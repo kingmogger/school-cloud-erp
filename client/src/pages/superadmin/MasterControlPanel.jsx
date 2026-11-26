@@ -23,6 +23,7 @@ import {
   Image as ImageIcon,
   Check,
   Package,
+  Trash2,
 } from 'lucide-react';
 import { api, getApiErrorMessage } from '../../api/client';
 import { useAuth } from '../../context/AuthContext';

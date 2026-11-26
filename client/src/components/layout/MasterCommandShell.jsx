@@ -19,6 +19,7 @@ import {
   Menu,
   X,
   Sparkles,
+  HardDrive,
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { useToast } from '../../context/ToastContext';
@@ -26,6 +27,7 @@ import { useToast } from '../../context/ToastContext';
 const NAV_ITEMS = [
   { to: '/master-control', label: 'Master Command Center', icon: Sliders, end: true },
   { to: '/master-control/schools', label: 'School Tenants & White-Label', icon: Building2 },
+  { to: '/master-control/storage', label: 'Storage Management', icon: HardDrive },
   { to: '/master-control/database', label: 'Database Commander', icon: Database },
   { to: '/master-control/plans', label: 'Subscription Plans', icon: Layers },
   { to: '/master-control/billing', label: 'Billing & Invoices', icon: CreditCard },

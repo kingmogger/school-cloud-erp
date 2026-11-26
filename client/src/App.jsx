@@ -81,6 +81,8 @@ export default function App() {
                   <Route path="database" element={<DatabaseDashboard />} />
                   <Route path="plans" element={<PlansPage />} />
                   <Route path="billing" element={<BillingPage />} />
+                  <Route path="storage" element={<StoragePage />} />
+                  <Route path="storage/:id" element={<SchoolStorageDetailPage />} />
                   <Route path="audit-logs" element={<PlatformAuditPage />} />
                   <Route path="settings" element={<PlatformSettingsPage />} />
                 </Route>
