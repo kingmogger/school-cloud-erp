@@ -1,9 +1,9 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { GraduationCap, Moon, Sun, ShieldCheck } from 'lucide-react';
+import { GraduationCap, Moon, Sun, ShieldCheck, Shield } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { useTheme } from '../../context/ThemeContext';
 import { useToast } from '../../context/ToastContext';
@@ -17,7 +17,7 @@ const loginSchema = z.object({
 });
 
 const ROLE_HOME = {
-  super_admin: '/superadmin',
+  super_admin: '/master-control',
   school_admin: '/admin',
   faculty: '/faculty',
   student: '/student',
@@ -133,6 +133,18 @@ export function LoginPage() {
                   <p className="truncate text-slate-500 dark:text-slate-400">{acc.email}</p>
                 </button>
               ))}
+            </div>
+
+            {/* Standalone Master Control Portal Switcher Link */}
+            <div className="mt-4 pt-3 border-t border-slate-200 dark:border-slate-800 text-center">
+              <Link
+                to="/master-control/login"
+                className="inline-flex items-center gap-1.5 text-xs text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300 hover:underline font-semibold"
+              >
+                <Shield className="h-3.5 w-3.5" />
+                <span>Platform Owner? Access Dedicated Master Control Console</span>
+                <span aria-hidden="true">&rarr;</span>
+              </Link>
             </div>
           </div>
         </div>

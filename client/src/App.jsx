@@ -4,8 +4,10 @@ import { ThemeProvider } from './context/ThemeContext';
 import { ToastProvider } from './context/ToastContext';
 import { AuthProvider } from './context/AuthContext';
 import { AppShell } from './components/layout/AppShell';
+import { MasterCommandShell } from './components/layout/MasterCommandShell';
 import { ProtectedRoute, RoleRedirect } from './components/layout/ProtectedRoute';
 import { LoginPage } from './pages/auth/LoginPage';
+import { MasterControlLogin } from './pages/superadmin/MasterControlLogin';
 
 import { SuperAdminDashboard } from './pages/superadmin/SuperAdminDashboard';
 import { MasterControlPanel } from './pages/superadmin/MasterControlPanel';
@@ -59,18 +61,42 @@ export default function App() {
             <BrowserRouter>
               <Routes>
                 <Route path="/login" element={<LoginPage />} />
+                <Route path="/master-control/login" element={<MasterControlLogin />} />
+                <Route path="/superadmin/login" element={<Navigate to="/master-control/login" replace />} />
                 <Route path="/" element={<RoleRedirect />} />
 
+                {/* Standalone Super Admin / Master Control Website */}
+                <Route
+                  path="/master-control"
+                  element={
+                    <ProtectedRoute allowedRoles={['super_admin']}>
+                      <MasterCommandShell />
+                    </ProtectedRoute>
+                  }
+                >
+                  <Route index element={<MasterControlPanel />} />
+                  <Route path="control-panel" element={<MasterControlPanel />} />
+                  <Route path="dashboard" element={<SuperAdminDashboard />} />
+                  <Route path="schools" element={<SchoolsPage />} />
+                  <Route path="database" element={<DatabaseDashboard />} />
+                  <Route path="plans" element={<PlansPage />} />
+                  <Route path="billing" element={<BillingPage />} />
+                  <Route path="audit-logs" element={<PlatformAuditPage />} />
+                  <Route path="settings" element={<PlatformSettingsPage />} />
+                </Route>
+
+                {/* Backward compatibility for /superadmin alias -> MasterCommandShell */}
                 <Route
                   path="/superadmin"
                   element={
                     <ProtectedRoute allowedRoles={['super_admin']}>
-                      <AppShell />
+                      <MasterCommandShell />
                     </ProtectedRoute>
                   }
                 >
-                  <Route index element={<SuperAdminDashboard />} />
+                  <Route index element={<MasterControlPanel />} />
                   <Route path="control-panel" element={<MasterControlPanel />} />
+                  <Route path="dashboard" element={<SuperAdminDashboard />} />
                   <Route path="schools" element={<SchoolsPage />} />
                   <Route path="plans" element={<PlansPage />} />
                   <Route path="billing" element={<BillingPage />} />

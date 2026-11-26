@@ -470,11 +470,19 @@ export class FirestoreModel {
   }
 
   async findByIdAndDelete(id) {
+    const db = getDb();
+    const docRef = db.collection(this.collectionName).doc(String(id));
+    const snap = await docRef.get();
+    if (snap.exists) {
+      const data = snap.data();
+      await docRef.delete();
+      return data;
+    }
+
     const existing = await this.findById(id).lean().exec();
     if (!existing) return null;
 
-    const db = getDb();
-    await db.collection(this.collectionName).doc(String(id)).delete();
+    await db.collection(this.collectionName).doc(String(existing._id || id)).delete();
     return existing;
   }
 

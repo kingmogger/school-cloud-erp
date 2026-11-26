@@ -119,6 +119,17 @@ export function SchoolsPage() {
     },
   });
 
+  const permanentDeleteMutation = useMutation({
+    mutationFn: (id) => api.delete(`/superadmin/schools/${id}?permanent=true`),
+    onSuccess: () => {
+      addToast('School and all associated records permanently purged from database', 'success');
+      qc.invalidateQueries({ queryKey: ['superadmin-schools'] });
+    },
+    onError: (e) => {
+      addToast(getApiErrorMessage(e), 'error');
+    },
+  });
+
   const handleImpersonate = async (schoolId) => {
     try {
       const res = await api.post(`/superadmin/schools/${schoolId}/impersonate`, { reason: 'Support inspection' });
@@ -214,8 +225,18 @@ export function SchoolsPage() {
                 <Button size="sm" variant="ghost" title="Reset Admin Password" onClick={() => resetPassMutation.mutate(r._id)}>
                   <KeyRound className="h-3.5 w-3.5" />
                 </Button>
-                <Button size="sm" variant="ghost" title="Soft Delete" onClick={() => deleteMutation.mutate(r._id)}>
-                  <Trash2 className="h-3.5 w-3.5 text-rose-500" />
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  title="Permanently Delete School from Database"
+                  className="hover:bg-rose-50 dark:hover:bg-rose-950/40 text-rose-600"
+                  onClick={() => {
+                    if (window.confirm(`PERMANENT DATABASE PURGE:\nAre you sure you want to permanently delete "${r.name}" (${r.code})?\n\nThis will completely erase this school and all its accounts, classes, and records from the database.`)) {
+                      permanentDeleteMutation.mutate(r._id);
+                    }
+                  }}
+                >
+                  <Trash2 className="h-3.5 w-3.5 text-rose-600" />
                 </Button>
               </div>
             ),

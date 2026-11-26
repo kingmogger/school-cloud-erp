@@ -9,6 +9,7 @@ import { Student } from '../models/Student.js';
 import { Faculty } from '../models/Faculty.js';
 import { AcademicYear } from '../models/AcademicYear.js';
 import { SchoolSettings } from '../models/SchoolSettings.js';
+import { ALL_MODELS } from '../models/allModels.js';
 import { ApiError } from '../utils/ApiError.js';
 import { sendSuccess } from '../utils/ApiResponse.js';
 import { parsePagination, buildPaginationMeta } from '../utils/pagination.js';
@@ -112,7 +113,12 @@ export const createSchool = asyncHandler(async (req, res) => {
   if (await School.exists({ code: upperCode })) {
     throw new ApiError(409, `School code ${upperCode} already exists`, 'SCHOOL_CODE_EXISTS');
   }
-  if (await runWithoutTenant(() => User.exists({ email: adminEmail.toLowerCase() }))) {
+
+  const effectiveAdminEmail = (adminEmail || email || `admin@${upperCode.toLowerCase()}.edu`).toLowerCase().trim();
+  const effectiveAdminName = adminName || contactPerson || `${name} Admin`;
+  const effectiveAdminPassword = adminPassword || 'Password@123';
+
+  if (await runWithoutTenant(() => User.exists({ email: effectiveAdminEmail }))) {
     throw new ApiError(409, 'Admin email already exists', 'EMAIL_EXISTS');
   }
 
@@ -137,13 +143,13 @@ export const createSchool = asyncHandler(async (req, res) => {
     gracePeriodDays: settings?.gracePeriodDays ?? 7,
   });
 
-  const rawPassword = adminPassword && adminPassword.trim() ? adminPassword.trim() : 'Password@123';
+  const rawPassword = effectiveAdminPassword;
   const passHash = await User.hashPassword(rawPassword);
 
   const adminUser = await runWithTenant(school._id, async () => {
     const user = await User.create({
-      name: adminName,
-      email: adminEmail.trim().toLowerCase(),
+      name: effectiveAdminName,
+      email: effectiveAdminEmail,
       passwordHash: passHash,
       role: 'school_admin',
       schoolId: school._id,
@@ -231,15 +237,48 @@ export const updateSchool = asyncHandler(async (req, res) => {
 });
 
 export const softDeleteSchool = asyncHandler(async (req, res) => {
+  const { permanent } = req.query;
+  const schoolId = req.params.id;
+
+  if (permanent === 'true' || permanent === true) {
+    const school = await School.findById(schoolId).lean().exec();
+    if (!school) throw new ApiError(404, 'School not found', 'NOT_FOUND');
+
+    // Permanently remove school document from database
+    await School.findByIdAndDelete(schoolId);
+
+    // Permanently purge all associated tenant data across all models
+    for (const [name, model] of Object.entries(ALL_MODELS)) {
+      if (model.hasTenant) {
+        try {
+          await model.deleteMany({ schoolId });
+        } catch {
+          // ignore if collection is empty
+        }
+      }
+    }
+    await PlatformPayment.deleteMany({ schoolId });
+
+    await logPlatformAudit({
+      req,
+      action: 'PERMANENT_DELETE_SCHOOL',
+      targetSchoolId: schoolId,
+      reason: req.body?.reason || 'Permanently purged from database by Super Admin',
+    });
+    return sendSuccess(res, { deleted: true, permanent: true, schoolId });
+  }
+
   const school = await School.findByIdAndUpdate(
-    req.params.id,
+    schoolId,
     { softDeletedAt: new Date(), status: 'suspended', subscriptionStatus: 'suspended' },
     { new: true }
   );
   if (!school) throw new ApiError(404, 'School not found', 'NOT_FOUND');
   await logPlatformAudit({ req, action: 'SOFT_DELETE_SCHOOL', targetSchoolId: school._id, reason: req.body?.reason || '' });
-  return sendSuccess(res, { deleted: true });
+  return sendSuccess(res, { deleted: true, permanent: false });
 });
+
+export const deleteSchool = softDeleteSchool;
 
 // ---------------- ONE-CLICK SCHOOL ACTIONS ----------------
 export const suspendSchool = asyncHandler(async (req, res) => {

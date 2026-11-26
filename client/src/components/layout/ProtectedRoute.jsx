@@ -3,7 +3,7 @@ import { useAuth } from '../../context/AuthContext';
 import { Skeleton } from '../ui';
 
 const ROLE_HOME = {
-  super_admin: '/superadmin',
+  super_admin: '/master-control',
   school_admin: '/admin',
   faculty: '/faculty',
   student: '/student',
@@ -26,10 +26,16 @@ export function ProtectedRoute({ allowedRoles, children }) {
   }
 
   if (!user) {
+    if (location.pathname.startsWith('/master-control') || location.pathname.startsWith('/superadmin')) {
+      return <Navigate to="/master-control/login" replace />;
+    }
     return <Navigate to="/login" replace />;
   }
 
   if (allowedRoles && !allowedRoles.includes(user.role)) {
+    if (allowedRoles.includes('super_admin')) {
+      return <Navigate to="/master-control/login" replace />;
+    }
     return <Navigate to={ROLE_HOME[user.role] || '/login'} replace />;
   }
 

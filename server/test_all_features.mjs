@@ -128,11 +128,12 @@ async function runTests() {
     });
     assert('User Account Login: khan@gmail.com', khanLogin.ok && khanLogin.data?.data?.user?.role === 'school_admin', JSON.stringify(khanLogin.data));
 
+    // Test school soft-delete auth protection (khan121@gmail.com's school was archived)
     const khan121Login = await req('/auth/login', {
       method: 'POST',
       body: JSON.stringify({ email: 'khan121@gmail.com', password: 'Password@123' }),
     });
-    assert('User Account Login: khan121@gmail.com', khan121Login.ok && khan121Login.data?.data?.user?.role === 'school_admin', JSON.stringify(khan121Login.data));
+    assert('Archived School Account Correctly Blocked (SCHOOL_NOT_FOUND)', khan121Login.status === 403 && khan121Login.data?.error?.code === 'SCHOOL_NOT_FOUND');
 
     // ----------------------------------------------------
     // TEST 6: School Access Kill-Switch (Suspend & Reactivate)
@@ -289,6 +290,46 @@ async function runTests() {
         assert('Official School Fee PDF Receipt Download', isPdf);
       }
     }
+
+    // ----------------------------------------------------
+    // TEST 24: Direct Database Document Creation & Permanent Deletion
+    // ----------------------------------------------------
+    const createDoc = await req('/database/remarks', {
+      method: 'POST',
+      body: JSON.stringify({ comment: 'Automated test remark to delete', category: 'General' }),
+    });
+    assert('Database API Create Document (201)', createDoc.status === 201 && createDoc.data?.data?._id);
+    const testDocId = createDoc.data?.data?._id;
+
+    const delDoc = await req(`/database/remarks/${testDocId}`, { method: 'DELETE' });
+    assert('Database API Delete Document (200 OK & deleted: true)', delDoc.status === 200 && delDoc.data?.data?.deleted === true);
+
+    const checkDoc = await req(`/database/remarks/${testDocId}`, { method: 'GET' });
+    assert('Document Permanently Removed from Database (404)', checkDoc.status === 404);
+
+    // ----------------------------------------------------
+    // TEST 25: Permanent School Wipe (Hard Delete from Database)
+    // ----------------------------------------------------
+    const wipeCode = `WIPE${Date.now().toString().slice(-4)}`;
+    const newWipeSchool = await req('/superadmin/schools', {
+      method: 'POST',
+      body: JSON.stringify({
+        name: 'School To Wipe',
+        code: wipeCode,
+        email: `wipe_${wipeCode.toLowerCase()}@test.edu`,
+        adminPassword: 'Password@123',
+      }),
+    }, saToken);
+    const wipeSchoolId = newWipeSchool.data?.data?.school?._id;
+    assert('Create Temporary School for Deletion Test', newWipeSchool.ok && wipeSchoolId);
+
+    const wipeRes = await req(`/superadmin/schools/${wipeSchoolId}?permanent=true`, {
+      method: 'DELETE',
+    }, saToken);
+    assert('Permanent School Wipe (Hard Delete from Database)', wipeRes.ok && wipeRes.data?.data?.permanent === true);
+
+    const checkWipedSchool = await req(`/superadmin/schools/${wipeSchoolId}`, { method: 'GET' }, saToken);
+    assert('Wiped School Permanently Erased from Database (404)', checkWipedSchool.status === 404);
 
   } catch (err) {
     console.error('UNEXPECTED TEST EXCEPTION:', err);

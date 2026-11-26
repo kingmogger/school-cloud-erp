@@ -75,15 +75,18 @@ export function DatabaseDashboard() {
   };
 
   const handleDelete = async (docId) => {
-    if (!window.confirm(`Delete document "${docId}" from ${selectedCol}?`)) return;
+    if (!window.confirm(`PERMANENT DELETE: Are you sure you want to permanently delete document "${docId}" from collection "${selectedCol}"? This will immediately remove it from the database.`)) return;
     try {
+      // Optimistic removal
+      setDocuments((prev) => prev.filter((d) => (d._id || d.id) !== docId));
       await api.delete(`/database/${selectedCol}/${docId}`);
-      addToast(`Document deleted successfully`, 'success');
+      addToast(`Document "${docId}" permanently removed from database`, 'success');
       fetchDocuments(selectedCol, search);
       fetchStats();
-      if (selectedDoc?._id === docId) setSelectedDoc(null);
+      if (selectedDoc?._id === docId || selectedDoc?.id === docId) setSelectedDoc(null);
     } catch (err) {
-      addToast(err.response?.data?.message || 'Failed to delete document', 'error');
+      addToast(err.response?.data?.message || err.message || 'Failed to delete document', 'error');
+      fetchDocuments(selectedCol, search);
     }
   };
 

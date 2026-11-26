@@ -70,6 +70,7 @@ export function MasterControlPanel() {
   const [editSchool, setEditSchool] = useState(null);
   const [suspendTarget, setSuspendTarget] = useState(null);
   const [suspendReason, setSuspendReason] = useState('');
+  const [deleteTarget, setDeleteTarget] = useState(null);
   const [changePlanTarget, setChangePlanTarget] = useState(null);
   const [newPlanId, setNewPlanId] = useState('');
   const [createdCreds, setCreatedCreds] = useState(null);
@@ -170,6 +171,18 @@ export function MasterControlPanel() {
       addToast('School access granted & reactivated (+30 days auto-extended)', 'success');
       qc.invalidateQueries({ queryKey: ['superadmin-schools'] });
       qc.invalidateQueries({ queryKey: ['superadmin-dashboard'] });
+    },
+    onError: (e) => addToast(getApiErrorMessage(e), 'error'),
+  });
+
+  const deleteSchoolMutation = useMutation({
+    mutationFn: (id) => api.delete(`/superadmin/schools/${id}?permanent=true`),
+    onSuccess: () => {
+      addToast('School and all associated records permanently purged from database', 'success');
+      setDeleteTarget(null);
+      qc.invalidateQueries({ queryKey: ['superadmin-schools'] });
+      qc.invalidateQueries({ queryKey: ['superadmin-dashboard'] });
+      qc.invalidateQueries({ queryKey: ['database-stats'] });
     },
     onError: (e) => addToast(getApiErrorMessage(e), 'error'),
   });
@@ -498,6 +511,15 @@ export function MasterControlPanel() {
                         title="Reset Admin Password"
                       >
                         <KeyRound className="h-3.5 w-3.5" />
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={() => setDeleteTarget(s)}
+                        className="p-1 rounded-md text-rose-500 hover:text-rose-700 hover:bg-rose-50 dark:hover:bg-rose-950/50 cursor-pointer"
+                        title="Permanently Delete School from Database"
+                      >
+                        <Trash2 className="h-3.5 w-3.5" />
                       </button>
                     </div>
                   </div>
@@ -889,6 +911,28 @@ export function MasterControlPanel() {
               onClick={() => changePlanMutation.mutate()}
             >
               Update Subscription Plan
+            </Button>
+          </div>
+        </div>
+      </Modal>
+
+      {/* Permanent Delete School Modal */}
+      <Modal open={!!deleteTarget} onClose={() => setDeleteTarget(null)} title="Permanently Purge School from Database" maxWidth="max-w-md">
+        <div className="space-y-4">
+          <div className="p-3 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-700 dark:text-rose-300 text-xs">
+            ⚠️ <strong>Danger:</strong> This will completely remove <strong>{deleteTarget?.name}</strong> ({deleteTarget?.code}) and all its associated users, classes, students, and records from the database. This action is immediate and cannot be undone.
+          </div>
+          <p className="text-sm text-slate-600 dark:text-slate-300">
+            Confirm permanent deletion of <strong>{deleteTarget?.name}</strong>?
+          </p>
+          <div className="flex justify-end gap-2 pt-2">
+            <Button variant="secondary" onClick={() => setDeleteTarget(null)}>Cancel</Button>
+            <Button
+              variant="danger"
+              disabled={deleteSchoolMutation.isPending}
+              onClick={() => deleteSchoolMutation.mutate(deleteTarget?._id)}
+            >
+              {deleteSchoolMutation.isPending ? 'Purging...' : 'Permanently Delete'}
             </Button>
           </div>
         </div>
