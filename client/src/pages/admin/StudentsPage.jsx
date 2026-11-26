@@ -187,7 +187,6 @@ export function StudentsPage() {
             </FormField>
           </div>
 
-<<<<<<< HEAD
           <div className="border-t border-slate-200 dark:border-slate-800 pt-4">
             <div className="flex items-center justify-between mb-2">
               <p className="text-xs font-semibold uppercase tracking-wider text-slate-500">Student Account & Login Credentials</p>

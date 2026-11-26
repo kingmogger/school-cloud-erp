@@ -4,7 +4,7 @@
       "_id": "42ce9317b71a9905f4b2e35a",
       "id": "42ce9317b71a9905f4b2e35a",
       "createdAt": "2026-11-25T20:21:21.828Z",
-      "updatedAt": "2026-11-26T11:32:54.809Z",
+      "updatedAt": "2026-11-26T15:56:53.472Z",
       "platformName": "StudyX",
       "defaultTrialDays": 14,
       "gracePeriodDays": 7
@@ -22,7 +22,7 @@
       "_id": "b1d6a81811cfa77b68de6102",
       "id": "b1d6a81811cfa77b68de6102",
       "createdAt": "2026-11-25T20:21:21.830Z",
-      "updatedAt": "2026-11-26T11:32:54.817Z"
+      "updatedAt": "2026-11-26T15:56:53.483Z"
     },
     "f7f669eeb3e1ceec84f2378c": {
       "code": "STARTER-MONTHLY",
@@ -35,7 +35,7 @@
       "maxStudents": 150,
       "maxFaculty": 20,
       "storageLimitMb": 2048,
-      "updatedAt": "2026-11-26T11:32:54.814Z"
+      "updatedAt": "2026-11-26T15:56:53.478Z"
     },
     "29a6e707a9753ba73da6599c": {
       "name": "mine",
@@ -62,11 +62,11 @@
       "subscriptionStatus": "active",
       "planId": "b1d6a81811cfa77b68de6102",
       "startDate": "2026-11-25T20:21:21.830Z",
-      "endDate": "2027-02-24T11:32:54.822Z",
+      "endDate": "2027-02-24T15:56:53.492Z",
       "_id": "fb5033ac69243aed2591b3c3",
       "id": "fb5033ac69243aed2591b3c3",
       "createdAt": "2026-11-25T20:21:21.830Z",
-      "updatedAt": "2026-11-26T11:32:54.823Z",
+      "updatedAt": "2026-11-26T15:56:53.492Z",
       "manualSuspension": {
         "isSuspended": false,
         "reason": ""
@@ -81,17 +81,16 @@
       "email": "office@oakridge.edu",
       "contactPerson": "Mr. Arthur Pendelton",
       "phone": "+1-555-0200",
-      "status": "active",
-      "subscriptionStatus": "active",
+      "status": "suspended",
+      "subscriptionStatus": "suspended",
       "planId": "f7f669eeb3e1ceec84f2378c",
-      "endDate": "2026-12-26T12:16:20.381Z",
+      "endDate": "2026-11-16T15:56:53.497Z",
       "manualSuspension": {
-        "isSuspended": false,
-        "reason": "",
-        "suspendedAt": null,
-        "suspendedBy": null
+        "isSuspended": true,
+        "reason": "Overdue monthly subscription invoice",
+        "suspendedAt": "2026-11-26T15:56:53.497Z"
       },
-      "updatedAt": "2026-11-26T12:16:20.381Z"
+      "updatedAt": "2026-11-26T15:56:53.498Z"
     },
     "69b7438fe7fbf3c37a44a771": {
       "name": "spring feild",
@@ -321,11 +320,11 @@
       "id": "40210e689d042ad5d3842130",
       "createdAt": "2026-11-25T20:21:21.896Z",
       "name": "Platform Owner",
-      "passwordHash": "$2a$10$vFHG3gNrhFjRhAd.JbcNF.ZC6va4h46R.HMBOlaQFv1fl.hl4wNP2",
+      "passwordHash": "$2a$10$7ckHU.RnxlY8CaH5wzCiquSHwPq9gOpOo8RR4QLRZZoL.HhTBR1NC",
       "role": "super_admin",
       "schoolId": null,
       "isActive": true,
-      "updatedAt": "2026-11-26T12:37:26.376Z",
+      "updatedAt": "2026-11-26T15:56:53.489Z",
       "refreshTokenHash": "4d87dd08423fa3e0f19d274f0ed9137d4abbc40ac398aef8018171381422aba9",
       "lastLoginAt": "2026-11-26T12:37:26.375Z"
     },
@@ -335,14 +334,14 @@
       "id": "b850b2665da7b4eed764a180",
       "createdAt": "2026-11-25T20:21:21.900Z",
       "name": "Dr. Elena Vance",
-      "passwordHash": "$2a$10$vFHG3gNrhFjRhAd.JbcNF.ZC6va4h46R.HMBOlaQFv1fl.hl4wNP2",
+      "passwordHash": "$2a$10$7ckHU.RnxlY8CaH5wzCiquSHwPq9gOpOo8RR4QLRZZoL.HhTBR1NC",
       "role": "school_admin",
       "schoolId": "fb5033ac69243aed2591b3c3",
       "phone": "+1-555-0101",
       "isActive": true,
-      "updatedAt": "2026-11-26T12:37:26.769Z",
-      "refreshTokenHash": "92425bc42746be35c7d8437691550e30b9dd81cc63c7d3f2265fb224b7e3583e",
-      "lastLoginAt": "2026-11-26T12:37:26.769Z"
+      "updatedAt": "2026-11-26T15:56:54.142Z",
+      "refreshTokenHash": "b3e91f92e6d48a65632791121911f6ad5e743a8e49db6ee07d890fe911aa62bb",
+      "lastLoginAt": "2026-11-26T15:56:54.141Z"
     },
     "f8067a0949312bc34fa9341d": {
       "email": "parent.gf@greenfield.edu",
@@ -350,11 +349,11 @@
       "id": "f8067a0949312bc34fa9341d",
       "createdAt": "2026-11-25T20:21:21.904Z",
       "name": "Sarah Johnson (gf)",
-      "passwordHash": "$2a$10$vFHG3gNrhFjRhAd.JbcNF.ZC6va4h46R.HMBOlaQFv1fl.hl4wNP2",
+      "passwordHash": "$2a$10$7ckHU.RnxlY8CaH5wzCiquSHwPq9gOpOo8RR4QLRZZoL.HhTBR1NC",
       "role": "parent",
       "schoolId": "fb5033ac69243aed2591b3c3",
       "isActive": true,
-      "updatedAt": "2026-11-26T12:37:27.097Z",
+      "updatedAt": "2026-11-26T15:56:53.554Z",
       "refreshTokenHash": "9060e30da8a25e0a9e173d28f0a3ebc3f38adc14b6963c3b48bde617fed84756",
       "lastLoginAt": "2026-11-26T12:37:27.097Z"
     },
@@ -364,11 +363,11 @@
       "id": "13792d1b5956244e4ac3fe5e",
       "createdAt": "2026-11-25T20:21:21.906Z",
       "name": "Robert Patel (gf)",
-      "passwordHash": "$2a$10$vFHG3gNrhFjRhAd.JbcNF.ZC6va4h46R.HMBOlaQFv1fl.hl4wNP2",
+      "passwordHash": "$2a$10$7ckHU.RnxlY8CaH5wzCiquSHwPq9gOpOo8RR4QLRZZoL.HhTBR1NC",
       "role": "parent",
       "schoolId": "fb5033ac69243aed2591b3c3",
       "isActive": true,
-      "updatedAt": "2026-11-26T11:32:54.861Z"
+      "updatedAt": "2026-11-26T15:56:53.562Z"
     },
     "a687ab0c097682bfab1c0526": {
       "email": "liam.gf@greenfield.edu",
@@ -376,11 +375,11 @@
       "id": "a687ab0c097682bfab1c0526",
       "createdAt": "2026-11-25T20:21:21.907Z",
       "name": "Liam Johnson (gf)",
-      "passwordHash": "$2a$10$vFHG3gNrhFjRhAd.JbcNF.ZC6va4h46R.HMBOlaQFv1fl.hl4wNP2",
+      "passwordHash": "$2a$10$7ckHU.RnxlY8CaH5wzCiquSHwPq9gOpOo8RR4QLRZZoL.HhTBR1NC",
       "role": "student",
       "schoolId": "fb5033ac69243aed2591b3c3",
       "isActive": true,
-      "updatedAt": "2026-11-26T12:37:27.028Z",
+      "updatedAt": "2026-11-26T15:56:53.571Z",
       "refreshTokenHash": "e629aa9e0b602dbc05f2d9c86c83f9b50b8e9e776d8a4d0441b8c7c4c77a6e26",
       "lastLoginAt": "2026-11-26T12:37:27.028Z"
     },
@@ -390,11 +389,11 @@
       "id": "47b6dc32208e3ef65c255b5f",
       "createdAt": "2026-11-25T20:21:21.908Z",
       "name": "Aarav Patel (gf)",
-      "passwordHash": "$2a$10$vFHG3gNrhFjRhAd.JbcNF.ZC6va4h46R.HMBOlaQFv1fl.hl4wNP2",
+      "passwordHash": "$2a$10$7ckHU.RnxlY8CaH5wzCiquSHwPq9gOpOo8RR4QLRZZoL.HhTBR1NC",
       "role": "student",
       "schoolId": "fb5033ac69243aed2591b3c3",
       "isActive": true,
-      "updatedAt": "2026-11-26T11:32:54.872Z"
+      "updatedAt": "2026-11-26T15:56:53.585Z"
     },
     "2e563f93a6467ffce152bf7e": {
       "email": "admin@oakridge.edu",
@@ -402,12 +401,12 @@
       "id": "2e563f93a6467ffce152bf7e",
       "createdAt": "2026-11-25T20:21:21.911Z",
       "name": "Mr. Arthur Pendelton",
-      "passwordHash": "$2a$10$vFHG3gNrhFjRhAd.JbcNF.ZC6va4h46R.HMBOlaQFv1fl.hl4wNP2",
+      "passwordHash": "$2a$10$7ckHU.RnxlY8CaH5wzCiquSHwPq9gOpOo8RR4QLRZZoL.HhTBR1NC",
       "role": "school_admin",
       "schoolId": "67cb35cdcca02538aacb7392",
       "phone": "+1-555-0101",
       "isActive": true,
-      "updatedAt": "2026-11-26T12:16:33.236Z",
+      "updatedAt": "2026-11-26T15:56:53.604Z",
       "refreshTokenHash": null,
       "lastLoginAt": "2026-11-26T12:16:30.100Z"
     },
@@ -417,11 +416,11 @@
       "id": "9ec08baa4dcfe1fe6924e359",
       "createdAt": "2026-11-25T20:21:21.913Z",
       "name": "Ms. Priya Nair (oak)",
-      "passwordHash": "$2a$10$vFHG3gNrhFjRhAd.JbcNF.ZC6va4h46R.HMBOlaQFv1fl.hl4wNP2",
+      "passwordHash": "$2a$10$7ckHU.RnxlY8CaH5wzCiquSHwPq9gOpOo8RR4QLRZZoL.HhTBR1NC",
       "role": "faculty",
       "schoolId": "67cb35cdcca02538aacb7392",
       "isActive": true,
-      "updatedAt": "2026-11-26T11:32:54.893Z"
+      "updatedAt": "2026-11-26T15:56:53.616Z"
     },
     "481c7e1363540c0d0d343cdd": {
       "email": "parent.oak@oakridge.edu",
@@ -429,11 +428,11 @@
       "id": "481c7e1363540c0d0d343cdd",
       "createdAt": "2026-11-25T20:21:21.916Z",
       "name": "Sarah Johnson (oak)",
-      "passwordHash": "$2a$10$vFHG3gNrhFjRhAd.JbcNF.ZC6va4h46R.HMBOlaQFv1fl.hl4wNP2",
+      "passwordHash": "$2a$10$7ckHU.RnxlY8CaH5wzCiquSHwPq9gOpOo8RR4QLRZZoL.HhTBR1NC",
       "role": "parent",
       "schoolId": "67cb35cdcca02538aacb7392",
       "isActive": true,
-      "updatedAt": "2026-11-26T11:32:54.931Z"
+      "updatedAt": "2026-11-26T15:56:53.641Z"
     },
     "477d06299ee3fbcdcbe44a65": {
       "email": "parent2.oak@oakridge.edu",
@@ -441,11 +440,11 @@
       "id": "477d06299ee3fbcdcbe44a65",
       "createdAt": "2026-11-25T20:21:21.917Z",
       "name": "Robert Patel (oak)",
-      "passwordHash": "$2a$10$vFHG3gNrhFjRhAd.JbcNF.ZC6va4h46R.HMBOlaQFv1fl.hl4wNP2",
+      "passwordHash": "$2a$10$7ckHU.RnxlY8CaH5wzCiquSHwPq9gOpOo8RR4QLRZZoL.HhTBR1NC",
       "role": "parent",
       "schoolId": "67cb35cdcca02538aacb7392",
       "isActive": true,
-      "updatedAt": "2026-11-26T11:32:54.936Z"
+      "updatedAt": "2026-11-26T15:56:53.651Z"
     },
     "81488d49c34de0bb2253df3c": {
       "email": "liam.oak@oakridge.edu",
@@ -453,11 +452,11 @@
       "id": "81488d49c34de0bb2253df3c",
       "createdAt": "2026-11-25T20:21:21.918Z",
       "name": "Liam Johnson (oak)",
-      "passwordHash": "$2a$10$vFHG3gNrhFjRhAd.JbcNF.ZC6va4h46R.HMBOlaQFv1fl.hl4wNP2",
+      "passwordHash": "$2a$10$7ckHU.RnxlY8CaH5wzCiquSHwPq9gOpOo8RR4QLRZZoL.HhTBR1NC",
       "role": "student",
       "schoolId": "67cb35cdcca02538aacb7392",
       "isActive": true,
-      "updatedAt": "2026-11-26T11:32:54.940Z"
+      "updatedAt": "2026-11-26T15:56:53.661Z"
     },
     "150b46b5e6e45809228efcd6": {
       "email": "aarav.oak@oakridge.edu",
@@ -465,11 +464,11 @@
       "id": "150b46b5e6e45809228efcd6",
       "createdAt": "2026-11-25T20:21:21.919Z",
       "name": "Aarav Patel (oak)",
-      "passwordHash": "$2a$10$vFHG3gNrhFjRhAd.JbcNF.ZC6va4h46R.HMBOlaQFv1fl.hl4wNP2",
+      "passwordHash": "$2a$10$7ckHU.RnxlY8CaH5wzCiquSHwPq9gOpOo8RR4QLRZZoL.HhTBR1NC",
       "role": "student",
       "schoolId": "67cb35cdcca02538aacb7392",
       "isActive": true,
-      "updatedAt": "2026-11-26T11:32:54.948Z"
+      "updatedAt": "2026-11-26T15:56:53.676Z"
     },
     "5fb811f15a380ca64ae9fb75": {
       "name": "dorado",
@@ -533,11 +532,11 @@
       "id": "6215455bef9f511e50de6d2b",
       "createdAt": "2026-11-26T11:32:39.559Z",
       "name": "Prof. Marcus Reed (gf)",
-      "passwordHash": "$2a$10$vFHG3gNrhFjRhAd.JbcNF.ZC6va4h46R.HMBOlaQFv1fl.hl4wNP2",
+      "passwordHash": "$2a$10$7ckHU.RnxlY8CaH5wzCiquSHwPq9gOpOo8RR4QLRZZoL.HhTBR1NC",
       "role": "faculty",
       "schoolId": "fb5033ac69243aed2591b3c3",
       "isActive": true,
-      "updatedAt": "2026-11-26T12:37:26.964Z",
+      "updatedAt": "2026-11-26T15:56:53.517Z",
       "refreshTokenHash": "38b3ebf5ea8d8ff5b52fa8ee931b5744a833806aded8cf912f46fa5af4a50575",
       "lastLoginAt": "2026-11-26T12:37:26.964Z"
     },
@@ -547,11 +546,11 @@
       "id": "51350f1097df596ad3a9db5f",
       "createdAt": "2026-11-26T11:32:39.566Z",
       "name": "Ms. Priya Nair (gf)",
-      "passwordHash": "$2a$10$vFHG3gNrhFjRhAd.JbcNF.ZC6va4h46R.HMBOlaQFv1fl.hl4wNP2",
+      "passwordHash": "$2a$10$7ckHU.RnxlY8CaH5wzCiquSHwPq9gOpOo8RR4QLRZZoL.HhTBR1NC",
       "role": "faculty",
       "schoolId": "fb5033ac69243aed2591b3c3",
       "isActive": true,
-      "updatedAt": "2026-11-26T11:32:54.842Z"
+      "updatedAt": "2026-11-26T15:56:53.529Z"
     },
     "19818580f6da41f2f888ab8a": {
       "email": "marcus.oak@oakridge.edu",
@@ -559,11 +558,11 @@
       "id": "19818580f6da41f2f888ab8a",
       "createdAt": "2026-11-26T11:32:39.610Z",
       "name": "Prof. Marcus Reed (oak)",
-      "passwordHash": "$2a$10$vFHG3gNrhFjRhAd.JbcNF.ZC6va4h46R.HMBOlaQFv1fl.hl4wNP2",
+      "passwordHash": "$2a$10$7ckHU.RnxlY8CaH5wzCiquSHwPq9gOpOo8RR4QLRZZoL.HhTBR1NC",
       "role": "faculty",
       "schoolId": "67cb35cdcca02538aacb7392",
       "isActive": true,
-      "updatedAt": "2026-11-26T11:32:54.887Z"
+      "updatedAt": "2026-11-26T15:56:53.608Z"
     },
     "d7a2e046a345da9de8016c59": {
       "name": "KHAN",
@@ -844,7 +843,7 @@
         "1fb9cdb2990dc15746e6c4c9"
       ],
       "status": "active",
-      "updatedAt": "2026-11-26T11:32:54.868Z"
+      "updatedAt": "2026-11-26T15:56:53.575Z"
     },
     "ef81e8d8b91b2c76ed857610": {
       "admissionNo": "ADM-2026-0002",
@@ -862,7 +861,7 @@
         "8ddcb77883cb71fba822b6ae"
       ],
       "status": "active",
-      "updatedAt": "2026-11-26T11:32:54.875Z"
+      "updatedAt": "2026-11-26T15:56:53.590Z"
     },
     "9043f195796d70b8c3c21e02": {
       "admissionNo": "ADM-2026-0001",
@@ -880,7 +879,7 @@
         "c0313d0777627d3e98ed37a9"
       ],
       "status": "active",
-      "updatedAt": "2026-11-26T11:32:54.943Z"
+      "updatedAt": "2026-11-26T15:56:53.666Z"
     },
     "ba6d8e5127ebe0e4e6072322": {
       "admissionNo": "ADM-2026-0002",
@@ -898,7 +897,7 @@
         "2e8c78195da75af193c285c7"
       ],
       "status": "active",
-      "updatedAt": "2026-11-26T11:32:54.951Z"
+      "updatedAt": "2026-11-26T15:56:53.682Z"
     },
     "f4bf0e18e7a2e805605bc2bd": {
       "userId": "5fb811f15a380ca64ae9fb75",
@@ -1106,7 +1105,7 @@
       "department": "Mathematics",
       "qualification": "M.Sc. Mathematics",
       "designation": "Senior Lecturer",
-      "updatedAt": "2026-11-26T11:32:54.839Z"
+      "updatedAt": "2026-11-26T15:56:53.522Z"
     },
     "5839629c79a0ba2739f63317": {
       "employeeId": "FAC-1002",
@@ -1118,7 +1117,7 @@
       "department": "Science",
       "qualification": "M.Sc. Physics",
       "designation": "Senior Lecturer",
-      "updatedAt": "2026-11-26T11:32:54.845Z"
+      "updatedAt": "2026-11-26T15:56:53.533Z"
     },
     "b9a08d533119361542da7516": {
       "employeeId": "FAC-1002",
@@ -1130,7 +1129,7 @@
       "department": "Science",
       "qualification": "M.Sc. Physics",
       "designation": "Senior Lecturer",
-      "updatedAt": "2026-11-26T11:32:54.896Z"
+      "updatedAt": "2026-11-26T15:56:53.620Z"
     },
     "5ae42a21ba96ef19145f2bc0": {
       "userId": "266a4c60d7143bc44beea99f",
@@ -1154,7 +1153,7 @@
       "department": "Mathematics",
       "qualification": "M.Sc. Mathematics",
       "designation": "Senior Lecturer",
-      "updatedAt": "2026-11-26T11:32:54.889Z"
+      "updatedAt": "2026-11-26T15:56:53.613Z"
     }
   },
   "parents": {
@@ -1166,7 +1165,7 @@
       "schoolId": "fb5033ac69243aed2591b3c3",
       "occupation": "Architect",
       "address": "42 Oakwood Ave",
-      "updatedAt": "2026-11-26T11:32:54.881Z",
+      "updatedAt": "2026-11-26T15:56:53.598Z",
       "children": [
         "25191362741faf88642d6d07"
       ]
@@ -1179,7 +1178,7 @@
       "schoolId": "fb5033ac69243aed2591b3c3",
       "occupation": "Engineer",
       "address": "88 Maple St",
-      "updatedAt": "2026-11-26T11:32:54.878Z",
+      "updatedAt": "2026-11-26T15:56:53.594Z",
       "children": [
         "ef81e8d8b91b2c76ed857610"
       ]
@@ -1192,7 +1191,7 @@
       "schoolId": "67cb35cdcca02538aacb7392",
       "occupation": "Architect",
       "address": "42 Oakwood Ave",
-      "updatedAt": "2026-11-26T11:32:54.955Z",
+      "updatedAt": "2026-11-26T15:56:53.691Z",
       "children": [
         "9043f195796d70b8c3c21e02"
       ]
@@ -1205,7 +1204,7 @@
       "schoolId": "67cb35cdcca02538aacb7392",
       "occupation": "Engineer",
       "address": "88 Maple St",
-      "updatedAt": "2026-11-26T11:32:54.953Z",
+      "updatedAt": "2026-11-26T15:56:53.687Z",
       "children": [
         "ba6d8e5127ebe0e4e6072322"
       ]
@@ -1302,7 +1301,7 @@
       "createdAt": "2026-11-25T20:21:21.902Z",
       "schoolId": "fb5033ac69243aed2591b3c3",
       "numericLevel": 10,
-      "updatedAt": "2026-11-26T11:32:54.848Z"
+      "updatedAt": "2026-11-26T15:56:53.537Z"
     },
     "92421acd2de5058721f0ed17": {
       "name": "Grade 10",
@@ -1312,7 +1311,7 @@
       "createdAt": "2026-11-25T20:21:21.914Z",
       "schoolId": "67cb35cdcca02538aacb7392",
       "numericLevel": 10,
-      "updatedAt": "2026-11-26T11:32:54.899Z"
+      "updatedAt": "2026-11-26T15:56:53.623Z"
     }
   },
   "sections": {
@@ -1325,7 +1324,7 @@
       "schoolId": "fb5033ac69243aed2591b3c3",
       "classTeacherId": "b8019b8d74f67da64cb44aa5",
       "capacity": 35,
-      "updatedAt": "2026-11-26T11:32:54.850Z"
+      "updatedAt": "2026-11-26T15:56:53.540Z"
     },
     "41989fe8fc2954210b45a601": {
       "classId": "92421acd2de5058721f0ed17",
@@ -1336,7 +1335,7 @@
       "schoolId": "67cb35cdcca02538aacb7392",
       "classTeacherId": "53e28654682574943b18c242",
       "capacity": 35,
-      "updatedAt": "2026-11-26T11:32:54.902Z"
+      "updatedAt": "2026-11-26T15:56:53.628Z"
     }
   },
   "subjects": {
@@ -1349,7 +1348,7 @@
       "schoolId": "fb5033ac69243aed2591b3c3",
       "name": "Mathematics",
       "facultyId": "b8019b8d74f67da64cb44aa5",
-      "updatedAt": "2026-11-26T11:32:54.852Z"
+      "updatedAt": "2026-11-26T15:56:53.545Z"
     },
     "d53b5d43fa6209083db496ab": {
       "code": "PHY10",
@@ -1360,7 +1359,7 @@
       "schoolId": "fb5033ac69243aed2591b3c3",
       "name": "Physics",
       "facultyId": "5839629c79a0ba2739f63317",
-      "updatedAt": "2026-11-26T11:32:54.854Z"
+      "updatedAt": "2026-11-26T15:56:53.549Z"
     },
     "1caefe9e664340b48c7d332e": {
       "code": "MATH10",
@@ -1371,7 +1370,7 @@
       "schoolId": "67cb35cdcca02538aacb7392",
       "name": "Mathematics",
       "facultyId": "53e28654682574943b18c242",
-      "updatedAt": "2026-11-26T11:32:54.925Z"
+      "updatedAt": "2026-11-26T15:56:53.632Z"
     },
     "0bcb73057539170d6d5e92f9": {
       "code": "PHY10",
@@ -1382,7 +1381,7 @@
       "schoolId": "67cb35cdcca02538aacb7392",
       "name": "Physics",
       "facultyId": "b9a08d533119361542da7516",
-      "updatedAt": "2026-11-26T11:32:54.929Z"
+      "updatedAt": "2026-11-26T15:56:53.636Z"
     }
   },
   "academicYears": {
@@ -2048,6 +2047,110 @@
       "id": "bf661c4440f4f546cbed90b7",
       "createdAt": "2026-11-26T12:37:26.898Z",
       "updatedAt": "2026-11-26T12:37:26.898Z"
+    },
+    "21df3201fcd093d8327e9cc0": {
+      "schoolId": "fb5033ac69243aed2591b3c3",
+      "actorId": "b850b2665da7b4eed764a180",
+      "actorRole": "school_admin",
+      "action": "CREATE_STUDENT",
+      "entity": "Student",
+      "entityId": "a5cee9633e410e4b43d3f3d0",
+      "before": null,
+      "after": {
+        "admissionNo": "ADM-2026-0012"
+      },
+      "ip": "127.0.0.1",
+      "_id": "21df3201fcd093d8327e9cc0",
+      "id": "21df3201fcd093d8327e9cc0",
+      "createdAt": "2026-11-26T15:56:54.480Z",
+      "updatedAt": "2026-11-26T15:56:54.480Z"
+    },
+    "19ced77e60fa76f5b5057bc7": {
+      "schoolId": "fb5033ac69243aed2591b3c3",
+      "actorId": "b850b2665da7b4eed764a180",
+      "actorRole": "school_admin",
+      "action": "DELETE_STUDENT",
+      "entity": "Student",
+      "entityId": "a5cee9633e410e4b43d3f3d0",
+      "before": {
+        "userId": "5ad5dbb073a942ade2eeaae8",
+        "schoolId": "fb5033ac69243aed2591b3c3",
+        "admissionNo": "ADM-2026-0012",
+        "rollNo": "",
+        "classId": "d1f9698c2f571df9fcaeb03b",
+        "sectionId": "8f7d2fadde2a5da733bcf97d",
+        "academicYearId": "eec99f689f699951637d3bc9",
+        "dateOfBirth": null,
+        "gender": "other",
+        "bloodGroup": "",
+        "address": "",
+        "guardianName": "",
+        "guardianPhone": "",
+        "parentIds": [],
+        "status": "active",
+        "_id": "a5cee9633e410e4b43d3f3d0",
+        "id": "a5cee9633e410e4b43d3f3d0",
+        "createdAt": "2026-11-26T15:56:54.473Z",
+        "updatedAt": "2026-11-26T15:56:54.473Z"
+      },
+      "after": null,
+      "ip": "127.0.0.1",
+      "_id": "19ced77e60fa76f5b5057bc7",
+      "id": "19ced77e60fa76f5b5057bc7",
+      "createdAt": "2026-11-26T15:56:54.532Z",
+      "updatedAt": "2026-11-26T15:56:54.532Z"
+    },
+    "6a1f712b99bbc72464ef472c": {
+      "schoolId": "fb5033ac69243aed2591b3c3",
+      "actorId": "b850b2665da7b4eed764a180",
+      "actorRole": "school_admin",
+      "action": "CREATE_STUDENT",
+      "entity": "Student",
+      "entityId": "f123626b2c2df2de7a614473",
+      "before": null,
+      "after": {
+        "admissionNo": "ADM-2026-0012"
+      },
+      "ip": "127.0.0.1",
+      "_id": "6a1f712b99bbc72464ef472c",
+      "id": "6a1f712b99bbc72464ef472c",
+      "createdAt": "2026-11-26T15:56:54.766Z",
+      "updatedAt": "2026-11-26T15:56:54.766Z"
+    },
+    "51a9f32bf665406a840e1eee": {
+      "schoolId": "fb5033ac69243aed2591b3c3",
+      "actorId": "b850b2665da7b4eed764a180",
+      "actorRole": "school_admin",
+      "action": "DELETE_STUDENT",
+      "entity": "Student",
+      "entityId": "f123626b2c2df2de7a614473",
+      "before": {
+        "userId": "721aaad68a609a661a099297",
+        "schoolId": "fb5033ac69243aed2591b3c3",
+        "admissionNo": "ADM-2026-0012",
+        "rollNo": "",
+        "classId": "d1f9698c2f571df9fcaeb03b",
+        "sectionId": "8f7d2fadde2a5da733bcf97d",
+        "academicYearId": "eec99f689f699951637d3bc9",
+        "dateOfBirth": null,
+        "gender": "other",
+        "bloodGroup": "",
+        "address": "",
+        "guardianName": "",
+        "guardianPhone": "",
+        "parentIds": [],
+        "status": "active",
+        "_id": "f123626b2c2df2de7a614473",
+        "id": "f123626b2c2df2de7a614473",
+        "createdAt": "2026-11-26T15:56:54.760Z",
+        "updatedAt": "2026-11-26T15:56:54.760Z"
+      },
+      "after": null,
+      "ip": "127.0.0.1",
+      "_id": "51a9f32bf665406a840e1eee",
+      "id": "51a9f32bf665406a840e1eee",
+      "createdAt": "2026-11-26T15:56:54.806Z",
+      "updatedAt": "2026-11-26T15:56:54.806Z"
     }
   },
   "attendances": {
@@ -2402,7 +2505,8 @@
       "status": "present",
       "remarks": "",
       "markedById": "6215455bef9f511e50de6d2b",
-      "updatedAt": "2026-11-26T12:01:00.128Z"
+      "updatedAt": "2026-11-26T15:56:53.169Z",
+      "schoolId": "fb5033ac69243aed2591b3c3"
     },
     "91f07138430fcbc91f995129": {
       "studentId": "ef81e8d8b91b2c76ed857610",
@@ -2416,7 +2520,8 @@
       "status": "present",
       "remarks": "",
       "markedById": "6215455bef9f511e50de6d2b",
-      "updatedAt": "2026-11-26T12:01:00.134Z"
+      "updatedAt": "2026-11-26T15:56:53.175Z",
+      "schoolId": "fb5033ac69243aed2591b3c3"
     },
     "c21a28da5cf1bfb520a61dcb": {
       "studentId": "25191362741faf88642d6d07",
@@ -2430,7 +2535,8 @@
       "status": "present",
       "remarks": "",
       "markedById": "6215455bef9f511e50de6d2b",
-      "updatedAt": "2026-11-26T12:01:08.569Z"
+      "updatedAt": "2026-11-26T15:56:53.179Z",
+      "schoolId": "fb5033ac69243aed2591b3c3"
     },
     "9a3617c543e69bd09d4491b3": {
       "studentId": "ef81e8d8b91b2c76ed857610",
@@ -2444,7 +2550,8 @@
       "status": "excused",
       "remarks": "",
       "markedById": "6215455bef9f511e50de6d2b",
-      "updatedAt": "2026-11-26T12:01:08.576Z"
+      "updatedAt": "2026-11-26T15:56:53.185Z",
+      "schoolId": "fb5033ac69243aed2591b3c3"
     }
   },
   "exams": {
@@ -3220,10 +3327,10 @@
       "amount": 199,
       "method": "bank_transfer",
       "reference": "TXN-GF-001",
-      "periodStart": "2026-11-26T11:32:54.828Z",
-      "periodEnd": "2027-02-24T11:32:54.828Z",
+      "periodStart": "2026-11-26T15:56:53.502Z",
+      "periodEnd": "2027-02-24T15:56:53.502Z",
       "status": "paid",
-      "updatedAt": "2026-11-26T11:32:54.828Z"
+      "updatedAt": "2026-11-26T15:56:53.503Z"
     },
     "ad759adfff5027d06ddaf88b": {
       "schoolId": "563a21680351e8daa6d05074",
@@ -3683,5 +3790,6 @@
       "createdAt": "2026-11-26T12:37:27.225Z",
       "updatedAt": "2026-11-26T12:37:27.225Z"
     }
-  }
+  },
+  "firebaseAuthUsers": {}
 }
