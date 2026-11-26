@@ -23,6 +23,20 @@ export async function computeEffectiveSchoolStatus(school) {
     };
   }
 
+  if (school.servicePaused?.isPaused) {
+    return {
+      effectiveStatus: 'paused',
+      isBlocked: true,
+      code: 'SCHOOL_PAUSED',
+      reason: school.servicePaused.customMessage || 'Service paused. Please contact your service provider.',
+      pauseReason: school.servicePaused.reason || '',
+      pausedAt: school.servicePaused.pausedAt || null,
+      pausedBy: school.servicePaused.pausedByName || 'Platform Owner',
+      daysRemaining: 0,
+      graceDaysRemaining: 0,
+    };
+  }
+
   if (school.manualSuspension?.isSuspended || school.status === 'suspended') {
     return {
       effectiveStatus: 'suspended',

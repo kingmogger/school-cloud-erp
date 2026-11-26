@@ -23,6 +23,7 @@ import timetableRoutes from './routes/timetable.routes.js';
 import intelligenceRoutes from './routes/intelligence.routes.js';
 import reportRoutes from './routes/report.routes.js';
 import databaseRoutes from './routes/database.routes.js';
+import storageRoutes from './routes/storage.routes.js';
 
 export function createApp() {
   const app = express();
@@ -80,6 +81,7 @@ export function createApp() {
   app.use('/api/v1/timetable', timetableRoutes);
   app.use('/api/v1/intelligence', intelligenceRoutes);
   app.use('/api/v1/reports', reportRoutes);
+  app.use('/api/v1/storage', storageRoutes);
 
   app.use((req, res) => {
     return sendError(res, 404, 'NOT_FOUND', `Route not found: ${req.method} ${req.originalUrl}`);

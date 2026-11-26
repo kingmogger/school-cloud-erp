@@ -16,6 +16,8 @@ import { PlansPage } from './pages/superadmin/PlansPage';
 import { BillingPage } from './pages/superadmin/BillingPage';
 import { PlatformAuditPage, PlatformSettingsPage } from './pages/superadmin/PlatformAuditAndSettings';
 import { DatabaseDashboard } from './pages/superadmin/DatabaseDashboard';
+import { StoragePage } from './pages/superadmin/StoragePage';
+import { SchoolStorageDetailPage } from './pages/superadmin/SchoolStorageDetailPage';
 
 import { AdminDashboard } from './pages/admin/AdminDashboard';
 import { StudentsPage } from './pages/admin/StudentsPage';
@@ -40,8 +42,6 @@ import { StudentAttendancePage } from './pages/student/StudentAttendancePage';
 import { StudentResultsPage } from './pages/student/StudentResultsPage';
 import { StudentAssignmentsPage } from './pages/student/StudentAssignmentsPage';
 import { StudentMaterialsPage, StudentTimetablePage } from './pages/student/StudentResources';
-
-import { ParentPortal } from './pages/parent/ParentPortal';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -100,6 +100,8 @@ export default function App() {
                   <Route path="schools" element={<SchoolsPage />} />
                   <Route path="plans" element={<PlansPage />} />
                   <Route path="billing" element={<BillingPage />} />
+                  <Route path="storage" element={<StoragePage />} />
+                  <Route path="storage/:id" element={<SchoolStorageDetailPage />} />
                   <Route path="audit-logs" element={<PlatformAuditPage />} />
                   <Route path="database" element={<DatabaseDashboard />} />
                   <Route path="settings" element={<PlatformSettingsPage />} />
@@ -157,22 +159,6 @@ export default function App() {
                   <Route path="materials" element={<StudentMaterialsPage />} />
                   <Route path="timetable" element={<StudentTimetablePage />} />
                   <Route path="profile" element={<StudentDashboard />} />
-                </Route>
-
-                <Route
-                  path="/parent"
-                  element={
-                    <ProtectedRoute allowedRoles={['parent']}>
-                      <AppShell />
-                    </ProtectedRoute>
-                  }
-                >
-                  <Route index element={<ParentPortal section="overview" />} />
-                  <Route path="attendance" element={<ParentPortal section="attendance" />} />
-                  <Route path="results" element={<ParentPortal section="results" />} />
-                  <Route path="fees" element={<ParentPortal section="fees" />} />
-                  <Route path="remarks" element={<ParentPortal section="remarks" />} />
-                  <Route path="notifications" element={<ParentPortal section="notifications" />} />
                 </Route>
 
                 <Route path="*" element={<Navigate to="/" replace />} />

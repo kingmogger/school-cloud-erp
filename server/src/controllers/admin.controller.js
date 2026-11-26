@@ -15,6 +15,9 @@ import { SubscriptionPlan } from '../models/SubscriptionPlan.js';
 import { AuditLog } from '../models/AuditLog.js';
 import { Attendance } from '../models/Attendance.js';
 import { FeePayment } from '../models/FeePayment.js';
+import { Assignment } from '../models/Assignment.js';
+import { Submission } from '../models/Submission.js';
+import { StudyMaterial } from '../models/StudyMaterial.js';
 import { computeEffectiveSchoolStatus } from '../services/subscription.service.js';
 import { generatePlatformInvoiceBuffer } from '../services/pdf.service.js';
 import { ApiError } from '../utils/ApiError.js';
@@ -22,7 +25,7 @@ import { sendSuccess } from '../utils/ApiResponse.js';
 import { parsePagination, buildPaginationMeta } from '../utils/pagination.js';
 import { asyncHandler } from '../middleware/asyncHandler.js';
 import { recordAudit } from '../middleware/audit.js';
-import { uploadFile } from '../services/storage.service.js';
+import { uploadFile, deleteFile, resolveSchoolStorageLimitBytes, emptyCategoryUsage } from '../services/storage.service.js';
 
 async function generateAdmissionNo() {
   const year = new Date().getFullYear();
@@ -100,7 +103,7 @@ export const getDashboard = asyncHandler(async (_req, res) => {
 // ---------------- STUDENTS ----------------
 export const listStudents = asyncHandler(async (req, res) => {
   const { page, limit, skip, search } = parsePagination(req.query);
-  const filter = {};
+  const filter = { isDeleted: { $ne: true } };
   if (req.query.classId) filter.classId = req.query.classId;
   if (req.query.sectionId) filter.sectionId = req.query.sectionId;
   if (req.query.status) filter.status = req.query.status;
@@ -174,7 +177,7 @@ export const createStudent = asyncHandler(async (req, res) => {
   });
 
   const parentIds = [];
-  if (data.parentEmail) {
+  if (data.createParentAccount && data.parentEmail) {
     let parentUser = await User.findOne({ email: data.parentEmail.toLowerCase() });
     if (!parentUser) {
       parentUser = await User.create({
@@ -247,20 +250,41 @@ export const updateStudent = asyncHandler(async (req, res) => {
 
 export const deleteStudent = asyncHandler(async (req, res) => {
   const student = await Student.findById(req.params.id);
-  if (!student) throw new ApiError(404, 'Student not found', 'NOT_FOUND');
+  if (!student || student.isDeleted) throw new ApiError(404, 'Student not found', 'NOT_FOUND');
 
+  const before = student.toObject();
+  const schoolId = req.user.schoolId;
+
+  // Clean up any uploaded files by this student's user account or submissions
+  const submissions = await Submission.find({ studentId: student._id }).lean();
+  for (const sub of submissions) {
+    if (sub.storageFileId || sub.storagePath) {
+      await deleteFile(sub.storageFileId || sub.storagePath, { schoolId }).catch(() => {});
+    }
+  }
+  await Submission.deleteMany({ studentId: student._id });
   await Parent.updateMany({ children: student._id }, { $pull: { children: student._id } });
-  await User.findByIdAndDelete(student.userId);
-  await student.deleteOne();
 
-  await recordAudit({ req, action: 'DELETE_STUDENT', entity: 'Student', entityId: req.params.id, before: student.toObject() });
+  // Remove linked User login so they cannot log in
+  if (student.userId) {
+    await User.findByIdAndDelete(student.userId);
+  }
+
+  // Soft delete student record (preserve historical attendance/marks/fees integrity)
+  await Student.findByIdAndUpdate(student._id, {
+    isDeleted: true,
+    deletedAt: new Date().toISOString(),
+    status: 'inactive',
+  });
+
+  await recordAudit({ req, action: 'DELETE_STUDENT', entity: 'Student', entityId: req.params.id, before });
   return sendSuccess(res, { deleted: true });
 });
 
 // ---------------- FACULTY ----------------
 export const listFaculty = asyncHandler(async (req, res) => {
   const { page, limit, skip, search } = parsePagination(req.query);
-  const filter = {};
+  const filter = { isDeleted: { $ne: true } };
   if (req.query.department) filter.department = req.query.department;
   if (req.query.status) filter.status = req.query.status;
 
@@ -352,14 +376,42 @@ export const updateFaculty = asyncHandler(async (req, res) => {
 
 export const deleteFaculty = asyncHandler(async (req, res) => {
   const faculty = await Faculty.findById(req.params.id);
-  if (!faculty) throw new ApiError(404, 'Faculty not found', 'NOT_FOUND');
+  if (!faculty || faculty.isDeleted) throw new ApiError(404, 'Faculty not found', 'NOT_FOUND');
 
+  const before = faculty.toObject();
+  const schoolId = req.user.schoolId;
+
+  // Clean up uploaded study materials & assignment attachments owned by this faculty
+  const materials = await StudyMaterial.find({ facultyId: faculty._id }).lean();
+  for (const mat of materials) {
+    if (mat.storageFileId || mat.storagePath) {
+      await deleteFile(mat.storageFileId || mat.storagePath, { schoolId }).catch(() => {});
+    }
+  }
+  const assignments = await Assignment.find({ facultyId: faculty._id }).lean();
+  for (const asg of assignments) {
+    if (asg.attachmentFileId || asg.attachmentStoragePath) {
+      await deleteFile(asg.attachmentFileId || asg.attachmentStoragePath, { schoolId }).catch(() => {});
+    }
+  }
+
+  // Unassign from subjects and sections safely
   await Subject.updateMany({ facultyId: faculty._id }, { $set: { facultyId: null } });
   await Section.updateMany({ classTeacherId: faculty._id }, { $set: { classTeacherId: null } });
-  await User.findByIdAndDelete(faculty.userId);
-  await faculty.deleteOne();
 
-  await recordAudit({ req, action: 'DELETE_FACULTY', entity: 'Faculty', entityId: req.params.id });
+  // Remove linked User login
+  if (faculty.userId) {
+    await User.findByIdAndDelete(faculty.userId);
+  }
+
+  // Soft delete faculty record
+  await Faculty.findByIdAndUpdate(faculty._id, {
+    isDeleted: true,
+    deletedAt: new Date().toISOString(),
+    status: 'inactive',
+  });
+
+  await recordAudit({ req, action: 'DELETE_FACULTY', entity: 'Faculty', entityId: req.params.id, before });
   return sendSuccess(res, { deleted: true });
 });
 
@@ -483,8 +535,21 @@ export const updateSettings = asyncHandler(async (req, res) => {
   if (!settings) settings = new SchoolSettings();
 
   if (req.file) {
-    const uploaded = await uploadFile(req.file, 'logos');
-    if (uploaded) settings.logoUrl = uploaded.url;
+    if (settings.logoFileId || settings.logoStoragePath) {
+      await deleteFile(settings.logoFileId || settings.logoStoragePath, { schoolId: req.user.schoolId }).catch(() => {});
+    }
+    const uploaded = await uploadFile(req.file, {
+      schoolId: req.user.schoolId,
+      category: 'other',
+      uploadedById: req.user.id,
+      uploaderName: req.user.name || 'School Admin',
+      entityType: 'schoolLogo',
+    });
+    if (uploaded) {
+      settings.logoUrl = uploaded.url;
+      settings.logoStoragePath = uploaded.storagePath;
+      settings.logoFileId = uploaded.fileId;
+    }
   }
 
   Object.assign(settings, req.body);
@@ -523,6 +588,10 @@ export const getMySubscription = asyncHandler(async (req, res) => {
     PlatformSettings.findOne().lean(),
   ]);
 
+  const storageUsedBytes = Number(school.storageUsedBytes || 0);
+  const storageLimitBytes = resolveSchoolStorageLimitBytes(school);
+  const storagePercentUsed = storageLimitBytes > 0 ? Math.round((storageUsedBytes / storageLimitBytes) * 1000) / 10 : 0;
+
   return sendSuccess(res, {
     school: {
       id: school._id,
@@ -543,6 +612,14 @@ export const getMySubscription = asyncHandler(async (req, res) => {
       faculty: facultyCount,
       maxFaculty: school.planId?.maxFaculty || 0,
     },
+    storage: {
+      storageUsedBytes,
+      storageLimitBytes,
+      fileCount: Number(school.fileCount || 0),
+      storageUsageByCategory: { ...emptyCategoryUsage(), ...(school.storageUsageByCategory || {}) },
+      percentUsed: storagePercentUsed,
+      lastStorageSyncAt: school.lastStorageSyncAt || null,
+    },
     payments,
     support: {
       email: platformSettings?.supportEmail || 'billing@schoolcloud.io',
@@ -550,6 +627,25 @@ export const getMySubscription = asyncHandler(async (req, res) => {
       message: platformSettings?.supportMessage || '',
       paymentInstructions: platformSettings?.paymentInstructions || '',
     },
+  });
+});
+
+export const getMyStorage = asyncHandler(async (req, res) => {
+  const school = await School.findById(req.user.schoolId).populate('planId').lean();
+  if (!school) throw new ApiError(404, 'School not found', 'NOT_FOUND');
+
+  const storageUsedBytes = Number(school.storageUsedBytes || 0);
+  const storageLimitBytes = resolveSchoolStorageLimitBytes(school);
+  const percentUsed = storageLimitBytes > 0 ? Math.round((storageUsedBytes / storageLimitBytes) * 1000) / 10 : 0;
+
+  return sendSuccess(res, {
+    schoolId: school._id,
+    storageUsedBytes,
+    storageLimitBytes,
+    fileCount: Number(school.fileCount || 0),
+    storageUsageByCategory: { ...emptyCategoryUsage(), ...(school.storageUsageByCategory || {}) },
+    percentUsed,
+    lastStorageSyncAt: school.lastStorageSyncAt || null,
   });
 });
 

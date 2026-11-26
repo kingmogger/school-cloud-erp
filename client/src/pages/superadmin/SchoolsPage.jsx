@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { Plus, Search, Ban, CheckCircle, CalendarPlus, KeyRound, UserCheck, Eye, Trash2, Building2 } from 'lucide-react';
+import { Plus, Search, Ban, CheckCircle, CalendarPlus, KeyRound, UserCheck, Eye, Trash2, Building2, PauseCircle, PlayCircle } from 'lucide-react';
 import { api, getApiErrorMessage } from '../../api/client';
 import { useAuth } from '../../context/AuthContext';
 import { useToast } from '../../context/ToastContext';
@@ -27,6 +27,10 @@ export function SchoolsPage() {
   const [createdCreds, setCreatedCreds] = useState(null);
   const [suspendTarget, setSuspendTarget] = useState(null);
   const [suspendReason, setSuspendReason] = useState('');
+  const [pauseModal, setPauseModal] = useState(null); // { mode: 'pause' | 'resume' | 'bulk_pause' | 'bulk_resume', school?: obj }
+  const [pauseReason, setPauseReason] = useState('');
+  const [pauseCustomMessage, setPauseCustomMessage] = useState('');
+  const [selectedIds, setSelectedIds] = useState([]);
   const [detailSchoolId, setDetailSchoolId] = useState(null);
 
   const [form, setForm] = useState({
@@ -130,6 +134,43 @@ export function SchoolsPage() {
     },
   });
 
+  const pauseActionMutation = useMutation({
+    mutationFn: async () => {
+      if (!pauseModal) return;
+      if (pauseModal.mode === 'pause') {
+        return api.post(`/superadmin/schools/${pauseModal.school._id}/pause`, {
+          reason: pauseReason,
+          customMessage: pauseCustomMessage,
+        });
+      }
+      if (pauseModal.mode === 'resume') {
+        return api.post(`/superadmin/schools/${pauseModal.school._id}/resume`, {
+          reason: pauseReason,
+        });
+      }
+      return api.post('/superadmin/schools/bulk-pause', {
+        schoolIds: selectedIds,
+        action: pauseModal.mode === 'bulk_pause' ? 'pause' : 'resume',
+        reason: pauseReason,
+        customMessage: pauseCustomMessage,
+      });
+    },
+    onSuccess: () => {
+      addToast(
+        pauseModal?.mode?.includes('pause') ? 'Service paused' : 'Service resumed',
+        'success'
+      );
+      setPauseModal(null);
+      setPauseReason('');
+      setPauseCustomMessage('');
+      setSelectedIds([]);
+      qc.invalidateQueries({ queryKey: ['superadmin-schools'] });
+      qc.invalidateQueries({ queryKey: ['superadmin-dashboard'] });
+      qc.invalidateQueries({ queryKey: ['superadmin-school-detail'] });
+    },
+    onError: (e) => addToast(getApiErrorMessage(e), 'error'),
+  });
+
   const handleImpersonate = async (schoolId) => {
     try {
       const res = await api.post(`/superadmin/schools/${schoolId}/impersonate`, { reason: 'Support inspection' });
@@ -167,9 +208,40 @@ export function SchoolsPage() {
         </select>
       </div>
 
+      {selectedIds.length > 0 && (
+        <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-indigo-200 dark:border-indigo-900 bg-indigo-50/70 dark:bg-indigo-950/40 px-4 py-2.5 text-sm">
+          <span className="font-medium text-indigo-900 dark:text-indigo-200">{selectedIds.length} school(s) selected</span>
+          <div className="flex gap-2">
+            <Button size="sm" variant="danger" onClick={() => setPauseModal({ mode: 'bulk_pause' })}>
+              <PauseCircle className="h-3.5 w-3.5" /> Pause Selected
+            </Button>
+            <Button size="sm" variant="secondary" onClick={() => setPauseModal({ mode: 'bulk_resume' })}>
+              <PlayCircle className="h-3.5 w-3.5 text-emerald-600" /> Resume Selected
+            </Button>
+            <Button size="sm" variant="ghost" onClick={() => setSelectedIds([])}>Clear</Button>
+          </div>
+        </div>
+      )}
+
       <DataTable
         loading={isLoading}
         columns={[
+          {
+            key: 'select',
+            label: '',
+            render: (r) => (
+              <input
+                type="checkbox"
+                aria-label={`Select ${r.name}`}
+                checked={selectedIds.includes(r._id)}
+                onChange={(e) =>
+                  setSelectedIds((prev) =>
+                    e.target.checked ? [...prev, r._id] : prev.filter((id) => id !== r._id)
+                  )
+                }
+              />
+            ),
+          },
           {
             key: 'name',
             label: 'School',
@@ -197,7 +269,16 @@ export function SchoolsPage() {
             ),
           },
           { key: 'plan', label: 'Plan', render: (r) => r.planId?.name || 'Trial' },
-          { key: 'status', label: 'Status', render: (r) => <Badge color={STATUS_COLOR[r.status] || 'slate'}>{r.status.toUpperCase()}</Badge> },
+          {
+            key: 'status',
+            label: 'Status',
+            render: (r) => (
+              <div className="flex flex-wrap items-center gap-1.5">
+                <Badge color={STATUS_COLOR[r.status] || 'slate'}>{r.status.toUpperCase()}</Badge>
+                {r.servicePaused?.isPaused && <Badge color="amber">PAUSED</Badge>}
+              </div>
+            ),
+          },
           { key: 'endDate', label: 'Paid Until', render: (r) => (r.endDate ? new Date(r.endDate).toLocaleDateString() : '—') },
           {
             key: 'actions',
@@ -207,6 +288,31 @@ export function SchoolsPage() {
                 <Button size="sm" variant="ghost" title="View Details" onClick={() => setDetailSchoolId(r._id)}>
                   <Eye className="h-3.5 w-3.5" />
                 </Button>
+                {r.servicePaused?.isPaused ? (
+                  <Button
+                    size="sm"
+                    variant="secondary"
+                    onClick={() => {
+                      setPauseReason('');
+                      setPauseCustomMessage('');
+                      setPauseModal({ mode: 'resume', school: r });
+                    }}
+                  >
+                    <PlayCircle className="h-3.5 w-3.5 text-emerald-600" /> Resume Service
+                  </Button>
+                ) : (
+                  <Button
+                    size="sm"
+                    variant="secondary"
+                    onClick={() => {
+                      setPauseReason('');
+                      setPauseCustomMessage('');
+                      setPauseModal({ mode: 'pause', school: r });
+                    }}
+                  >
+                    <PauseCircle className="h-3.5 w-3.5 text-amber-600" /> Pause Service
+                  </Button>
+                )}
                 {r.status === 'suspended' ? (
                   <Button size="sm" variant="secondary" onClick={() => reactivateMutation.mutate(r._id)}>
                     <CheckCircle className="h-3.5 w-3.5 text-emerald-600" /> Reactivate
@@ -331,7 +437,7 @@ export function SchoolsPage() {
       <Modal open={Boolean(suspendTarget)} onClose={() => setSuspendTarget(null)} title={`Suspend ${suspendTarget?.name}`}>
         <div className="space-y-4">
           <p className="text-sm text-slate-600 dark:text-slate-300">
-            Suspending this school immediately blocks all faculty, student, and parent access without deleting any data.
+            Suspending this school immediately blocks all faculty and student access without deleting any data.
           </p>
           <FormField label="Suspension Reason" required>
             <input className={inputClass} value={suspendReason} onChange={(e) => setSuspendReason(e.target.value)} placeholder="e.g., Overdue subscription payment" />
@@ -350,12 +456,82 @@ export function SchoolsPage() {
         {detailData && (
           <div className="space-y-3 text-sm">
             <p><strong>Name:</strong> {detailData.school?.name} ({detailData.school?.code})</p>
-            <p><strong>Effective Status:</strong> <Badge color={STATUS_COLOR[detailData.statusInfo?.effectiveStatus]}>{detailData.statusInfo?.effectiveStatus?.toUpperCase()}</Badge></p>
+            <p><strong>Effective Status:</strong> <Badge color={STATUS_COLOR[detailData.statusInfo?.effectiveStatus] || 'amber'}>{detailData.statusInfo?.effectiveStatus?.toUpperCase()}</Badge></p>
             <p><strong>Active Students:</strong> {detailData.usage?.studentsCount} / {detailData.school?.planId?.maxStudents || '∞'}</p>
             <p><strong>Active Faculty:</strong> {detailData.usage?.facultyCount} / {detailData.school?.planId?.maxFaculty || '∞'}</p>
             <p><strong>Total Users:</strong> {detailData.usage?.usersCount}</p>
+            {detailData.school?.servicePaused?.isPaused && (
+              <div className="rounded-xl border border-amber-200 bg-amber-50 dark:bg-amber-950/40 dark:border-amber-900 p-3 space-y-1 text-xs">
+                <p className="font-semibold text-amber-800 dark:text-amber-300">Service Paused</p>
+                <p>Reason: {detailData.school.servicePaused.reason || '—'}</p>
+                <p>Paused By: {detailData.school.servicePaused.pausedByName || 'Super Admin'}</p>
+                <p>Paused At: {detailData.school.servicePaused.pausedAt ? new Date(detailData.school.servicePaused.pausedAt).toLocaleString() : '—'}</p>
+              </div>
+            )}
+            <div className="pt-2">
+              {detailData.school?.servicePaused?.isPaused ? (
+                <Button size="sm" variant="secondary" onClick={() => setPauseModal({ mode: 'resume', school: detailData.school })}>
+                  <PlayCircle className="h-3.5 w-3.5 text-emerald-600" /> Resume Service
+                </Button>
+              ) : (
+                <Button size="sm" variant="secondary" onClick={() => setPauseModal({ mode: 'pause', school: detailData.school })}>
+                  <PauseCircle className="h-3.5 w-3.5 text-amber-600" /> Pause Service
+                </Button>
+              )}
+            </div>
           </div>
         )}
+      </Modal>
+
+      {/* Pause / Resume Confirmation Modal */}
+      <Modal
+        open={Boolean(pauseModal)}
+        onClose={() => setPauseModal(null)}
+        title={
+          pauseModal?.mode === 'pause'
+            ? `Pause Service — ${pauseModal.school?.name}`
+            : pauseModal?.mode === 'resume'
+              ? `Resume Service — ${pauseModal.school?.name}`
+              : pauseModal?.mode === 'bulk_pause'
+                ? `Pause ${selectedIds.length} Selected School(s)`
+                : `Resume ${selectedIds.length} Selected School(s)`
+        }
+      >
+        <div className="space-y-4">
+          <p className="text-sm text-slate-600 dark:text-slate-300">
+            {pauseModal?.mode?.includes('pause')
+              ? 'Pausing immediately blocks all School Admin, Faculty, and Student logins and API requests without deleting any data.'
+              : 'Resuming immediately restores access for all users in the school.'}
+          </p>
+          <FormField label="Reason (Optional)">
+            <input
+              className={inputClass}
+              value={pauseReason}
+              onChange={(e) => setPauseReason(e.target.value)}
+              placeholder="e.g. Non-payment / Maintenance"
+            />
+          </FormField>
+          {pauseModal?.mode?.includes('pause') && (
+            <FormField label="Custom Message for Users (Optional)">
+              <input
+                className={inputClass}
+                value={pauseCustomMessage}
+                onChange={(e) => setPauseCustomMessage(e.target.value)}
+                placeholder="Service paused. Please contact your service provider."
+              />
+            </FormField>
+          )}
+          <div className="flex justify-end gap-2">
+            <Button variant="secondary" onClick={() => setPauseModal(null)}>Cancel</Button>
+            <Button
+              variant={pauseModal?.mode?.includes('pause') ? 'danger' : 'primary'}
+              disabled={pauseActionMutation.isPending}
+              onClick={() => pauseActionMutation.mutate()}
+            >
+              {pauseModal?.mode?.includes('pause') ? 'Confirm Pause' : 'Confirm Resume'}
+            </Button>
+          </div>
+        </div>
       </Modal>
     </div>
   );

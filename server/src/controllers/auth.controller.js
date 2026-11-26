@@ -108,11 +108,18 @@ export const login = asyncHandler(async (req, res) => {
     }
 
     subscription = await computeEffectiveSchoolStatus(school);
-    if (subscription.isBlocked && user.role !== 'school_admin') {
+    if (subscription.isBlocked && (subscription.code === 'SCHOOL_PAUSED' || user.role !== 'school_admin')) {
       const platformSettings = await PlatformSettings.findOne().lean();
-      throw new ApiError(402, subscription.reason, subscription.code, {
+      const supportEmail = platformSettings?.supportEmail || 'billing@schoolcloud.io';
+      const supportPhone = platformSettings?.supportPhone || '+1-800-555-0199';
+      const msg =
+        subscription.code === 'SCHOOL_PAUSED'
+          ? `${subscription.reason} (Contact: ${supportEmail} · ${supportPhone})`
+          : subscription.reason;
+      throw new ApiError(402, msg, subscription.code, {
         schoolName: school.name,
-        supportEmail: platformSettings?.supportEmail || 'billing@schoolcloud.io',
+        supportEmail,
+        supportPhone,
       });
     }
   }

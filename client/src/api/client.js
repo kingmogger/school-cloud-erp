@@ -73,6 +73,9 @@ api.interceptors.response.use(
         isRefreshing = false;
       }
     }
+    if (error.response?.status === 402 && error.response?.data?.error?.code === 'SCHOOL_PAUSED') {
+      window.dispatchEvent(new CustomEvent('schll:service-paused', { detail: error.response.data.error }));
+    }
     return Promise.reject(error);
   }
 );
@@ -88,4 +91,17 @@ export function getApiErrorMessage(err) {
     return errData.message || 'Something went wrong';
   }
   return err?.message || 'Something went wrong';
+}
+
+export async function openProtectedFile(fileUrl) {
+  if (!fileUrl) return;
+  if (fileUrl.startsWith('http://') || fileUrl.startsWith('https://')) {
+    window.open(fileUrl, '_blank', 'noopener,noreferrer');
+    return;
+  }
+  // Strip /api/v1 prefix if present since `api` baseURL already includes it
+  const relativePath = fileUrl.startsWith('/api/v1') ? fileUrl.slice('/api/v1'.length) : fileUrl;
+  const res = await api.get(relativePath, { responseType: 'blob' });
+  const blobUrl = window.URL.createObjectURL(res.data);
+  window.open(blobUrl, '_blank', 'noopener,noreferrer');
 }

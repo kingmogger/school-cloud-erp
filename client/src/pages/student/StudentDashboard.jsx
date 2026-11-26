@@ -8,6 +8,15 @@ export function StudentDashboard() {
   const { data, isLoading } = useQuery({
     queryKey: ['student-profile'],
     queryFn: async () => (await api.get('/student/profile')).data.data,
+    refetchOnWindowFocus: true,
+    refetchInterval: 30000,
+  });
+
+  const { data: notifications = [] } = useQuery({
+    queryKey: ['student-notifications'],
+    queryFn: async () => (await api.get('/student/notifications')).data.data,
+    refetchOnWindowFocus: true,
+    refetchInterval: 30000,
   });
 
   if (isLoading) return <Skeleton className="h-48 w-full" />;
@@ -25,9 +34,9 @@ export function StudentDashboard() {
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <StatCard
-          title="Attendance"
-          value={`${attendance?.percentage ?? 100}%`}
-          subtitle={attendance?.isShortage ? `Below ${attendance.threshold}% threshold` : 'Good standing'}
+          title="Today's Attendance"
+          value={attendance?.todayStatus ? attendance.todayStatus.toUpperCase() : 'Not marked yet'}
+          subtitle={`This month: ${attendance?.monthPercentage ?? 100}% · Overall: ${attendance?.percentage ?? 100}%`}
           icon={ClipboardCheck}
         />
         <StatCard title="Cumulative GPA" value={grades?.gpa ?? 0} subtitle={`Overall Grade: ${grades?.overallGrade || 'N/A'}`} icon={Award} />
@@ -81,6 +90,23 @@ export function StudentDashboard() {
           </div>
         </div>
       </div>
+
+      {notifications.length > 0 && (
+        <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-5 space-y-3">
+          <h3 className="font-semibold text-slate-900 dark:text-white">Recent Notifications</h3>
+          <div className="space-y-2">
+            {notifications.slice(0, 5).map((n) => (
+              <div key={n._id} className="flex items-start justify-between gap-3 rounded-xl bg-slate-50 dark:bg-slate-800/50 p-3 text-sm">
+                <div>
+                  <p className="font-medium text-slate-900 dark:text-white">{n.title}</p>
+                  <p className="text-xs text-slate-500">{n.message}</p>
+                </div>
+                <span className="text-xs text-slate-400 shrink-0">{new Date(n.createdAt).toLocaleDateString()}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

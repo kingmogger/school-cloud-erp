@@ -8,6 +8,7 @@ import { FeeStructure } from '../models/FeeStructure.js';
 import { FeePayment } from '../models/FeePayment.js';
 import { Student } from '../models/Student.js';
 import { Notification } from '../models/Notification.js';
+import { recalculateSchoolUsage, recordDailyStorageSnapshots } from '../services/storage.service.js';
 
 export async function runDailySubscriptionCheck() {
   return runWithoutTenant(async () => {
@@ -73,6 +74,19 @@ export function initScheduledJobs() {
       console.log(`[CRON] Subscription check complete:`, subRes);
     } catch (err) {
       console.error('[CRON] Error in subscription check:', err.message);
+    }
+
+    try {
+      const schoolsForStorage = await runWithoutTenant(() => School.find({ softDeletedAt: null }).lean());
+      for (const s of schoolsForStorage) {
+        await recalculateSchoolUsage(s._id).catch((e) =>
+          console.error(`[CRON] Storage reconciliation failed for ${s._id}:`, e.message)
+        );
+      }
+      const snapRes = await recordDailyStorageSnapshots();
+      console.log('[CRON] Storage reconciliation & snapshots complete:', snapRes);
+    } catch (err) {
+      console.error('[CRON] Error in storage reconciliation:', err.message);
     }
 
     try {

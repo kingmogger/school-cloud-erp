@@ -12,10 +12,13 @@ import {
   QrCode,
   ArrowRight,
   RefreshCw,
+  HardDrive,
+  AlertTriangle,
 } from 'lucide-react';
 import { api, getApiErrorMessage } from '../../api/client';
 import { useToast } from '../../context/ToastContext';
 import { StatCard, DataTable, Badge, Button, Modal, FormField, Skeleton, inputClass } from '../../components/ui';
+import { formatBytes, getStorageBarColor, getStorageBadgeColor } from '../../utils/formatBytes';
 
 const STATUS_COLOR = {
   active: 'emerald',
@@ -91,7 +94,10 @@ export function SubscriptionPage() {
     );
   }
 
-  const { school, plan, statusInfo, usage, payments, support } = data;
+  const { school, plan, statusInfo, usage, storage, payments, support } = data;
+  const storagePercent = storage?.percentUsed ?? 0;
+  const isStorageFull = storagePercent >= 100;
+  const isStorageWarning = storagePercent >= 80 && storagePercent < 100;
   const activePlanPrice = plan?.price || 99;
   const finalPrice = billingCycle === 'yearly' ? Math.round(activePlanPrice * 10) : activePlanPrice;
 
@@ -169,6 +175,61 @@ export function SubscriptionPage() {
           subtitle={`Faculty: ${usage?.faculty || 0} / ${usage?.maxFaculty || '∞'}`}
           icon={GraduationCap}
         />
+      </div>
+
+      {/* Read-only Storage Meter */}
+      <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-5 space-y-3">
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <div className="flex items-center gap-2">
+            <HardDrive className="h-5 w-5 text-indigo-600 dark:text-indigo-400" />
+            <h3 className="font-semibold text-slate-900 dark:text-white">Storage Usage</h3>
+          </div>
+          <div className="flex items-center gap-2 text-sm">
+            <span className="font-medium text-slate-700 dark:text-slate-200">
+              {formatBytes(storage?.storageUsedBytes || 0)} / {formatBytes(storage?.storageLimitBytes || 0)}
+            </span>
+            <Badge color={getStorageBadgeColor(storagePercent)}>{storagePercent.toFixed(1)}%</Badge>
+          </div>
+        </div>
+        <div className="h-3 w-full rounded-full bg-slate-200 dark:bg-slate-800 overflow-hidden">
+          <div
+            className={`h-full rounded-full transition-all ${getStorageBarColor(storagePercent)}`}
+            style={{ width: `${Math.min(100, storagePercent)}%` }}
+          />
+        </div>
+        <div className="flex justify-between text-xs text-slate-500">
+          <span>{storage?.fileCount || 0} file(s) stored</span>
+          <span>
+            Last synced:{' '}
+            {storage?.lastStorageSyncAt ? new Date(storage.lastStorageSyncAt).toLocaleString() : 'Up to date'}
+          </span>
+        </div>
+
+        {isStorageFull && (
+          <div
+            role="alert"
+            className="rounded-xl border border-rose-300 dark:border-rose-900 bg-rose-50 dark:bg-rose-950/60 p-3.5 text-sm text-rose-800 dark:text-rose-200 flex items-start gap-2.5"
+          >
+            <ShieldAlert className="h-5 w-5 text-rose-600 shrink-0 mt-0.5" />
+            <div>
+              <strong>Storage limit reached (100%).</strong> New file uploads are blocked until space is freed or
+              your storage limit is upgraded. Contact the platform owner at {support?.email}.
+            </div>
+          </div>
+        )}
+
+        {isStorageWarning && (
+          <div
+            role="alert"
+            className="rounded-xl border border-amber-300 dark:border-amber-900 bg-amber-50 dark:bg-amber-950/60 p-3.5 text-sm text-amber-800 dark:text-amber-200 flex items-start gap-2.5"
+          >
+            <AlertTriangle className="h-5 w-5 text-amber-600 shrink-0 mt-0.5" />
+            <div>
+              <strong>Storage nearly full ({storagePercent.toFixed(1)}%).</strong> Consider removing unused files
+              or contacting the platform owner ({support?.email}) to increase your storage quota.
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Support Contact Box */}

@@ -39,7 +39,7 @@ export function subscriptionGuard({ allowBlockedForAdmin = false } = {}) {
       }
 
       if (statusInfo.isBlocked) {
-        if (allowBlockedForAdmin && req.user.role === 'school_admin') {
+        if (allowBlockedForAdmin && req.user.role === 'school_admin' && statusInfo.code !== 'SCHOOL_PAUSED') {
           return next();
         }
         const platformSettings = await PlatformSettings.findOne().lean();
@@ -48,10 +48,12 @@ export function subscriptionGuard({ allowBlockedForAdmin = false } = {}) {
             schoolName: school?.name || 'School',
             schoolCode: school?.code || '',
             effectiveStatus: statusInfo.effectiveStatus,
+            pauseReason: statusInfo.pauseReason || '',
+            pausedAt: statusInfo.pausedAt || null,
             amountDue: school?.planId?.price || 0,
             supportEmail: platformSettings?.supportEmail || 'billing@schoolcloud.io',
             supportPhone: platformSettings?.supportPhone || '+1-800-555-0199',
-            supportMessage: platformSettings?.supportMessage || statusInfo.reason,
+            supportMessage: statusInfo.code === 'SCHOOL_PAUSED' ? statusInfo.reason : (platformSettings?.supportMessage || statusInfo.reason),
             paymentInstructions: platformSettings?.paymentInstructions || '',
           })
         );

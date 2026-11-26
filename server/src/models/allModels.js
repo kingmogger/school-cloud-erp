@@ -29,6 +29,8 @@ export const PlatformSettings = new FirestoreModel('platformSettings', {}, { has
 export const SubscriptionPlan = new FirestoreModel('subscriptionPlans', {}, { hasTenant: false });
 export const PlatformPayment = new FirestoreModel('platformPayments', {}, { hasTenant: false });
 export const PlatformAuditLog = new FirestoreModel('platformAuditLogs', {}, { hasTenant: false });
+export const StorageFile = new FirestoreModel('storageFiles', {}, { hasTenant: true });
+export const StorageSnapshot = new FirestoreModel('storageSnapshots', {}, { hasTenant: true });
 
 export const ALL_MODELS = {
   users: User,
@@ -58,4 +60,6 @@ export const ALL_MODELS = {
   subscriptionPlans: SubscriptionPlan,
   platformPayments: PlatformPayment,
   platformAuditLogs: PlatformAuditLog,
+  storageFiles: StorageFile,
+  storageSnapshots: StorageSnapshot,
 };

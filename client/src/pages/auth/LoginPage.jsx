@@ -21,7 +21,6 @@ const ROLE_HOME = {
   school_admin: '/admin',
   faculty: '/faculty',
   student: '/student',
-  parent: '/parent',
 };
 
 const DEMO_ACCOUNTS = [
@@ -29,7 +28,6 @@ const DEMO_ACCOUNTS = [
   { role: 'School Admin (Suspended)', email: 'admin@oakridge.edu', code: 'OAKRIDGE' },
   { role: 'Faculty (GF)', email: 'marcus.gf@greenfield.edu', code: 'GREENFIELD' },
   { role: 'Student (GF)', email: 'liam.gf@greenfield.edu', code: 'GREENFIELD' },
-  { role: 'Parent (GF)', email: 'parent.gf@greenfield.edu', code: 'GREENFIELD' },
 ];
 
 export function LoginPage() {
@@ -55,6 +53,10 @@ export function LoginPage() {
       const { user: loggedUser, school } = await login(values.email, values.password, values.schoolCode);
       if (loggedUser.role === 'super_admin') {
         setServerError('Super Administrator access is restricted to the Master Control Console.');
+        return;
+      }
+      if (loggedUser.role === 'parent') {
+        setServerError('This account type is not available');
         return;
       }
       addToast(`Welcome back, ${loggedUser.name}`, 'success');

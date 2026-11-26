@@ -11,11 +11,12 @@ import { Subject } from '../models/Subject.js';
 import { Class } from '../models/Class.js';
 import { Section } from '../models/Section.js';
 import { SchoolSettings } from '../models/SchoolSettings.js';
+import { Notification } from '../models/Notification.js';
 import { ApiError } from '../utils/ApiError.js';
 import { sendSuccess } from '../utils/ApiResponse.js';
 import { asyncHandler } from '../middleware/asyncHandler.js';
 import { recordAudit } from '../middleware/audit.js';
-import { uploadFile } from '../services/storage.service.js';
+import { uploadFile, deleteFile } from '../services/storage.service.js';
 import {
   calculateStudentAttendance,
   calculateStudentGrades,
@@ -29,6 +30,17 @@ async function getFacultyDoc(userId) {
   return fac;
 }
 
+function normalizeDateKey(input) {
+  if (typeof input === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(input.trim())) {
+    return input.trim();
+  }
+  const d = input ? new Date(input) : new Date();
+  if (Number.isNaN(d.getTime())) {
+    return new Date().toISOString().slice(0, 10);
+  }
+  return d.toISOString().slice(0, 10);
+}
+
 // ---------------- ATTENDANCE ----------------
 export const getAttendance = asyncHandler(async (req, res) => {
   const { classId, sectionId, subjectId, date } = req.query;
@@ -37,11 +49,7 @@ export const getAttendance = asyncHandler(async (req, res) => {
   if (sectionId) filter.sectionId = sectionId;
   if (subjectId) filter.subjectId = subjectId;
   if (date) {
-    const d = new Date(date);
-    d.setHours(0, 0, 0, 0);
-    const end = new Date(date);
-    end.setHours(23, 59, 59, 999);
-    filter.date = { $gte: d, $lte: end };
+    filter.dateKey = normalizeDateKey(date);
   }
 
   const records = await Attendance.find(filter)
@@ -55,15 +63,16 @@ export const markBulkAttendance = asyncHandler(async (req, res) => {
   const { classId, sectionId, subjectId, date, records } = req.body;
   // records: [ { studentId, status, remarks } ]
 
-  const targetDate = new Date(date || Date.now());
-  targetDate.setHours(0, 0, 0, 0);
+  const dateKey = normalizeDateKey(date);
+  const targetDateIso = `${dateKey}T00:00:00.000Z`;
+  const normalizedSubjectId = subjectId || null;
 
   // Check edit window if records already exist
   const existing = await Attendance.findOne({
     classId,
     sectionId,
-    subjectId: subjectId || null,
-    date: targetDate,
+    subjectId: normalizedSubjectId,
+    dateKey,
   });
 
   const settings = await SchoolSettings.findOne().lean();
@@ -79,15 +88,17 @@ export const markBulkAttendance = asyncHandler(async (req, res) => {
   const operations = records.map((r) => ({
     updateOne: {
       filter: {
-        studentId: r.studentId,
-        date: targetDate,
-        subjectId: subjectId || null,
+        studentId: String(r.studentId),
+        dateKey,
+        subjectId: normalizedSubjectId,
       },
       update: {
         $set: {
-          classId,
-          sectionId,
-          subjectId: subjectId || null,
+          classId: String(classId),
+          sectionId: String(sectionId),
+          subjectId: normalizedSubjectId,
+          dateKey,
+          date: targetDateIso,
           status: r.status,
           remarks: r.remarks || '',
           markedById: req.user.id,
@@ -101,20 +112,37 @@ export const markBulkAttendance = asyncHandler(async (req, res) => {
     await Attendance.bulkWrite(operations);
   }
 
-  // Trigger intelligence evaluation for any marked students
+  // Trigger intelligence evaluation & notify students marked absent or late
   for (const r of records) {
     evaluateStudentRisk(r.studentId).catch(() => {});
+    if (r.status === 'absent' || r.status === 'late') {
+      Student.findById(r.studentId)
+        .lean()
+        .then((stu) => {
+          if (stu?.userId) {
+            return Notification.create({
+              schoolId: req.user.schoolId,
+              userId: stu.userId,
+              type: 'attendance',
+              title: `Attendance Marked: ${r.status === 'absent' ? 'Absent' : 'Late'}`,
+              message: `Your attendance for ${dateKey} was marked as ${r.status}.`,
+              link: '/student/attendance',
+            });
+          }
+        })
+        .catch(() => {});
+    }
   }
 
   await recordAudit({
     req,
     action: 'MARK_ATTENDANCE',
     entity: 'Attendance',
-    entityId: `${classId}-${sectionId}`,
-    after: { count: records.length, date: targetDate },
+    entityId: `${classId}-${sectionId}-${dateKey}`,
+    after: { count: records.length, dateKey },
   });
 
-  return sendSuccess(res, { markedCount: records.length, date: targetDate });
+  return sendSuccess(res, { markedCount: records.length, date: dateKey, dateKey });
 });
 
 // ---------------- MARKS ----------------
@@ -215,15 +243,30 @@ export const listAssignments = asyncHandler(async (req, res) => {
 export const createAssignment = asyncHandler(async (req, res) => {
   const fac = await getFacultyDoc(req.user.id);
   let attachmentUrl = '';
+  let attachmentStoragePath = '';
+  let attachmentFileId = '';
   if (req.file) {
-    const uploaded = await uploadFile(req.file, 'assignments');
-    if (uploaded) attachmentUrl = uploaded.url;
+    const uploaded = await uploadFile(req.file, {
+      schoolId: req.user.schoolId,
+      category: 'assignments',
+      uploadedById: req.user.id,
+      uploaderName: req.user.name || 'Faculty',
+      entityType: 'assignment',
+    });
+    if (uploaded) {
+      attachmentUrl = uploaded.url;
+      attachmentStoragePath = uploaded.storagePath;
+      attachmentFileId = uploaded.fileId;
+    }
   }
 
   const assignment = await Assignment.create({
     ...req.body,
+    schoolId: req.user.schoolId,
     facultyId: fac._id,
     attachmentUrl,
+    attachmentStoragePath,
+    attachmentFileId,
   });
 
   return sendSuccess(res, assignment, 201);
@@ -280,14 +323,24 @@ export const uploadStudyMaterial = asyncHandler(async (req, res) => {
   const fac = await getFacultyDoc(req.user.id);
   if (!req.file) throw new ApiError(400, 'Material file is required', 'FILE_REQUIRED');
 
-  const uploaded = await uploadFile(req.file, 'materials');
+  const uploaded = await uploadFile(req.file, {
+    schoolId: req.user.schoolId,
+    category: 'study-materials',
+    uploadedById: req.user.id,
+    uploaderName: req.user.name || 'Faculty',
+    entityType: 'studyMaterial',
+  });
   const material = await StudyMaterial.create({
+    schoolId: req.user.schoolId,
     title: req.body.title,
     description: req.body.description || '',
     classId: req.body.classId,
     subjectId: req.body.subjectId,
     facultyId: fac._id,
     fileUrl: uploaded.url,
+    storagePath: uploaded.storagePath,
+    storageFileId: uploaded.fileId,
+    fileSizeBytes: uploaded.sizeBytes,
     fileType: req.file.mimetype,
   });
 
@@ -297,6 +350,9 @@ export const uploadStudyMaterial = asyncHandler(async (req, res) => {
 export const deleteStudyMaterial = asyncHandler(async (req, res) => {
   const mat = await StudyMaterial.findByIdAndDelete(req.params.id);
   if (!mat) throw new ApiError(404, 'Material not found', 'NOT_FOUND');
+  if (mat.storageFileId || mat.storagePath) {
+    await deleteFile(mat.storageFileId || mat.storagePath, { schoolId: req.user.schoolId }).catch(() => {});
+  }
   return sendSuccess(res, { deleted: true });
 });
 

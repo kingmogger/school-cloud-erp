@@ -12,6 +12,7 @@ export function StudentsPage() {
   const [search, setSearch] = useState('');
   const [classFilter, setClassFilter] = useState('');
   const [modalOpen, setModalOpen] = useState(false);
+  const [deleteTarget, setDeleteTarget] = useState(null);
 
   const { data: studentsRes, isLoading } = useQuery({
     queryKey: ['admin-students', search, classFilter],
@@ -35,7 +36,7 @@ export function StudentsPage() {
   const createMutation = useMutation({
     mutationFn: (payload) => api.post('/admin/students', payload),
     onSuccess: () => {
-      addToast('Student registered with auto admission number & parent link', 'success');
+      addToast('Student registered with auto admission number', 'success');
       qc.invalidateQueries({ queryKey: ['admin-students'] });
       qc.invalidateQueries({ queryKey: ['admin-dashboard'] });
       reset();
@@ -48,7 +49,9 @@ export function StudentsPage() {
     mutationFn: (id) => api.delete(`/admin/students/${id}`),
     onSuccess: () => {
       addToast('Student removed', 'info');
+      setDeleteTarget(null);
       qc.invalidateQueries({ queryKey: ['admin-students'] });
+      qc.invalidateQueries({ queryKey: ['admin-dashboard'] });
     },
     onError: (err) => addToast(getApiErrorMessage(err), 'error'),
   });
@@ -66,13 +69,12 @@ export function StudentsPage() {
       ),
     },
     { key: 'class', label: 'Class / Section', render: (r) => `${r.classId?.name || '-'} — ${r.sectionId?.name || '-'}` },
-    { key: 'parent', label: 'Linked Parent', render: (r) => r.parentIds?.[0]?.userId?.name || r.guardianName || '—' },
     { key: 'status', label: 'Status', render: (r) => <Badge color={r.status === 'active' ? 'emerald' : 'slate'}>{r.status}</Badge> },
     {
       key: 'actions',
       label: '',
       render: (r) => (
-        <Button variant="ghost" size="sm" onClick={() => deleteMutation.mutate(r._id)} aria-label={`Delete ${r.userId?.name}`}>
+        <Button variant="ghost" size="sm" onClick={() => setDeleteTarget(r)} aria-label={`Delete ${r.userId?.name}`}>
           <Trash2 className="h-4 w-4 text-rose-500" />
         </Button>
       ),
@@ -84,7 +86,7 @@ export function StudentsPage() {
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="text-2xl font-bold text-slate-900 dark:text-white">Students</h1>
-          <p className="text-sm text-slate-500 dark:text-slate-400">Register students with automatic admission numbers and linked parent accounts</p>
+          <p className="text-sm text-slate-500 dark:text-slate-400">Register students with automatic admission numbers</p>
         </div>
         <Button onClick={() => setModalOpen(true)}>
           <Plus className="h-4 w-4" /> Register Student
@@ -149,18 +151,6 @@ export function StudentsPage() {
             </FormField>
           </div>
 
-          <div className="border-t border-slate-200 dark:border-slate-800 pt-4">
-            <p className="mb-3 text-xs font-semibold uppercase tracking-wider text-slate-500">Auto-Linked Parent Account</p>
-            <div className="grid gap-4 sm:grid-cols-2">
-              <FormField label="Parent Name">
-                <input className={inputClass} {...register('parentName')} />
-              </FormField>
-              <FormField label="Parent Email">
-                <input type="email" className={inputClass} placeholder="parent@example.com" {...register('parentEmail')} />
-              </FormField>
-            </div>
-          </div>
-
           <div className="flex justify-end gap-2 pt-2">
             <Button type="button" variant="secondary" onClick={() => setModalOpen(false)}>Cancel</Button>
             <Button type="submit" disabled={createMutation.isPending}>
@@ -168,6 +158,21 @@ export function StudentsPage() {
             </Button>
           </div>
         </form>
+      </Modal>
+
+      <Modal open={Boolean(deleteTarget)} onClose={() => setDeleteTarget(null)} title="Delete Student">
+        <div className="space-y-4">
+          <p className="text-sm text-slate-600 dark:text-slate-300">
+            Are you sure you want to remove <strong>{deleteTarget?.userId?.name}</strong> ({deleteTarget?.admissionNo})?
+            Their login access and uploaded submissions will be removed.
+          </p>
+          <div className="flex justify-end gap-2">
+            <Button variant="secondary" onClick={() => setDeleteTarget(null)}>Cancel</Button>
+            <Button variant="danger" disabled={deleteMutation.isPending} onClick={() => deleteMutation.mutate(deleteTarget._id)}>
+              {deleteMutation.isPending ? 'Removing...' : 'Confirm Delete'}
+            </Button>
+          </div>
+        </div>
       </Modal>
     </div>
   );

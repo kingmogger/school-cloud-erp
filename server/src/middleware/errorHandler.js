@@ -18,6 +18,13 @@ export function errorHandler(err, req, res, _next) {
     );
   }
 
+  if (err?.name === 'MulterError') {
+    if (err.code === 'LIMIT_FILE_SIZE') {
+      return sendError(res, 413, 'FILE_TOO_LARGE', 'File exceeds the maximum allowed size of 10 MB');
+    }
+    return sendError(res, 400, 'UPLOAD_ERROR', err.message || 'File upload failed');
+  }
+
   if (err?.name === 'ValidationError') {
     const details = Object.values(err.errors || {}).map((e) => ({
       path: e.path,

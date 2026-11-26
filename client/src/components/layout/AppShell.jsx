@@ -28,12 +28,23 @@ import {
   AlertTriangle,
   Database,
   Sliders,
+  HardDrive,
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { useTheme } from '../../context/ThemeContext';
 import { Badge, Button } from '../ui';
 
 const NAV_BY_ROLE = {
+  super_admin: [
+    { to: '/superadmin', label: 'Platform Overview', icon: LayoutDashboard, end: true },
+    { to: '/superadmin/schools', label: 'Schools', icon: Building2 },
+    { to: '/superadmin/plans', label: 'Subscription Plans', icon: Package },
+    { to: '/superadmin/billing', label: 'Billing & Invoices', icon: Receipt },
+    { to: '/superadmin/storage', label: 'Storage', icon: HardDrive },
+    { to: '/superadmin/database', label: 'Firebase Database', icon: Database },
+    { to: '/superadmin/audit-logs', label: 'Platform Audit Log', icon: ShieldAlert },
+    { to: '/superadmin/settings', label: 'Platform Settings', icon: Settings },
+  ],
   school_admin: [
     { to: '/admin', label: 'Dashboard', icon: LayoutDashboard, end: true },
     { to: '/admin/students', label: 'Students', icon: Users },
@@ -63,14 +74,6 @@ const NAV_BY_ROLE = {
     { to: '/student/materials', label: 'Study Materials', icon: FolderOpen },
     { to: '/student/timetable', label: 'Timetable', icon: Calendar },
     { to: '/student/profile', label: 'Profile & Report Card', icon: Users },
-  ],
-  parent: [
-    { to: '/parent', label: 'Overview', icon: LayoutDashboard, end: true },
-    { to: '/parent/attendance', label: 'Attendance', icon: ClipboardCheck },
-    { to: '/parent/results', label: 'Academic Results', icon: Award },
-    { to: '/parent/fees', label: 'Fees & Payments', icon: CreditCard },
-    { to: '/parent/remarks', label: 'Teacher Remarks', icon: MessageSquare },
-    { to: '/parent/notifications', label: 'Notifications', icon: Bell },
   ],
 };
 

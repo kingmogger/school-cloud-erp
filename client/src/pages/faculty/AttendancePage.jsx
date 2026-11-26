@@ -1,11 +1,12 @@
 import { useState, useEffect } from 'react';
-import { useQuery, useMutation } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { api, getApiErrorMessage } from '../../api/client';
 import { useToast } from '../../context/ToastContext';
-import { Button, FormField, EmptyState, inputClass } from '../../components/ui';
+import { Button, FormField, EmptyState, Badge, inputClass } from '../../components/ui';
 
 export function AttendancePage() {
   const { addToast } = useToast();
+  const qc = useQueryClient();
   const [classId, setClassId] = useState('');
   const [sectionId, setSectionId] = useState('');
   const [subjectId, setSubjectId] = useState('');
@@ -17,6 +18,16 @@ export function AttendancePage() {
     queryFn: async () => (await api.get('/faculty/roster')).data.data,
   });
 
+  const { data: existingRecords = [], isFetching: loadingExisting } = useQuery({
+    queryKey: ['faculty-attendance', classId, sectionId, subjectId, date],
+    enabled: Boolean(classId && sectionId && date),
+    queryFn: async () => {
+      const params = { classId, sectionId, date };
+      if (subjectId) params.subjectId = subjectId;
+      return (await api.get('/faculty/attendance', { params })).data.data;
+    },
+  });
+
   const classes = roster?.classes || [];
   const sections = (roster?.sections || []).filter((s) => !classId || (s.classId?._id || s.classId) === classId);
   const subjects = (roster?.subjects || []).filter((s) => !classId || (s.classId?._id || s.classId) === classId);
@@ -26,11 +37,16 @@ export function AttendancePage() {
 
   useEffect(() => {
     const initial = {};
+    const existingMap = new Map(
+      existingRecords
+        .filter((rec) => (subjectId ? String(rec.subjectId) === String(subjectId) : !rec.subjectId))
+        .map((rec) => [String(rec.studentId?._id || rec.studentId), rec.status])
+    );
     students.forEach((s) => {
-      initial[s._id] = 'present';
+      initial[s._id] = existingMap.get(String(s._id)) || 'present';
     });
     setStatuses(initial);
-  }, [classId, sectionId, students.length]);
+  }, [classId, sectionId, subjectId, date, students.length, existingRecords]);
 
   const mutation = useMutation({
     mutationFn: () =>
@@ -41,15 +57,27 @@ export function AttendancePage() {
         date,
         records: students.map((s) => ({ studentId: s._id, status: statuses[s._id] || 'present' })),
       }),
-    onSuccess: (res) => addToast(`Marked attendance for ${res.data.data.markedCount} students`, 'success'),
+    onSuccess: (res) => {
+      addToast(`Saved attendance for ${res.data.data.markedCount} students (${res.data.data.dateKey || date})`, 'success');
+      qc.invalidateQueries({ queryKey: ['faculty-attendance', classId, sectionId, subjectId, date] });
+    },
     onError: (e) => addToast(getApiErrorMessage(e), 'error'),
   });
 
+  const hasSavedRecords = existingRecords.some((rec) => (subjectId ? String(rec.subjectId) === String(subjectId) : !rec.subjectId));
+
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold text-slate-900 dark:text-white">Bulk Attendance</h1>
-        <p className="text-sm text-slate-500 dark:text-slate-400">Mark daily or subject-wise attendance (editable within configured window)</p>
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <div>
+          <h1 className="text-2xl font-bold text-slate-900 dark:text-white">Bulk Attendance</h1>
+          <p className="text-sm text-slate-500 dark:text-slate-400">Mark daily or subject-wise attendance (editable within configured window)</p>
+        </div>
+        {classId && sectionId && (
+          <Badge color={hasSavedRecords ? 'emerald' : 'slate'}>
+            {loadingExisting ? 'Loading...' : hasSavedRecords ? 'Saved for this date (editing)' : 'Not marked yet'}
+          </Badge>
+        )}
       </div>
 
       <div className="grid gap-4 sm:grid-cols-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-4">
@@ -107,7 +135,7 @@ export function AttendancePage() {
             ))}
           </div>
           <Button onClick={() => mutation.mutate()} disabled={mutation.isPending || students.length === 0}>
-            {mutation.isPending ? 'Saving...' : 'Submit Attendance'}
+            {mutation.isPending ? 'Saving...' : hasSavedRecords ? 'Update Attendance' : 'Submit Attendance'}
           </Button>
         </div>
       )}

@@ -8,6 +8,7 @@
     "start": "node src/server.js",
     "seed": "node src/seeds/seed.js",
     "migrate": "node src/scripts/migrateToMultiTenant.js",
+    "migrate:storage": "node src/scripts/migrateStoragePaths.js",
     "create-superadmin": "node src/scripts/createSuperAdmin.js",
     "test": "node --test --test-concurrency=1 src/tests/**/*.test.js"
   },

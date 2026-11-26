@@ -31,7 +31,7 @@ export function SuperAdminDashboard() {
         <StatCard
           title="Total Schools"
           value={data.totalSchools}
-          subtitle={`${data.counts?.active || 0} active · ${data.counts?.trial || 0} trial · ${data.counts?.suspended || 0} suspended`}
+          subtitle={`${data.counts?.active || 0} active · ${data.counts?.paused || 0} paused · ${data.counts?.suspended || 0} suspended`}
           icon={Building2}
         />
         <StatCard title="Platform Users" value={data.totalUsers} subtitle={`${data.totalStudents} active students`} icon={Users} />
@@ -69,6 +69,22 @@ export function SuperAdminDashboard() {
           />
         </div>
       </div>
+
+      {(data.pausedSchools || []).length > 0 && (
+        <div className="space-y-3">
+          <h2 className="text-lg font-semibold text-slate-900 dark:text-white">Paused Schools ({data.pausedSchools.length})</h2>
+          <DataTable
+            columns={[
+              { key: 'name', label: 'School' },
+              { key: 'code', label: 'Code', render: (r) => <span className="font-mono">{r.code}</span> },
+              { key: 'reason', label: 'Reason', render: (r) => r.reason || '—' },
+              { key: 'pausedByName', label: 'Paused By' },
+              { key: 'pausedAt', label: 'Paused At', render: (r) => (r.pausedAt ? new Date(r.pausedAt).toLocaleString() : '—') },
+            ]}
+            data={data.pausedSchools}
+          />
+        </div>
+      )}
     </div>
   );
 }

@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { Plus } from 'lucide-react';
-import { api, getApiErrorMessage } from '../../api/client';
+import { Plus, ExternalLink } from 'lucide-react';
+import { api, getApiErrorMessage, openProtectedFile } from '../../api/client';
 import { useToast } from '../../context/ToastContext';
 import { Button, DataTable, Modal, FormField, Badge, inputClass } from '../../components/ui';
 
@@ -14,6 +14,8 @@ export function AssignmentsPage() {
   const [sectionId, setSectionId] = useState('');
   const [subjectId, setSubjectId] = useState('');
   const [dueDate, setDueDate] = useState('');
+  const [attachment, setAttachment] = useState(null);
+  const [uploadProgress, setUploadProgress] = useState(0);
   const [selectedAssignmentId, setSelectedAssignmentId] = useState(null);
   const [gradePoints, setGradePoints] = useState({});
 
@@ -30,14 +32,34 @@ export function AssignmentsPage() {
   const subjects = (roster?.subjects || []).filter((s) => !classId || (s.classId?._id || s.classId) === classId);
 
   const createMutation = useMutation({
-    mutationFn: () => api.post('/faculty/assignments', { title, description, classId, sectionId, subjectId, dueDate }),
+    mutationFn: () => {
+      const fd = new FormData();
+      fd.append('title', title);
+      fd.append('description', description);
+      fd.append('classId', classId);
+      fd.append('sectionId', sectionId);
+      fd.append('subjectId', subjectId);
+      fd.append('dueDate', dueDate);
+      if (attachment) fd.append('attachment', attachment);
+      setUploadProgress(0);
+      return api.post('/faculty/assignments', fd, {
+        onUploadProgress: (evt) => {
+          if (evt.total) setUploadProgress(Math.round((evt.loaded / evt.total) * 100));
+        },
+      });
+    },
     onSuccess: () => {
       addToast('Assignment published', 'success');
       setTitle('');
       setDescription('');
+      setAttachment(null);
+      setUploadProgress(0);
       qc.invalidateQueries({ queryKey: ['faculty-assignments'] });
     },
-    onError: (e) => addToast(getApiErrorMessage(e), 'error'),
+    onError: (e) => {
+      setUploadProgress(0);
+      addToast(getApiErrorMessage(e), 'error');
+    },
   });
 
   const gradeMutation = useMutation({
@@ -81,7 +103,20 @@ export function AssignmentsPage() {
           <div className="sm:col-span-2"><FormField label="Description"><input className={inputClass} value={description} onChange={(e) => setDescription(e.target.value)} /></FormField></div>
           <FormField label="Due Date"><input type="date" className={inputClass} value={dueDate} onChange={(e) => setDueDate(e.target.value)} /></FormField>
         </div>
-        <Button onClick={() => createMutation.mutate()} disabled={!title || !classId || !sectionId || !subjectId || !dueDate}>
+        <FormField label="Attachment (Optional PDF, Image, Doc)">
+          <input
+            type="file"
+            accept=".pdf,.jpg,.jpeg,.png,.docx,.pptx,.xlsx"
+            onChange={(e) => setAttachment(e.target.files?.[0] || null)}
+            className="text-sm text-slate-600 dark:text-slate-300"
+          />
+        </FormField>
+        {createMutation.isPending && attachment && (
+          <div className="h-2 w-full rounded-full bg-slate-200 dark:bg-slate-800 overflow-hidden">
+            <div className="h-full bg-indigo-600 transition-all" style={{ width: `${uploadProgress}%` }} />
+          </div>
+        )}
+        <Button onClick={() => createMutation.mutate()} disabled={!title || !classId || !sectionId || !subjectId || !dueDate || createMutation.isPending}>
           <Plus className="h-4 w-4" /> Publish Assignment
         </Button>
       </div>
