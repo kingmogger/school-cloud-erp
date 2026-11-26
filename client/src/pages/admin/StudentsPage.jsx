@@ -187,7 +187,6 @@ export function StudentsPage() {
             </FormField>
           </div>
 
-<<<<<<< HEAD
           <div className="border-t border-slate-200 dark:border-slate-800 pt-4">
             <div className="flex items-center justify-between mb-2">
               <p className="text-xs font-semibold uppercase tracking-wider text-slate-500">Student Account & Login Credentials</p>
@@ -259,18 +258,6 @@ export function StudentsPage() {
                 This temporary password will be assigned to the student's Firebase account for their initial login.
               </p>
             </FormField>
-          </div>
-
-          <div className="border-t border-slate-200 dark:border-slate-800 pt-4">
-            <p className="mb-3 text-xs font-semibold uppercase tracking-wider text-slate-500">Auto-Linked Parent Account</p>
-            <div className="grid gap-4 sm:grid-cols-2">
-              <FormField label="Parent Name">
-                <input className={inputClass} {...register('parentName')} />
-              </FormField>
-              <FormField label="Parent Email">
-                <input type="email" className={inputClass} placeholder="parent@example.com" {...register('parentEmail')} />
-              </FormField>
-            </div>
           </div>
 
           <div className="flex justify-end gap-2 pt-2">
