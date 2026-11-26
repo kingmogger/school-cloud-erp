@@ -23,8 +23,6 @@ const ROLE_HOME = {
 };
 
 const DEMO_ACCOUNTS = [
-  { role: 'School Admin (Active)', email: 'admin@greenfield.edu', code: 'GREENFIELD' },
-  { role: 'School Admin (Suspended)', email: 'admin@oakridge.edu', code: 'OAKRIDGE' },
   { role: 'Faculty (GF)', email: 'marcus.gf@greenfield.edu', code: 'GREENFIELD' },
   { role: 'Student (GF)', email: 'liam.gf@greenfield.edu', code: 'GREENFIELD' },
 ];
