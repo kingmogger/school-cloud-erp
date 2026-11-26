@@ -485,6 +485,14 @@ export const updateSettings = asyncHandler(async (req, res) => {
 
   Object.assign(settings, req.body);
   await settings.save();
+
+  if (req.body.schoolName || req.body.logoUrl || settings.logoUrl) {
+    const schoolUpdates = {};
+    if (req.body.schoolName) schoolUpdates.name = req.body.schoolName;
+    if (req.body.logoUrl || settings.logoUrl) schoolUpdates.logoUrl = req.body.logoUrl || settings.logoUrl;
+    await School.findByIdAndUpdate(req.user.schoolId, schoolUpdates);
+  }
+
   await recordAudit({ req, action: 'UPDATE_SETTINGS', entity: 'SchoolSettings', entityId: settings._id });
   return sendSuccess(res, settings);
 });

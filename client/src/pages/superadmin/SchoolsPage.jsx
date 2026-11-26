@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { Plus, Search, Ban, CheckCircle, CalendarPlus, KeyRound, UserCheck, Eye, Trash2 } from 'lucide-react';
+import { Plus, Search, Ban, CheckCircle, CalendarPlus, KeyRound, UserCheck, Eye, Trash2, Building2 } from 'lucide-react';
 import { api, getApiErrorMessage } from '../../api/client';
 import { useAuth } from '../../context/AuthContext';
 import { useToast } from '../../context/ToastContext';
@@ -32,6 +32,7 @@ export function SchoolsPage() {
   const [form, setForm] = useState({
     name: '',
     code: '',
+    logoUrl: '',
     email: '',
     phone: '',
     planId: '',
@@ -157,9 +158,25 @@ export function SchoolsPage() {
             key: 'name',
             label: 'School',
             render: (r) => (
-              <div>
-                <p className="font-semibold text-slate-900 dark:text-white">{r.name}</p>
-                <p className="text-xs font-mono text-indigo-600 dark:text-indigo-400">{r.code}</p>
+              <div className="flex items-center gap-3">
+                <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 overflow-hidden shrink-0">
+                  {r.logoUrl ? (
+                    <img
+                      src={r.logoUrl}
+                      alt=""
+                      className="h-full w-full object-contain p-0.5"
+                      onError={(e) => {
+                        e.currentTarget.style.display = 'none';
+                      }}
+                    />
+                  ) : (
+                    <Building2 className="h-4 w-4 text-slate-500" />
+                  )}
+                </div>
+                <div>
+                  <p className="font-semibold text-slate-900 dark:text-white">{r.name}</p>
+                  <p className="text-xs font-mono text-indigo-600 dark:text-indigo-400">{r.code}</p>
+                </div>
               </div>
             ),
           },
@@ -209,6 +226,7 @@ export function SchoolsPage() {
             <FormField label="School Name" required><input className={inputClass} value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} /></FormField>
             <FormField label="School Code (Slug)" required><input className={inputClass} placeholder="RIVERDALE" value={form.code} onChange={(e) => setForm({ ...form, code: e.target.value.toUpperCase() })} /></FormField>
             <FormField label="School Email" required><input type="email" className={inputClass} value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} /></FormField>
+            <FormField label="School Logo URL"><input className={inputClass} placeholder="https://example.com/logo.png" value={form.logoUrl} onChange={(e) => setForm({ ...form, logoUrl: e.target.value })} /></FormField>
             <FormField label="Subscription Plan">
               <select className={inputClass} value={form.planId} onChange={(e) => setForm({ ...form, planId: e.target.value })}>
                 <option value="">14-Day Free Trial</option>

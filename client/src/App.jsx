@@ -8,6 +8,7 @@ import { ProtectedRoute, RoleRedirect } from './components/layout/ProtectedRoute
 import { LoginPage } from './pages/auth/LoginPage';
 
 import { SuperAdminDashboard } from './pages/superadmin/SuperAdminDashboard';
+import { MasterControlPanel } from './pages/superadmin/MasterControlPanel';
 import { SchoolsPage } from './pages/superadmin/SchoolsPage';
 import { PlansPage } from './pages/superadmin/PlansPage';
 import { BillingPage } from './pages/superadmin/BillingPage';
@@ -69,6 +70,7 @@ export default function App() {
                   }
                 >
                   <Route index element={<SuperAdminDashboard />} />
+                  <Route path="control-panel" element={<MasterControlPanel />} />
                   <Route path="schools" element={<SchoolsPage />} />
                   <Route path="plans" element={<PlansPage />} />
                   <Route path="billing" element={<BillingPage />} />

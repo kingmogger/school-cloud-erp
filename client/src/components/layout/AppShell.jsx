@@ -27,6 +27,7 @@ import {
   ShieldAlert,
   AlertTriangle,
   Database,
+  Sliders,
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { useTheme } from '../../context/ThemeContext';
@@ -35,7 +36,8 @@ import { Badge, Button } from '../ui';
 const NAV_BY_ROLE = {
   super_admin: [
     { to: '/superadmin', label: 'Platform Overview', icon: LayoutDashboard, end: true },
-    { to: '/superadmin/schools', label: 'Schools', icon: Building2 },
+    { to: '/superadmin/control-panel', label: 'Master Control Panel', icon: Sliders },
+    { to: '/superadmin/schools', label: 'Schools & Tenants', icon: Building2 },
     { to: '/superadmin/plans', label: 'Subscription Plans', icon: Package },
     { to: '/superadmin/billing', label: 'Billing & Invoices', icon: Receipt },
     { to: '/superadmin/database', label: 'Firebase Database', icon: Database },
@@ -115,14 +117,32 @@ export function AppShell() {
   const SidebarContent = () => (
     <div className="flex h-full flex-col">
       <div className="flex items-center gap-3 border-b border-slate-200 dark:border-slate-800 px-5 py-4">
-        <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-indigo-600 text-white">
-          <GraduationCap className="h-5 w-5" />
+        <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-indigo-600/10 dark:bg-indigo-900/40 border border-indigo-200 dark:border-indigo-800/60 text-indigo-600 dark:text-indigo-400 overflow-hidden shrink-0 shadow-xs">
+          {school?.logoUrl ? (
+            <img
+              src={school.logoUrl}
+              alt={school.name || 'School Logo'}
+              className="h-full w-full object-contain p-1 rounded-lg"
+              onError={(e) => {
+                e.currentTarget.style.display = 'none';
+                if (e.currentTarget.nextElementSibling) {
+                  e.currentTarget.nextElementSibling.style.display = 'block';
+                }
+              }}
+            />
+          ) : null}
+          <GraduationCap className={`h-5 w-5 ${school?.logoUrl ? 'hidden' : 'block'}`} />
         </div>
-        <div className="min-w-0">
+        <div className="min-w-0 flex-1">
           <p className="truncate text-sm font-bold text-slate-900 dark:text-white leading-tight">
-            {school?.name || 'StudyX'}
+            {school?.name || (user?.role === 'super_admin' ? 'StudyX Platform' : 'StudyX')}
           </p>
-          <p className="text-xs text-slate-500 dark:text-slate-400 capitalize">{user?.role?.replace('_', ' ')}</p>
+          <div className="flex items-center gap-1.5 mt-0.5">
+            <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 shrink-0"></span>
+            <p className="text-xs text-slate-500 dark:text-slate-400 capitalize truncate">
+              {user?.role?.replace('_', ' ')}
+            </p>
+          </div>
         </div>
       </div>
 
@@ -235,6 +255,14 @@ export function AppShell() {
               {user?.role?.replace('_', ' ')}
             </Badge>
             {school?.code && <Badge color="slate">{school.code}</Badge>}
+            {school?.name && user?.role !== 'super_admin' && (
+              <div className="hidden sm:flex items-center gap-2 rounded-lg border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/60 px-2.5 py-1 text-xs font-semibold text-slate-700 dark:text-slate-200">
+                {school.logoUrl && (
+                  <img src={school.logoUrl} alt="" className="h-4 w-4 object-contain rounded-xs" />
+                )}
+                <span className="truncate max-w-[200px]">{school.name}</span>
+              </div>
+            )}
           </div>
 
           <div className="flex items-center gap-2">

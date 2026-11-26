@@ -106,7 +106,7 @@ export const listSchools = asyncHandler(async (req, res) => {
 });
 
 export const createSchool = asyncHandler(async (req, res) => {
-  const { name, code, email, phone, address, contactPerson, planId, adminName, adminEmail, adminPassword, trialDays } = req.body;
+  const { name, code, email, phone, address, contactPerson, planId, adminName, adminEmail, adminPassword, trialDays, logoUrl } = req.body;
   const upperCode = code.trim().toUpperCase();
 
   if (await School.exists({ code: upperCode })) {
@@ -127,6 +127,7 @@ export const createSchool = asyncHandler(async (req, res) => {
     phone: phone || '',
     address: address || '',
     contactPerson: contactPerson || adminName,
+    logoUrl: logoUrl || '',
     planId: planId || null,
     status: planId ? 'active' : 'trial',
     subscriptionStatus: planId ? 'active' : 'trial',
@@ -160,6 +161,7 @@ export const createSchool = asyncHandler(async (req, res) => {
     await SchoolSettings.create({
       schoolId: school._id,
       schoolName: school.name,
+      logoUrl: logoUrl || '',
       email: school.email,
       phone: school.phone,
       address: school.address,
@@ -208,6 +210,20 @@ export const getSchoolDetails = asyncHandler(async (req, res) => {
 export const updateSchool = asyncHandler(async (req, res) => {
   const school = await School.findByIdAndUpdate(req.params.id, req.body, { new: true }).populate('planId');
   if (!school) throw new ApiError(404, 'School not found', 'NOT_FOUND');
+
+  if (req.body.name || req.body.logoUrl !== undefined) {
+    try {
+      await runWithTenant(school._id, async () => {
+        const updateFields = {};
+        if (req.body.name) updateFields.schoolName = req.body.name;
+        if (req.body.logoUrl !== undefined) updateFields.logoUrl = req.body.logoUrl;
+        await SchoolSettings.findOneAndUpdate({ schoolId: school._id }, updateFields);
+      });
+    } catch {
+      // non-fatal if settings not yet created
+    }
+  }
+
   await logPlatformAudit({ req, action: 'UPDATE_SCHOOL', targetSchoolId: school._id });
   return sendSuccess(res, school);
 });

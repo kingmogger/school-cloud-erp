@@ -1,7 +1,8 @@
 import { useQuery } from '@tanstack/react-query';
-import { Building2, Users, CreditCard, AlertTriangle, Calendar } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { Building2, Users, CreditCard, AlertTriangle, Calendar, Sliders, Database, ArrowRight } from 'lucide-react';
 import { api } from '../../api/client';
-import { StatCard, DataTable, Badge, Skeleton } from '../../components/ui';
+import { StatCard, DataTable, Badge, Skeleton, Button } from '../../components/ui';
 
 export function SuperAdminDashboard() {
   const { data, isLoading, isError } = useQuery({
@@ -14,9 +15,16 @@ export function SuperAdminDashboard() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold text-slate-900 dark:text-white">Platform Overview</h1>
-        <p className="text-sm text-slate-500 dark:text-slate-400">Multi-tenant SaaS health, revenue, and tenant activity</p>
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div>
+          <h1 className="text-2xl font-bold text-slate-900 dark:text-white">Platform Overview</h1>
+          <p className="text-sm text-slate-500 dark:text-slate-400">Multi-tenant SaaS health, revenue, and tenant activity</p>
+        </div>
+        <Link to="/superadmin/control-panel">
+          <Button className="bg-indigo-600 hover:bg-indigo-700 text-white">
+            <Sliders className="h-4 w-4" /> Open Master Control Panel <ArrowRight className="h-4 w-4 ml-1" />
+          </Button>
+        </Link>
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
