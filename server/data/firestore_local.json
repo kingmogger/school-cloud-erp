@@ -1,0 +1,1743 @@
+{
+  "platformSettings": {
+    "42ce9317b71a9905f4b2e35a": {
+      "_id": "42ce9317b71a9905f4b2e35a",
+      "id": "42ce9317b71a9905f4b2e35a",
+      "createdAt": "2026-11-25T20:21:21.828Z",
+      "updatedAt": "2026-11-25T20:21:21.894Z",
+      "platformName": "SchoolCloud SaaS",
+      "defaultTrialDays": 14,
+      "gracePeriodDays": 7
+    }
+  },
+  "subscriptionPlans": {
+    "b1d6a81811cfa77b68de6102": {
+      "name": "Pro Plan",
+      "code": "PRO-MONTHLY",
+      "price": 199,
+      "billingCycle": "monthly",
+      "maxStudents": 1000,
+      "maxFaculty": 100,
+      "storageLimitMb": 10240,
+      "_id": "b1d6a81811cfa77b68de6102",
+      "id": "b1d6a81811cfa77b68de6102",
+      "createdAt": "2026-11-25T20:21:21.830Z",
+      "updatedAt": "2026-11-25T20:21:21.895Z"
+    },
+    "f7f669eeb3e1ceec84f2378c": {
+      "code": "STARTER-MONTHLY",
+      "_id": "f7f669eeb3e1ceec84f2378c",
+      "id": "f7f669eeb3e1ceec84f2378c",
+      "createdAt": "2026-11-25T20:21:21.895Z",
+      "name": "Starter Plan",
+      "price": 99,
+      "billingCycle": "monthly",
+      "maxStudents": 150,
+      "maxFaculty": 20,
+      "storageLimitMb": 2048,
+      "updatedAt": "2026-11-25T20:21:21.895Z"
+    }
+  },
+  "schools": {
+    "fb5033ac69243aed2591b3c3": {
+      "name": "Greenfield International School",
+      "code": "GREENFIELD",
+      "email": "office@greenfield.edu",
+      "contactPerson": "Dr. Elena Vance",
+      "phone": "+1-555-0100",
+      "address": "123 Academic Way, Knowledge City",
+      "status": "active",
+      "subscriptionStatus": "active",
+      "planId": "b1d6a81811cfa77b68de6102",
+      "startDate": "2026-11-25T20:21:21.830Z",
+      "endDate": "2027-02-23T20:21:21.896Z",
+      "_id": "fb5033ac69243aed2591b3c3",
+      "id": "fb5033ac69243aed2591b3c3",
+      "createdAt": "2026-11-25T20:21:21.830Z",
+      "updatedAt": "2026-11-25T20:21:21.897Z",
+      "manualSuspension": {
+        "isSuspended": false,
+        "reason": ""
+      }
+    },
+    "67cb35cdcca02538aacb7392": {
+      "code": "OAKRIDGE",
+      "_id": "67cb35cdcca02538aacb7392",
+      "id": "67cb35cdcca02538aacb7392",
+      "createdAt": "2026-11-25T20:21:21.897Z",
+      "name": "Oakridge Academy",
+      "email": "office@oakridge.edu",
+      "contactPerson": "Mr. Arthur Pendelton",
+      "phone": "+1-555-0200",
+      "status": "suspended",
+      "subscriptionStatus": "suspended",
+      "planId": "f7f669eeb3e1ceec84f2378c",
+      "endDate": "2026-11-15T20:21:21.897Z",
+      "manualSuspension": {
+        "isSuspended": true,
+        "reason": "Overdue monthly subscription invoice",
+        "suspendedAt": "2026-11-25T20:21:21.897Z"
+      },
+      "updatedAt": "2026-11-25T20:21:21.897Z"
+    }
+  },
+  "users": {
+    "40210e689d042ad5d3842130": {
+      "email": "superadmin@schoolcloud.io",
+      "_id": "40210e689d042ad5d3842130",
+      "id": "40210e689d042ad5d3842130",
+      "createdAt": "2026-11-25T20:21:21.896Z",
+      "name": "Platform Owner",
+      "passwordHash": "$2a$10$DQ.f56I.Okqomf1J/uKTleDZL2g9s46ogDUD7ENw/hIqDIzwortGC",
+      "role": "super_admin",
+      "schoolId": null,
+      "isActive": true,
+      "updatedAt": "2026-11-26T08:20:13.191Z",
+      "refreshTokenHash": null,
+      "lastLoginAt": "2026-11-26T08:10:35.189Z"
+    },
+    "b850b2665da7b4eed764a180": {
+      "email": "admin@greenfield.edu",
+      "_id": "b850b2665da7b4eed764a180",
+      "id": "b850b2665da7b4eed764a180",
+      "createdAt": "2026-11-25T20:21:21.900Z",
+      "name": "Dr. Elena Vance",
+      "passwordHash": "$2a$10$DQ.f56I.Okqomf1J/uKTleDZL2g9s46ogDUD7ENw/hIqDIzwortGC",
+      "role": "school_admin",
+      "schoolId": "fb5033ac69243aed2591b3c3",
+      "phone": "+1-555-0101",
+      "isActive": true,
+      "updatedAt": "2026-11-26T08:21:16.623Z",
+      "refreshTokenHash": "a90c4554783dee02b17090735b79ee7b6f7469c7a854498234e5016daea77c38",
+      "lastLoginAt": "2026-11-26T08:21:16.623Z"
+    },
+    "6e3bc9c2d0fc5eee4f58e124": {
+      "email": "marcus.gf@greenfield.edu",
+      "_id": "6e3bc9c2d0fc5eee4f58e124",
+      "id": "6e3bc9c2d0fc5eee4f58e124",
+      "createdAt": "2026-11-25T20:21:21.900Z",
+      "name": "Prof. Marcus Reed (gf)",
+      "passwordHash": "$2a$10$DQ.f56I.Okqomf1J/uKTleDZL2g9s46ogDUD7ENw/hIqDIzwortGC",
+      "role": "faculty",
+      "schoolId": "fb5033ac69243aed2591b3c3",
+      "isActive": true,
+      "updatedAt": "2026-11-26T08:22:55.582Z",
+      "refreshTokenHash": "c6054c3a3b40ea05d30785920688f6218d9ca7387589f2d2ce522881f2145f81",
+      "lastLoginAt": "2026-11-26T08:22:55.582Z"
+    },
+    "78c67f9df1f40a9596be870a": {
+      "email": "priya.gf@greenfield.edu",
+      "_id": "78c67f9df1f40a9596be870a",
+      "id": "78c67f9df1f40a9596be870a",
+      "createdAt": "2026-11-25T20:21:21.901Z",
+      "name": "Ms. Priya Nair (gf)",
+      "passwordHash": "$2a$10$DQ.f56I.Okqomf1J/uKTleDZL2g9s46ogDUD7ENw/hIqDIzwortGC",
+      "role": "faculty",
+      "schoolId": "fb5033ac69243aed2591b3c3",
+      "isActive": true,
+      "updatedAt": "2026-11-25T20:21:21.901Z"
+    },
+    "f8067a0949312bc34fa9341d": {
+      "email": "parent.gf@greenfield.edu",
+      "_id": "f8067a0949312bc34fa9341d",
+      "id": "f8067a0949312bc34fa9341d",
+      "createdAt": "2026-11-25T20:21:21.904Z",
+      "name": "Sarah Johnson (gf)",
+      "passwordHash": "$2a$10$DQ.f56I.Okqomf1J/uKTleDZL2g9s46ogDUD7ENw/hIqDIzwortGC",
+      "role": "parent",
+      "schoolId": "fb5033ac69243aed2591b3c3",
+      "isActive": true,
+      "updatedAt": "2026-11-26T07:44:18.740Z",
+      "refreshTokenHash": null,
+      "lastLoginAt": "2026-11-26T07:44:06.078Z"
+    },
+    "13792d1b5956244e4ac3fe5e": {
+      "email": "parent2.gf@greenfield.edu",
+      "_id": "13792d1b5956244e4ac3fe5e",
+      "id": "13792d1b5956244e4ac3fe5e",
+      "createdAt": "2026-11-25T20:21:21.906Z",
+      "name": "Robert Patel (gf)",
+      "passwordHash": "$2a$10$DQ.f56I.Okqomf1J/uKTleDZL2g9s46ogDUD7ENw/hIqDIzwortGC",
+      "role": "parent",
+      "schoolId": "fb5033ac69243aed2591b3c3",
+      "isActive": true,
+      "updatedAt": "2026-11-25T20:21:21.906Z"
+    },
+    "a687ab0c097682bfab1c0526": {
+      "email": "liam.gf@greenfield.edu",
+      "_id": "a687ab0c097682bfab1c0526",
+      "id": "a687ab0c097682bfab1c0526",
+      "createdAt": "2026-11-25T20:21:21.907Z",
+      "name": "Liam Johnson (gf)",
+      "passwordHash": "$2a$10$DQ.f56I.Okqomf1J/uKTleDZL2g9s46ogDUD7ENw/hIqDIzwortGC",
+      "role": "student",
+      "schoolId": "fb5033ac69243aed2591b3c3",
+      "isActive": true,
+      "updatedAt": "2026-11-26T08:20:45.935Z",
+      "refreshTokenHash": null,
+      "lastLoginAt": "2026-11-26T08:20:17.141Z"
+    },
+    "47b6dc32208e3ef65c255b5f": {
+      "email": "aarav.gf@greenfield.edu",
+      "_id": "47b6dc32208e3ef65c255b5f",
+      "id": "47b6dc32208e3ef65c255b5f",
+      "createdAt": "2026-11-25T20:21:21.908Z",
+      "name": "Aarav Patel (gf)",
+      "passwordHash": "$2a$10$DQ.f56I.Okqomf1J/uKTleDZL2g9s46ogDUD7ENw/hIqDIzwortGC",
+      "role": "student",
+      "schoolId": "fb5033ac69243aed2591b3c3",
+      "isActive": true,
+      "updatedAt": "2026-11-25T20:21:21.908Z"
+    },
+    "2e563f93a6467ffce152bf7e": {
+      "email": "admin@oakridge.edu",
+      "_id": "2e563f93a6467ffce152bf7e",
+      "id": "2e563f93a6467ffce152bf7e",
+      "createdAt": "2026-11-25T20:21:21.911Z",
+      "name": "Mr. Arthur Pendelton",
+      "passwordHash": "$2a$10$DQ.f56I.Okqomf1J/uKTleDZL2g9s46ogDUD7ENw/hIqDIzwortGC",
+      "role": "school_admin",
+      "schoolId": "67cb35cdcca02538aacb7392",
+      "phone": "+1-555-0101",
+      "isActive": true,
+      "updatedAt": "2026-11-26T08:21:09.450Z",
+      "refreshTokenHash": null,
+      "lastLoginAt": "2026-11-26T08:20:52.319Z"
+    },
+    "9ec08baa4dcfe1fe6924e359": {
+      "email": "priya.oak@oakridge.edu",
+      "_id": "9ec08baa4dcfe1fe6924e359",
+      "id": "9ec08baa4dcfe1fe6924e359",
+      "createdAt": "2026-11-25T20:21:21.913Z",
+      "name": "Ms. Priya Nair (oak)",
+      "passwordHash": "$2a$10$DQ.f56I.Okqomf1J/uKTleDZL2g9s46ogDUD7ENw/hIqDIzwortGC",
+      "role": "faculty",
+      "schoolId": "67cb35cdcca02538aacb7392",
+      "isActive": true,
+      "updatedAt": "2026-11-25T20:21:21.913Z"
+    },
+    "481c7e1363540c0d0d343cdd": {
+      "email": "parent.oak@oakridge.edu",
+      "_id": "481c7e1363540c0d0d343cdd",
+      "id": "481c7e1363540c0d0d343cdd",
+      "createdAt": "2026-11-25T20:21:21.916Z",
+      "name": "Sarah Johnson (oak)",
+      "passwordHash": "$2a$10$DQ.f56I.Okqomf1J/uKTleDZL2g9s46ogDUD7ENw/hIqDIzwortGC",
+      "role": "parent",
+      "schoolId": "67cb35cdcca02538aacb7392",
+      "isActive": true,
+      "updatedAt": "2026-11-25T20:21:21.916Z"
+    },
+    "477d06299ee3fbcdcbe44a65": {
+      "email": "parent2.oak@oakridge.edu",
+      "_id": "477d06299ee3fbcdcbe44a65",
+      "id": "477d06299ee3fbcdcbe44a65",
+      "createdAt": "2026-11-25T20:21:21.917Z",
+      "name": "Robert Patel (oak)",
+      "passwordHash": "$2a$10$DQ.f56I.Okqomf1J/uKTleDZL2g9s46ogDUD7ENw/hIqDIzwortGC",
+      "role": "parent",
+      "schoolId": "67cb35cdcca02538aacb7392",
+      "isActive": true,
+      "updatedAt": "2026-11-25T20:21:21.917Z"
+    },
+    "81488d49c34de0bb2253df3c": {
+      "email": "liam.oak@oakridge.edu",
+      "_id": "81488d49c34de0bb2253df3c",
+      "id": "81488d49c34de0bb2253df3c",
+      "createdAt": "2026-11-25T20:21:21.918Z",
+      "name": "Liam Johnson (oak)",
+      "passwordHash": "$2a$10$DQ.f56I.Okqomf1J/uKTleDZL2g9s46ogDUD7ENw/hIqDIzwortGC",
+      "role": "student",
+      "schoolId": "67cb35cdcca02538aacb7392",
+      "isActive": true,
+      "updatedAt": "2026-11-25T20:21:21.918Z"
+    },
+    "150b46b5e6e45809228efcd6": {
+      "email": "aarav.oak@oakridge.edu",
+      "_id": "150b46b5e6e45809228efcd6",
+      "id": "150b46b5e6e45809228efcd6",
+      "createdAt": "2026-11-25T20:21:21.919Z",
+      "name": "Aarav Patel (oak)",
+      "passwordHash": "$2a$10$DQ.f56I.Okqomf1J/uKTleDZL2g9s46ogDUD7ENw/hIqDIzwortGC",
+      "role": "student",
+      "schoolId": "67cb35cdcca02538aacb7392",
+      "isActive": true,
+      "updatedAt": "2026-11-25T20:21:21.919Z"
+    },
+    "5fb811f15a380ca64ae9fb75": {
+      "name": "dorado",
+      "email": "abdulrahmanmohdnasir33@gmail.com",
+      "passwordHash": "$2a$10$XSWZ.sQHOfTab3GGqkfxmOtqwlhj/t.q5AlaMfNcAj/VoU59/2AGC",
+      "role": "student",
+      "phone": "",
+      "_id": "5fb811f15a380ca64ae9fb75",
+      "id": "5fb811f15a380ca64ae9fb75",
+      "createdAt": "2026-11-26T08:22:00.084Z",
+      "updatedAt": "2026-11-26T08:22:00.084Z",
+      "schoolId": "fb5033ac69243aed2591b3c3"
+    }
+  },
+  "students": {
+    "25191362741faf88642d6d07": {
+      "admissionNo": "ADM-2026-0001",
+      "schoolId": "fb5033ac69243aed2591b3c3",
+      "_id": "25191362741faf88642d6d07",
+      "id": "25191362741faf88642d6d07",
+      "createdAt": "2026-11-25T20:21:21.907Z",
+      "userId": "a687ab0c097682bfab1c0526",
+      "rollNo": "10A-01",
+      "classId": "d1f9698c2f571df9fcaeb03b",
+      "sectionId": "8f7d2fadde2a5da733bcf97d",
+      "academicYearId": "eec99f689f699951637d3bc9",
+      "gender": "male",
+      "parentIds": [
+        "1fb9cdb2990dc15746e6c4c9"
+      ],
+      "status": "active",
+      "updatedAt": "2026-11-25T20:21:21.907Z"
+    },
+    "ef81e8d8b91b2c76ed857610": {
+      "admissionNo": "ADM-2026-0002",
+      "schoolId": "fb5033ac69243aed2591b3c3",
+      "_id": "ef81e8d8b91b2c76ed857610",
+      "id": "ef81e8d8b91b2c76ed857610",
+      "createdAt": "2026-11-25T20:21:21.909Z",
+      "userId": "47b6dc32208e3ef65c255b5f",
+      "rollNo": "10A-02",
+      "classId": "d1f9698c2f571df9fcaeb03b",
+      "sectionId": "8f7d2fadde2a5da733bcf97d",
+      "academicYearId": "eec99f689f699951637d3bc9",
+      "gender": "male",
+      "parentIds": [
+        "8ddcb77883cb71fba822b6ae"
+      ],
+      "status": "active",
+      "updatedAt": "2026-11-25T20:21:21.909Z"
+    },
+    "9043f195796d70b8c3c21e02": {
+      "admissionNo": "ADM-2026-0001",
+      "schoolId": "67cb35cdcca02538aacb7392",
+      "_id": "9043f195796d70b8c3c21e02",
+      "id": "9043f195796d70b8c3c21e02",
+      "createdAt": "2026-11-25T20:21:21.918Z",
+      "userId": "81488d49c34de0bb2253df3c",
+      "rollNo": "10A-01",
+      "classId": "92421acd2de5058721f0ed17",
+      "sectionId": "41989fe8fc2954210b45a601",
+      "academicYearId": "ecdc5359a3432821a6f9c372",
+      "gender": "male",
+      "parentIds": [
+        "c0313d0777627d3e98ed37a9"
+      ],
+      "status": "active",
+      "updatedAt": "2026-11-25T20:21:21.918Z"
+    },
+    "ba6d8e5127ebe0e4e6072322": {
+      "admissionNo": "ADM-2026-0002",
+      "schoolId": "67cb35cdcca02538aacb7392",
+      "_id": "ba6d8e5127ebe0e4e6072322",
+      "id": "ba6d8e5127ebe0e4e6072322",
+      "createdAt": "2026-11-25T20:21:21.919Z",
+      "userId": "150b46b5e6e45809228efcd6",
+      "rollNo": "10A-02",
+      "classId": "92421acd2de5058721f0ed17",
+      "sectionId": "41989fe8fc2954210b45a601",
+      "academicYearId": "ecdc5359a3432821a6f9c372",
+      "gender": "male",
+      "parentIds": [
+        "2e8c78195da75af193c285c7"
+      ],
+      "status": "active",
+      "updatedAt": "2026-11-25T20:21:21.919Z"
+    },
+    "f4bf0e18e7a2e805605bc2bd": {
+      "userId": "5fb811f15a380ca64ae9fb75",
+      "admissionNo": "ADM-2026-0003",
+      "rollNo": "",
+      "classId": "d1f9698c2f571df9fcaeb03b",
+      "sectionId": "8f7d2fadde2a5da733bcf97d",
+      "academicYearId": "eec99f689f699951637d3bc9",
+      "dateOfBirth": null,
+      "gender": "male",
+      "bloodGroup": "",
+      "address": "",
+      "guardianName": "",
+      "guardianPhone": "",
+      "parentIds": [],
+      "_id": "f4bf0e18e7a2e805605bc2bd",
+      "id": "f4bf0e18e7a2e805605bc2bd",
+      "createdAt": "2026-11-26T08:22:00.087Z",
+      "updatedAt": "2026-11-26T08:22:00.087Z",
+      "schoolId": "fb5033ac69243aed2591b3c3"
+    }
+  },
+  "faculties": {
+    "b8019b8d74f67da64cb44aa5": {
+      "employeeId": "FAC-1001",
+      "schoolId": "fb5033ac69243aed2591b3c3",
+      "_id": "b8019b8d74f67da64cb44aa5",
+      "id": "b8019b8d74f67da64cb44aa5",
+      "createdAt": "2026-11-25T20:21:21.901Z",
+      "userId": "6e3bc9c2d0fc5eee4f58e124",
+      "department": "Mathematics",
+      "qualification": "M.Sc. Mathematics",
+      "designation": "Senior Lecturer",
+      "updatedAt": "2026-11-25T20:21:21.901Z"
+    },
+    "5839629c79a0ba2739f63317": {
+      "employeeId": "FAC-1002",
+      "schoolId": "fb5033ac69243aed2591b3c3",
+      "_id": "5839629c79a0ba2739f63317",
+      "id": "5839629c79a0ba2739f63317",
+      "createdAt": "2026-11-25T20:21:21.902Z",
+      "userId": "78c67f9df1f40a9596be870a",
+      "department": "Science",
+      "qualification": "M.Sc. Physics",
+      "designation": "Senior Lecturer",
+      "updatedAt": "2026-11-25T20:21:21.902Z"
+    },
+    "b9a08d533119361542da7516": {
+      "employeeId": "FAC-1002",
+      "schoolId": "67cb35cdcca02538aacb7392",
+      "_id": "b9a08d533119361542da7516",
+      "id": "b9a08d533119361542da7516",
+      "createdAt": "2026-11-25T20:21:21.913Z",
+      "userId": "9ec08baa4dcfe1fe6924e359",
+      "department": "Science",
+      "qualification": "M.Sc. Physics",
+      "designation": "Senior Lecturer",
+      "updatedAt": "2026-11-25T20:21:21.913Z"
+    }
+  },
+  "parents": {
+    "1fb9cdb2990dc15746e6c4c9": {
+      "userId": "f8067a0949312bc34fa9341d",
+      "_id": "1fb9cdb2990dc15746e6c4c9",
+      "id": "1fb9cdb2990dc15746e6c4c9",
+      "createdAt": "2026-11-25T20:21:21.905Z",
+      "schoolId": "fb5033ac69243aed2591b3c3",
+      "occupation": "Architect",
+      "address": "42 Oakwood Ave",
+      "updatedAt": "2026-11-25T20:21:21.910Z",
+      "children": [
+        "25191362741faf88642d6d07"
+      ]
+    },
+    "8ddcb77883cb71fba822b6ae": {
+      "userId": "13792d1b5956244e4ac3fe5e",
+      "_id": "8ddcb77883cb71fba822b6ae",
+      "id": "8ddcb77883cb71fba822b6ae",
+      "createdAt": "2026-11-25T20:21:21.906Z",
+      "schoolId": "fb5033ac69243aed2591b3c3",
+      "occupation": "Engineer",
+      "address": "88 Maple St",
+      "updatedAt": "2026-11-25T20:21:21.909Z",
+      "children": [
+        "ef81e8d8b91b2c76ed857610"
+      ]
+    },
+    "c0313d0777627d3e98ed37a9": {
+      "userId": "481c7e1363540c0d0d343cdd",
+      "_id": "c0313d0777627d3e98ed37a9",
+      "id": "c0313d0777627d3e98ed37a9",
+      "createdAt": "2026-11-25T20:21:21.916Z",
+      "schoolId": "67cb35cdcca02538aacb7392",
+      "occupation": "Architect",
+      "address": "42 Oakwood Ave",
+      "updatedAt": "2026-11-25T20:21:21.920Z",
+      "children": [
+        "9043f195796d70b8c3c21e02"
+      ]
+    },
+    "2e8c78195da75af193c285c7": {
+      "userId": "477d06299ee3fbcdcbe44a65",
+      "_id": "2e8c78195da75af193c285c7",
+      "id": "2e8c78195da75af193c285c7",
+      "createdAt": "2026-11-25T20:21:21.917Z",
+      "schoolId": "67cb35cdcca02538aacb7392",
+      "occupation": "Engineer",
+      "address": "88 Maple St",
+      "updatedAt": "2026-11-25T20:21:21.920Z",
+      "children": [
+        "ba6d8e5127ebe0e4e6072322"
+      ]
+    }
+  },
+  "classes": {
+    "d1f9698c2f571df9fcaeb03b": {
+      "name": "Grade 10",
+      "academicYearId": "eec99f689f699951637d3bc9",
+      "_id": "d1f9698c2f571df9fcaeb03b",
+      "id": "d1f9698c2f571df9fcaeb03b",
+      "createdAt": "2026-11-25T20:21:21.902Z",
+      "schoolId": "fb5033ac69243aed2591b3c3",
+      "numericLevel": 10,
+      "updatedAt": "2026-11-25T20:21:21.902Z"
+    },
+    "92421acd2de5058721f0ed17": {
+      "name": "Grade 10",
+      "academicYearId": "ecdc5359a3432821a6f9c372",
+      "_id": "92421acd2de5058721f0ed17",
+      "id": "92421acd2de5058721f0ed17",
+      "createdAt": "2026-11-25T20:21:21.914Z",
+      "schoolId": "67cb35cdcca02538aacb7392",
+      "numericLevel": 10,
+      "updatedAt": "2026-11-25T20:21:21.914Z"
+    }
+  },
+  "sections": {
+    "8f7d2fadde2a5da733bcf97d": {
+      "classId": "d1f9698c2f571df9fcaeb03b",
+      "name": "A",
+      "_id": "8f7d2fadde2a5da733bcf97d",
+      "id": "8f7d2fadde2a5da733bcf97d",
+      "createdAt": "2026-11-25T20:21:21.903Z",
+      "schoolId": "fb5033ac69243aed2591b3c3",
+      "classTeacherId": "b8019b8d74f67da64cb44aa5",
+      "capacity": 35,
+      "updatedAt": "2026-11-25T20:21:21.903Z"
+    },
+    "41989fe8fc2954210b45a601": {
+      "classId": "92421acd2de5058721f0ed17",
+      "name": "A",
+      "_id": "41989fe8fc2954210b45a601",
+      "id": "41989fe8fc2954210b45a601",
+      "createdAt": "2026-11-25T20:21:21.914Z",
+      "schoolId": "67cb35cdcca02538aacb7392",
+      "classTeacherId": "77b5885853b1e3b939e4b88e",
+      "capacity": 35,
+      "updatedAt": "2026-11-25T20:21:21.914Z"
+    }
+  },
+  "subjects": {
+    "a31fed045284844e0e1862c2": {
+      "code": "MATH10",
+      "classId": "d1f9698c2f571df9fcaeb03b",
+      "_id": "a31fed045284844e0e1862c2",
+      "id": "a31fed045284844e0e1862c2",
+      "createdAt": "2026-11-25T20:21:21.903Z",
+      "schoolId": "fb5033ac69243aed2591b3c3",
+      "name": "Mathematics",
+      "facultyId": "b8019b8d74f67da64cb44aa5",
+      "updatedAt": "2026-11-25T20:21:21.903Z"
+    },
+    "d53b5d43fa6209083db496ab": {
+      "code": "PHY10",
+      "classId": "d1f9698c2f571df9fcaeb03b",
+      "_id": "d53b5d43fa6209083db496ab",
+      "id": "d53b5d43fa6209083db496ab",
+      "createdAt": "2026-11-25T20:21:21.904Z",
+      "schoolId": "fb5033ac69243aed2591b3c3",
+      "name": "Physics",
+      "facultyId": "5839629c79a0ba2739f63317",
+      "updatedAt": "2026-11-25T20:21:21.904Z"
+    },
+    "1caefe9e664340b48c7d332e": {
+      "code": "MATH10",
+      "classId": "92421acd2de5058721f0ed17",
+      "_id": "1caefe9e664340b48c7d332e",
+      "id": "1caefe9e664340b48c7d332e",
+      "createdAt": "2026-11-25T20:21:21.915Z",
+      "schoolId": "67cb35cdcca02538aacb7392",
+      "name": "Mathematics",
+      "facultyId": "77b5885853b1e3b939e4b88e",
+      "updatedAt": "2026-11-25T20:21:21.915Z"
+    },
+    "0bcb73057539170d6d5e92f9": {
+      "code": "PHY10",
+      "classId": "92421acd2de5058721f0ed17",
+      "_id": "0bcb73057539170d6d5e92f9",
+      "id": "0bcb73057539170d6d5e92f9",
+      "createdAt": "2026-11-25T20:21:21.915Z",
+      "schoolId": "67cb35cdcca02538aacb7392",
+      "name": "Physics",
+      "facultyId": "b9a08d533119361542da7516",
+      "updatedAt": "2026-11-25T20:21:21.915Z"
+    }
+  },
+  "academicYears": {
+    "eec99f689f699951637d3bc9": {
+      "schoolId": "fb5033ac69243aed2591b3c3",
+      "name": "2026-2027",
+      "startDate": "2026-04-01T00:00:00.000Z",
+      "endDate": "2027-03-31T00:00:00.000Z",
+      "isCurrent": true,
+      "_id": "eec99f689f699951637d3bc9",
+      "id": "eec99f689f699951637d3bc9",
+      "createdAt": "2026-11-25T20:21:21.899Z",
+      "updatedAt": "2026-11-25T20:21:21.899Z"
+    },
+    "ecdc5359a3432821a6f9c372": {
+      "schoolId": "67cb35cdcca02538aacb7392",
+      "name": "2026-2027",
+      "startDate": "2026-04-01T00:00:00.000Z",
+      "endDate": "2027-03-31T00:00:00.000Z",
+      "isCurrent": true,
+      "_id": "ecdc5359a3432821a6f9c372",
+      "id": "ecdc5359a3432821a6f9c372",
+      "createdAt": "2026-11-25T20:21:21.910Z",
+      "updatedAt": "2026-11-25T20:21:21.910Z"
+    }
+  },
+  "schoolSettings": {
+    "17f850f5ad4cc73e138f709c": {
+      "schoolId": "fb5033ac69243aed2591b3c3",
+      "schoolName": "Greenfield International School",
+      "email": "office@greenfield.edu",
+      "currentAcademicYearId": "eec99f689f699951637d3bc9",
+      "_id": "17f850f5ad4cc73e138f709c",
+      "id": "17f850f5ad4cc73e138f709c",
+      "createdAt": "2026-11-25T20:21:21.899Z",
+      "updatedAt": "2026-11-25T20:21:21.899Z"
+    },
+    "04b9ccbc9eab14f4d86eef15": {
+      "schoolId": "67cb35cdcca02538aacb7392",
+      "schoolName": "Oakridge Academy",
+      "email": "office@oakridge.edu",
+      "currentAcademicYearId": "ecdc5359a3432821a6f9c372",
+      "_id": "04b9ccbc9eab14f4d86eef15",
+      "id": "04b9ccbc9eab14f4d86eef15",
+      "createdAt": "2026-11-25T20:21:21.911Z",
+      "updatedAt": "2026-11-25T20:21:21.911Z"
+    }
+  },
+  "auditLogs": {
+    "1bab27ac8921718f6c6b5ab2": {
+      "schoolId": "fb5033ac69243aed2591b3c3",
+      "actorId": "6e3bc9c2d0fc5eee4f58e124",
+      "actorRole": "faculty",
+      "action": "MARK_ATTENDANCE",
+      "entity": "Attendance",
+      "entityId": "d1f9698c2f571df9fcaeb03b-8f7d2fadde2a5da733bcf97d",
+      "before": null,
+      "after": {
+        "count": 2,
+        "date": "2026-11-25T18:30:00.000Z"
+      },
+      "ip": "::1",
+      "_id": "1bab27ac8921718f6c6b5ab2",
+      "id": "1bab27ac8921718f6c6b5ab2",
+      "createdAt": "2026-11-26T08:05:41.355Z",
+      "updatedAt": "2026-11-26T08:05:41.355Z"
+    },
+    "2c7fb00309291651dc3c9665": {
+      "schoolId": "fb5033ac69243aed2591b3c3",
+      "actorId": "6e3bc9c2d0fc5eee4f58e124",
+      "actorRole": "faculty",
+      "action": "MARK_ATTENDANCE",
+      "entity": "Attendance",
+      "entityId": "d1f9698c2f571df9fcaeb03b-8f7d2fadde2a5da733bcf97d",
+      "before": null,
+      "after": {
+        "count": 2,
+        "date": "2026-11-25T18:30:00.000Z"
+      },
+      "ip": "::1",
+      "_id": "2c7fb00309291651dc3c9665",
+      "id": "2c7fb00309291651dc3c9665",
+      "createdAt": "2026-11-26T08:05:56.519Z",
+      "updatedAt": "2026-11-26T08:05:56.519Z"
+    },
+    "cfc574bbb7892228e8c11fb0": {
+      "schoolId": "fb5033ac69243aed2591b3c3",
+      "actorId": "6e3bc9c2d0fc5eee4f58e124",
+      "actorRole": "faculty",
+      "action": "MARK_ATTENDANCE",
+      "entity": "Attendance",
+      "entityId": "d1f9698c2f571df9fcaeb03b-8f7d2fadde2a5da733bcf97d",
+      "before": null,
+      "after": {
+        "count": 2,
+        "date": "2026-11-25T18:30:00.000Z"
+      },
+      "ip": "::1",
+      "_id": "cfc574bbb7892228e8c11fb0",
+      "id": "cfc574bbb7892228e8c11fb0",
+      "createdAt": "2026-11-26T08:06:04.894Z",
+      "updatedAt": "2026-11-26T08:06:04.894Z"
+    },
+    "e91cf47c7480236237fbc2da": {
+      "schoolId": "fb5033ac69243aed2591b3c3",
+      "actorId": "6e3bc9c2d0fc5eee4f58e124",
+      "actorRole": "faculty",
+      "action": "MARK_ATTENDANCE",
+      "entity": "Attendance",
+      "entityId": "d1f9698c2f571df9fcaeb03b-8f7d2fadde2a5da733bcf97d",
+      "before": null,
+      "after": {
+        "count": 2,
+        "date": "2026-11-25T18:30:00.000Z"
+      },
+      "ip": "::1",
+      "_id": "e91cf47c7480236237fbc2da",
+      "id": "e91cf47c7480236237fbc2da",
+      "createdAt": "2026-11-26T08:06:08.421Z",
+      "updatedAt": "2026-11-26T08:06:08.421Z"
+    },
+    "58da27874d111eeeffb3020c": {
+      "schoolId": "fb5033ac69243aed2591b3c3",
+      "actorId": "6e3bc9c2d0fc5eee4f58e124",
+      "actorRole": "faculty",
+      "action": "MARK_ATTENDANCE",
+      "entity": "Attendance",
+      "entityId": "d1f9698c2f571df9fcaeb03b-8f7d2fadde2a5da733bcf97d",
+      "before": null,
+      "after": {
+        "count": 2,
+        "date": "2026-11-25T18:30:00.000Z"
+      },
+      "ip": "::1",
+      "_id": "58da27874d111eeeffb3020c",
+      "id": "58da27874d111eeeffb3020c",
+      "createdAt": "2026-11-26T08:06:11.502Z",
+      "updatedAt": "2026-11-26T08:06:11.503Z"
+    },
+    "a398c97f85ecc3c903300c68": {
+      "schoolId": "fb5033ac69243aed2591b3c3",
+      "actorId": "6e3bc9c2d0fc5eee4f58e124",
+      "actorRole": "faculty",
+      "action": "MARK_ATTENDANCE",
+      "entity": "Attendance",
+      "entityId": "d1f9698c2f571df9fcaeb03b-8f7d2fadde2a5da733bcf97d",
+      "before": null,
+      "after": {
+        "count": 2,
+        "date": "2026-11-25T18:30:00.000Z"
+      },
+      "ip": "::1",
+      "_id": "a398c97f85ecc3c903300c68",
+      "id": "a398c97f85ecc3c903300c68",
+      "createdAt": "2026-11-26T08:06:12.461Z",
+      "updatedAt": "2026-11-26T08:06:12.461Z"
+    },
+    "86a5643faf70b4d607916f3f": {
+      "schoolId": "fb5033ac69243aed2591b3c3",
+      "actorId": "6e3bc9c2d0fc5eee4f58e124",
+      "actorRole": "faculty",
+      "action": "MARK_ATTENDANCE",
+      "entity": "Attendance",
+      "entityId": "d1f9698c2f571df9fcaeb03b-8f7d2fadde2a5da733bcf97d",
+      "before": null,
+      "after": {
+        "count": 2,
+        "date": "2026-11-25T18:30:00.000Z"
+      },
+      "ip": "::1",
+      "_id": "86a5643faf70b4d607916f3f",
+      "id": "86a5643faf70b4d607916f3f",
+      "createdAt": "2026-11-26T08:06:12.707Z",
+      "updatedAt": "2026-11-26T08:06:12.707Z"
+    },
+    "adf83c1b1e27289ef3094121": {
+      "schoolId": "fb5033ac69243aed2591b3c3",
+      "actorId": "6e3bc9c2d0fc5eee4f58e124",
+      "actorRole": "faculty",
+      "action": "MARK_ATTENDANCE",
+      "entity": "Attendance",
+      "entityId": "d1f9698c2f571df9fcaeb03b-8f7d2fadde2a5da733bcf97d",
+      "before": null,
+      "after": {
+        "count": 2,
+        "date": "2026-11-25T18:30:00.000Z"
+      },
+      "ip": "::1",
+      "_id": "adf83c1b1e27289ef3094121",
+      "id": "adf83c1b1e27289ef3094121",
+      "createdAt": "2026-11-26T08:06:12.937Z",
+      "updatedAt": "2026-11-26T08:06:12.937Z"
+    },
+    "53d00ad4e11be6e68514d4eb": {
+      "schoolId": "fb5033ac69243aed2591b3c3",
+      "actorId": "6e3bc9c2d0fc5eee4f58e124",
+      "actorRole": "faculty",
+      "action": "MARK_ATTENDANCE",
+      "entity": "Attendance",
+      "entityId": "d1f9698c2f571df9fcaeb03b-8f7d2fadde2a5da733bcf97d",
+      "before": null,
+      "after": {
+        "count": 2,
+        "date": "2026-11-25T18:30:00.000Z"
+      },
+      "ip": "::1",
+      "_id": "53d00ad4e11be6e68514d4eb",
+      "id": "53d00ad4e11be6e68514d4eb",
+      "createdAt": "2026-11-26T08:07:12.714Z",
+      "updatedAt": "2026-11-26T08:07:12.714Z"
+    },
+    "e39b9d881109546869451b1f": {
+      "schoolId": "fb5033ac69243aed2591b3c3",
+      "actorId": "6e3bc9c2d0fc5eee4f58e124",
+      "actorRole": "faculty",
+      "action": "MARK_ATTENDANCE",
+      "entity": "Attendance",
+      "entityId": "d1f9698c2f571df9fcaeb03b-8f7d2fadde2a5da733bcf97d",
+      "before": null,
+      "after": {
+        "count": 2,
+        "date": "2026-11-25T18:30:00.000Z"
+      },
+      "ip": "::1",
+      "_id": "e39b9d881109546869451b1f",
+      "id": "e39b9d881109546869451b1f",
+      "createdAt": "2026-11-26T08:08:44.193Z",
+      "updatedAt": "2026-11-26T08:08:44.193Z"
+    },
+    "42ff1717abf6f25f0f25e305": {
+      "schoolId": "fb5033ac69243aed2591b3c3",
+      "actorId": "6e3bc9c2d0fc5eee4f58e124",
+      "actorRole": "faculty",
+      "action": "SAVE_MARKS",
+      "entity": "Mark",
+      "entityId": "9d188c330ab38813505200a9-a31fed045284844e0e1862c2",
+      "before": null,
+      "after": {
+        "count": 2
+      },
+      "ip": "::1",
+      "_id": "42ff1717abf6f25f0f25e305",
+      "id": "42ff1717abf6f25f0f25e305",
+      "createdAt": "2026-11-26T08:20:00.312Z",
+      "updatedAt": "2026-11-26T08:20:00.312Z"
+    },
+    "982d466c414347798d5d9691": {
+      "schoolId": "fb5033ac69243aed2591b3c3",
+      "actorId": "b850b2665da7b4eed764a180",
+      "actorRole": "school_admin",
+      "action": "CREATE_STUDENT",
+      "entity": "Student",
+      "entityId": "f4bf0e18e7a2e805605bc2bd",
+      "before": null,
+      "after": {
+        "admissionNo": "ADM-2026-0003"
+      },
+      "ip": "::1",
+      "_id": "982d466c414347798d5d9691",
+      "id": "982d466c414347798d5d9691",
+      "createdAt": "2026-11-26T08:22:00.091Z",
+      "updatedAt": "2026-11-26T08:22:00.091Z"
+    }
+  },
+  "attendances": {
+    "5fc6969b9c6152c656b0b83d": {
+      "studentId": "25191362741faf88642d6d07",
+      "date": "2026-11-25T18:30:00.000Z",
+      "_id": "5fc6969b9c6152c656b0b83d",
+      "id": "5fc6969b9c6152c656b0b83d",
+      "createdAt": "2026-11-25T20:46:47.581Z",
+      "classId": "d1f9698c2f571df9fcaeb03b",
+      "sectionId": "8f7d2fadde2a5da733bcf97d",
+      "status": "present",
+      "markedById": "6e3bc9c2d0fc5eee4f58e124",
+      "updatedAt": "2026-11-25T20:46:47.581Z"
+    },
+    "6d9316727ca042cf80fe1de8": {
+      "studentId": "25191362741faf88642d6d07",
+      "date": "2026-11-25T18:30:00.000Z",
+      "_id": "6d9316727ca042cf80fe1de8",
+      "id": "6d9316727ca042cf80fe1de8",
+      "createdAt": "2026-11-25T20:47:05.875Z",
+      "classId": "d1f9698c2f571df9fcaeb03b",
+      "sectionId": "8f7d2fadde2a5da733bcf97d",
+      "status": "present",
+      "markedById": "6e3bc9c2d0fc5eee4f58e124",
+      "updatedAt": "2026-11-25T20:47:05.875Z"
+    },
+    "96918d448c399af185067d16": {
+      "studentId": "25191362741faf88642d6d07",
+      "date": "2026-11-25T18:30:00.000Z",
+      "_id": "96918d448c399af185067d16",
+      "id": "96918d448c399af185067d16",
+      "createdAt": "2026-11-25T20:47:23.935Z",
+      "classId": "d1f9698c2f571df9fcaeb03b",
+      "sectionId": "8f7d2fadde2a5da733bcf97d",
+      "status": "present",
+      "markedById": "6e3bc9c2d0fc5eee4f58e124",
+      "updatedAt": "2026-11-25T20:47:23.935Z"
+    },
+    "1ed149044d7b9ec07bd0ef6b": {
+      "studentId": "25191362741faf88642d6d07",
+      "date": "2026-11-25T18:30:00.000Z",
+      "subjectId": "a31fed045284844e0e1862c2",
+      "_id": "1ed149044d7b9ec07bd0ef6b",
+      "id": "1ed149044d7b9ec07bd0ef6b",
+      "createdAt": "2026-11-26T08:05:41.345Z",
+      "classId": "d1f9698c2f571df9fcaeb03b",
+      "sectionId": "8f7d2fadde2a5da733bcf97d",
+      "status": "present",
+      "remarks": "",
+      "markedById": "6e3bc9c2d0fc5eee4f58e124",
+      "updatedAt": "2026-11-26T08:05:41.345Z"
+    },
+    "05f347c59729983972dae220": {
+      "studentId": "ef81e8d8b91b2c76ed857610",
+      "date": "2026-11-25T18:30:00.000Z",
+      "subjectId": "a31fed045284844e0e1862c2",
+      "_id": "05f347c59729983972dae220",
+      "id": "05f347c59729983972dae220",
+      "createdAt": "2026-11-26T08:05:41.350Z",
+      "classId": "d1f9698c2f571df9fcaeb03b",
+      "sectionId": "8f7d2fadde2a5da733bcf97d",
+      "status": "present",
+      "remarks": "",
+      "markedById": "6e3bc9c2d0fc5eee4f58e124",
+      "updatedAt": "2026-11-26T08:05:41.350Z"
+    },
+    "33ca3e659d2c37ed62061fdc": {
+      "studentId": "25191362741faf88642d6d07",
+      "date": "2026-11-25T18:30:00.000Z",
+      "subjectId": "a31fed045284844e0e1862c2",
+      "_id": "33ca3e659d2c37ed62061fdc",
+      "id": "33ca3e659d2c37ed62061fdc",
+      "createdAt": "2026-11-26T08:05:56.510Z",
+      "classId": "d1f9698c2f571df9fcaeb03b",
+      "sectionId": "8f7d2fadde2a5da733bcf97d",
+      "status": "absent",
+      "remarks": "",
+      "markedById": "6e3bc9c2d0fc5eee4f58e124",
+      "updatedAt": "2026-11-26T08:05:56.510Z"
+    },
+    "cd79e4115fe0d192265dd63f": {
+      "studentId": "ef81e8d8b91b2c76ed857610",
+      "date": "2026-11-25T18:30:00.000Z",
+      "subjectId": "a31fed045284844e0e1862c2",
+      "_id": "cd79e4115fe0d192265dd63f",
+      "id": "cd79e4115fe0d192265dd63f",
+      "createdAt": "2026-11-26T08:05:56.515Z",
+      "classId": "d1f9698c2f571df9fcaeb03b",
+      "sectionId": "8f7d2fadde2a5da733bcf97d",
+      "status": "present",
+      "remarks": "",
+      "markedById": "6e3bc9c2d0fc5eee4f58e124",
+      "updatedAt": "2026-11-26T08:05:56.515Z"
+    },
+    "37c0ade6f10c067a737706b0": {
+      "studentId": "25191362741faf88642d6d07",
+      "date": "2026-11-25T18:30:00.000Z",
+      "subjectId": "a31fed045284844e0e1862c2",
+      "_id": "37c0ade6f10c067a737706b0",
+      "id": "37c0ade6f10c067a737706b0",
+      "createdAt": "2026-11-26T08:06:04.888Z",
+      "classId": "d1f9698c2f571df9fcaeb03b",
+      "sectionId": "8f7d2fadde2a5da733bcf97d",
+      "status": "absent",
+      "remarks": "",
+      "markedById": "6e3bc9c2d0fc5eee4f58e124",
+      "updatedAt": "2026-11-26T08:06:04.888Z"
+    },
+    "2c405cc854cabd720a6c56a0": {
+      "studentId": "ef81e8d8b91b2c76ed857610",
+      "date": "2026-11-25T18:30:00.000Z",
+      "subjectId": "a31fed045284844e0e1862c2",
+      "_id": "2c405cc854cabd720a6c56a0",
+      "id": "2c405cc854cabd720a6c56a0",
+      "createdAt": "2026-11-26T08:06:04.891Z",
+      "classId": "d1f9698c2f571df9fcaeb03b",
+      "sectionId": "8f7d2fadde2a5da733bcf97d",
+      "status": "present",
+      "remarks": "",
+      "markedById": "6e3bc9c2d0fc5eee4f58e124",
+      "updatedAt": "2026-11-26T08:06:04.892Z"
+    },
+    "6b6d9567deb08af89dc960c2": {
+      "studentId": "25191362741faf88642d6d07",
+      "date": "2026-11-25T18:30:00.000Z",
+      "subjectId": "a31fed045284844e0e1862c2",
+      "_id": "6b6d9567deb08af89dc960c2",
+      "id": "6b6d9567deb08af89dc960c2",
+      "createdAt": "2026-11-26T08:06:08.414Z",
+      "classId": "d1f9698c2f571df9fcaeb03b",
+      "sectionId": "8f7d2fadde2a5da733bcf97d",
+      "status": "absent",
+      "remarks": "",
+      "markedById": "6e3bc9c2d0fc5eee4f58e124",
+      "updatedAt": "2026-11-26T08:06:08.414Z"
+    },
+    "36423854db59dbc378b91faa": {
+      "studentId": "ef81e8d8b91b2c76ed857610",
+      "date": "2026-11-25T18:30:00.000Z",
+      "subjectId": "a31fed045284844e0e1862c2",
+      "_id": "36423854db59dbc378b91faa",
+      "id": "36423854db59dbc378b91faa",
+      "createdAt": "2026-11-26T08:06:08.418Z",
+      "classId": "d1f9698c2f571df9fcaeb03b",
+      "sectionId": "8f7d2fadde2a5da733bcf97d",
+      "status": "absent",
+      "remarks": "",
+      "markedById": "6e3bc9c2d0fc5eee4f58e124",
+      "updatedAt": "2026-11-26T08:06:08.418Z"
+    },
+    "c4e388fad4373a9aaea69456": {
+      "studentId": "25191362741faf88642d6d07",
+      "date": "2026-11-25T18:30:00.000Z",
+      "subjectId": "d53b5d43fa6209083db496ab",
+      "_id": "c4e388fad4373a9aaea69456",
+      "id": "c4e388fad4373a9aaea69456",
+      "createdAt": "2026-11-26T08:06:11.496Z",
+      "classId": "d1f9698c2f571df9fcaeb03b",
+      "sectionId": "8f7d2fadde2a5da733bcf97d",
+      "status": "absent",
+      "remarks": "",
+      "markedById": "6e3bc9c2d0fc5eee4f58e124",
+      "updatedAt": "2026-11-26T08:06:11.496Z"
+    },
+    "fea8b1b3d941f10fa472ef83": {
+      "studentId": "ef81e8d8b91b2c76ed857610",
+      "date": "2026-11-25T18:30:00.000Z",
+      "subjectId": "d53b5d43fa6209083db496ab",
+      "_id": "fea8b1b3d941f10fa472ef83",
+      "id": "fea8b1b3d941f10fa472ef83",
+      "createdAt": "2026-11-26T08:06:11.500Z",
+      "classId": "d1f9698c2f571df9fcaeb03b",
+      "sectionId": "8f7d2fadde2a5da733bcf97d",
+      "status": "absent",
+      "remarks": "",
+      "markedById": "6e3bc9c2d0fc5eee4f58e124",
+      "updatedAt": "2026-11-26T08:06:11.500Z"
+    },
+    "b9236a9bdfaad9a46bc997b6": {
+      "studentId": "25191362741faf88642d6d07",
+      "date": "2026-11-25T18:30:00.000Z",
+      "subjectId": "d53b5d43fa6209083db496ab",
+      "_id": "b9236a9bdfaad9a46bc997b6",
+      "id": "b9236a9bdfaad9a46bc997b6",
+      "createdAt": "2026-11-26T08:06:12.453Z",
+      "classId": "d1f9698c2f571df9fcaeb03b",
+      "sectionId": "8f7d2fadde2a5da733bcf97d",
+      "status": "absent",
+      "remarks": "",
+      "markedById": "6e3bc9c2d0fc5eee4f58e124",
+      "updatedAt": "2026-11-26T08:06:12.453Z"
+    },
+    "05ac71da1fe01015fa2dca24": {
+      "studentId": "ef81e8d8b91b2c76ed857610",
+      "date": "2026-11-25T18:30:00.000Z",
+      "subjectId": "d53b5d43fa6209083db496ab",
+      "_id": "05ac71da1fe01015fa2dca24",
+      "id": "05ac71da1fe01015fa2dca24",
+      "createdAt": "2026-11-26T08:06:12.457Z",
+      "classId": "d1f9698c2f571df9fcaeb03b",
+      "sectionId": "8f7d2fadde2a5da733bcf97d",
+      "status": "absent",
+      "remarks": "",
+      "markedById": "6e3bc9c2d0fc5eee4f58e124",
+      "updatedAt": "2026-11-26T08:06:12.457Z"
+    },
+    "fd478e1f0daf9d02b5610b22": {
+      "studentId": "25191362741faf88642d6d07",
+      "date": "2026-11-25T18:30:00.000Z",
+      "subjectId": "d53b5d43fa6209083db496ab",
+      "_id": "fd478e1f0daf9d02b5610b22",
+      "id": "fd478e1f0daf9d02b5610b22",
+      "createdAt": "2026-11-26T08:06:12.700Z",
+      "classId": "d1f9698c2f571df9fcaeb03b",
+      "sectionId": "8f7d2fadde2a5da733bcf97d",
+      "status": "absent",
+      "remarks": "",
+      "markedById": "6e3bc9c2d0fc5eee4f58e124",
+      "updatedAt": "2026-11-26T08:06:12.701Z"
+    },
+    "1d5aad2314a9a1aa264c04ca": {
+      "studentId": "ef81e8d8b91b2c76ed857610",
+      "date": "2026-11-25T18:30:00.000Z",
+      "subjectId": "d53b5d43fa6209083db496ab",
+      "_id": "1d5aad2314a9a1aa264c04ca",
+      "id": "1d5aad2314a9a1aa264c04ca",
+      "createdAt": "2026-11-26T08:06:12.704Z",
+      "classId": "d1f9698c2f571df9fcaeb03b",
+      "sectionId": "8f7d2fadde2a5da733bcf97d",
+      "status": "absent",
+      "remarks": "",
+      "markedById": "6e3bc9c2d0fc5eee4f58e124",
+      "updatedAt": "2026-11-26T08:06:12.704Z"
+    },
+    "5011d512dd5e75717de5d17f": {
+      "studentId": "25191362741faf88642d6d07",
+      "date": "2026-11-25T18:30:00.000Z",
+      "subjectId": "d53b5d43fa6209083db496ab",
+      "_id": "5011d512dd5e75717de5d17f",
+      "id": "5011d512dd5e75717de5d17f",
+      "createdAt": "2026-11-26T08:06:12.930Z",
+      "classId": "d1f9698c2f571df9fcaeb03b",
+      "sectionId": "8f7d2fadde2a5da733bcf97d",
+      "status": "absent",
+      "remarks": "",
+      "markedById": "6e3bc9c2d0fc5eee4f58e124",
+      "updatedAt": "2026-11-26T08:06:12.930Z"
+    },
+    "ab9929d607b1dde347068d44": {
+      "studentId": "ef81e8d8b91b2c76ed857610",
+      "date": "2026-11-25T18:30:00.000Z",
+      "subjectId": "d53b5d43fa6209083db496ab",
+      "_id": "ab9929d607b1dde347068d44",
+      "id": "ab9929d607b1dde347068d44",
+      "createdAt": "2026-11-26T08:06:12.934Z",
+      "classId": "d1f9698c2f571df9fcaeb03b",
+      "sectionId": "8f7d2fadde2a5da733bcf97d",
+      "status": "absent",
+      "remarks": "",
+      "markedById": "6e3bc9c2d0fc5eee4f58e124",
+      "updatedAt": "2026-11-26T08:06:12.934Z"
+    },
+    "b14bec329119487d7dae0c3d": {
+      "studentId": "25191362741faf88642d6d07",
+      "date": "2026-11-25T18:30:00.000Z",
+      "subjectId": null,
+      "_id": "b14bec329119487d7dae0c3d",
+      "id": "b14bec329119487d7dae0c3d",
+      "createdAt": "2026-11-26T08:07:12.703Z",
+      "classId": "d1f9698c2f571df9fcaeb03b",
+      "sectionId": "8f7d2fadde2a5da733bcf97d",
+      "status": "absent",
+      "remarks": "",
+      "markedById": "6e3bc9c2d0fc5eee4f58e124",
+      "updatedAt": "2026-11-26T08:07:12.703Z"
+    },
+    "51bf0d02dbad24566b835518": {
+      "studentId": "ef81e8d8b91b2c76ed857610",
+      "date": "2026-11-25T18:30:00.000Z",
+      "subjectId": null,
+      "_id": "51bf0d02dbad24566b835518",
+      "id": "51bf0d02dbad24566b835518",
+      "createdAt": "2026-11-26T08:07:12.710Z",
+      "classId": "d1f9698c2f571df9fcaeb03b",
+      "sectionId": "8f7d2fadde2a5da733bcf97d",
+      "status": "present",
+      "remarks": "",
+      "markedById": "6e3bc9c2d0fc5eee4f58e124",
+      "updatedAt": "2026-11-26T08:07:12.710Z"
+    },
+    "c6d61878644f6563a213f2cb": {
+      "studentId": "25191362741faf88642d6d07",
+      "date": "2026-11-25T18:30:00.000Z",
+      "subjectId": "a31fed045284844e0e1862c2",
+      "_id": "c6d61878644f6563a213f2cb",
+      "id": "c6d61878644f6563a213f2cb",
+      "createdAt": "2026-11-26T08:08:44.184Z",
+      "classId": "d1f9698c2f571df9fcaeb03b",
+      "sectionId": "8f7d2fadde2a5da733bcf97d",
+      "status": "absent",
+      "remarks": "",
+      "markedById": "6e3bc9c2d0fc5eee4f58e124",
+      "updatedAt": "2026-11-26T08:08:44.184Z"
+    },
+    "d9329ab8b83c7980485a4e8f": {
+      "studentId": "ef81e8d8b91b2c76ed857610",
+      "date": "2026-11-25T18:30:00.000Z",
+      "subjectId": "a31fed045284844e0e1862c2",
+      "_id": "d9329ab8b83c7980485a4e8f",
+      "id": "d9329ab8b83c7980485a4e8f",
+      "createdAt": "2026-11-26T08:08:44.191Z",
+      "classId": "d1f9698c2f571df9fcaeb03b",
+      "sectionId": "8f7d2fadde2a5da733bcf97d",
+      "status": "absent",
+      "remarks": "",
+      "markedById": "6e3bc9c2d0fc5eee4f58e124",
+      "updatedAt": "2026-11-26T08:08:44.191Z"
+    }
+  },
+  "exams": {
+    "9d188c330ab38813505200a9": {
+      "name": "testt1",
+      "classId": "d1f9698c2f571df9fcaeb03b",
+      "academicYearId": "eec99f689f699951637d3bc9",
+      "term": "Term 1",
+      "_id": "9d188c330ab38813505200a9",
+      "id": "9d188c330ab38813505200a9",
+      "createdAt": "2026-11-25T20:30:07.086Z",
+      "updatedAt": "2026-11-25T20:30:07.086Z",
+      "schoolId": "fb5033ac69243aed2591b3c3"
+    },
+    "783638079415d0fc4499e8f7": {
+      "schoolId": "fb5033ac69243aed2591b3c3",
+      "name": "Midterm Science & Math 2026",
+      "classId": "d1f9698c2f571df9fcaeb03b",
+      "term": "Term 1",
+      "startDate": "2026-12-01T00:00:00.000Z",
+      "_id": "783638079415d0fc4499e8f7",
+      "id": "783638079415d0fc4499e8f7",
+      "createdAt": "2026-11-25T20:46:47.578Z",
+      "updatedAt": "2026-11-25T20:46:47.579Z"
+    },
+    "f0de1ea29a1b8da72991ddf5": {
+      "schoolId": "fb5033ac69243aed2591b3c3",
+      "name": "Midterm Science & Math 2026",
+      "classId": "d1f9698c2f571df9fcaeb03b",
+      "term": "Term 1",
+      "startDate": "2026-12-01T00:00:00.000Z",
+      "_id": "f0de1ea29a1b8da72991ddf5",
+      "id": "f0de1ea29a1b8da72991ddf5",
+      "createdAt": "2026-11-25T20:47:05.873Z",
+      "updatedAt": "2026-11-25T20:47:05.874Z"
+    },
+    "9b7e331a5893b6046a67e1ce": {
+      "schoolId": "fb5033ac69243aed2591b3c3",
+      "name": "Midterm Science & Math 2026",
+      "classId": "d1f9698c2f571df9fcaeb03b",
+      "term": "Term 1",
+      "startDate": "2026-12-01T00:00:00.000Z",
+      "_id": "9b7e331a5893b6046a67e1ce",
+      "id": "9b7e331a5893b6046a67e1ce",
+      "createdAt": "2026-11-25T20:47:23.933Z",
+      "updatedAt": "2026-11-25T20:47:23.934Z"
+    }
+  },
+  "marks": {
+    "6c96cc75642e97dad1e217db": {
+      "examId": "783638079415d0fc4499e8f7",
+      "subjectId": "a31fed045284844e0e1862c2",
+      "studentId": "25191362741faf88642d6d07",
+      "_id": "6c96cc75642e97dad1e217db",
+      "id": "6c96cc75642e97dad1e217db",
+      "createdAt": "2026-11-25T20:46:47.583Z",
+      "marksObtained": 95,
+      "maxMarks": 100,
+      "remarks": "Excellent work!",
+      "enteredById": "6e3bc9c2d0fc5eee4f58e124",
+      "updatedAt": "2026-11-25T20:46:47.583Z"
+    },
+    "0999288e6f21259cb76c816c": {
+      "examId": "f0de1ea29a1b8da72991ddf5",
+      "subjectId": "a31fed045284844e0e1862c2",
+      "studentId": "25191362741faf88642d6d07",
+      "_id": "0999288e6f21259cb76c816c",
+      "id": "0999288e6f21259cb76c816c",
+      "createdAt": "2026-11-25T20:47:05.877Z",
+      "marksObtained": 95,
+      "maxMarks": 100,
+      "remarks": "Excellent work!",
+      "enteredById": "6e3bc9c2d0fc5eee4f58e124",
+      "updatedAt": "2026-11-25T20:47:05.877Z"
+    },
+    "efe4c252a4f546b770f90cc7": {
+      "examId": "9b7e331a5893b6046a67e1ce",
+      "subjectId": "a31fed045284844e0e1862c2",
+      "studentId": "25191362741faf88642d6d07",
+      "_id": "efe4c252a4f546b770f90cc7",
+      "id": "efe4c252a4f546b770f90cc7",
+      "createdAt": "2026-11-25T20:47:23.938Z",
+      "schoolId": "fb5033ac69243aed2591b3c3",
+      "marksObtained": 95,
+      "maxMarks": 100,
+      "remarks": "Excellent work!",
+      "enteredById": "6e3bc9c2d0fc5eee4f58e124",
+      "updatedAt": "2026-11-25T20:47:23.938Z"
+    },
+    "266acb1ddea44e6d6d85557c": {
+      "examId": "9d188c330ab38813505200a9",
+      "subjectId": "a31fed045284844e0e1862c2",
+      "studentId": "25191362741faf88642d6d07",
+      "_id": "266acb1ddea44e6d6d85557c",
+      "id": "266acb1ddea44e6d6d85557c",
+      "createdAt": "2026-11-26T08:20:00.307Z",
+      "marksObtained": 50,
+      "maxMarks": 100,
+      "remarks": "",
+      "enteredById": "6e3bc9c2d0fc5eee4f58e124",
+      "updatedAt": "2026-11-26T08:20:00.307Z"
+    },
+    "43297bf6f779d6697ab74aa2": {
+      "examId": "9d188c330ab38813505200a9",
+      "subjectId": "a31fed045284844e0e1862c2",
+      "studentId": "ef81e8d8b91b2c76ed857610",
+      "_id": "43297bf6f779d6697ab74aa2",
+      "id": "43297bf6f779d6697ab74aa2",
+      "createdAt": "2026-11-26T08:20:00.310Z",
+      "marksObtained": 100,
+      "maxMarks": 100,
+      "remarks": "",
+      "enteredById": "6e3bc9c2d0fc5eee4f58e124",
+      "updatedAt": "2026-11-26T08:20:00.310Z"
+    }
+  },
+  "assignments": {
+    "e62e00651316c82d6c653daf": {
+      "schoolId": "fb5033ac69243aed2591b3c3",
+      "title": "Quadratic Equations Worksheet",
+      "classId": "d1f9698c2f571df9fcaeb03b",
+      "subjectId": "a31fed045284844e0e1862c2",
+      "facultyId": "b8019b8d74f67da64cb44aa5",
+      "dueDate": "2026-12-02T20:46:47.582Z",
+      "_id": "e62e00651316c82d6c653daf",
+      "id": "e62e00651316c82d6c653daf",
+      "createdAt": "2026-11-25T20:46:47.582Z",
+      "updatedAt": "2026-11-25T20:46:47.582Z"
+    },
+    "c5d7480ba5f7eff4d7494fc9": {
+      "schoolId": "fb5033ac69243aed2591b3c3",
+      "title": "Quadratic Equations Worksheet",
+      "classId": "d1f9698c2f571df9fcaeb03b",
+      "subjectId": "a31fed045284844e0e1862c2",
+      "facultyId": "b8019b8d74f67da64cb44aa5",
+      "dueDate": "2026-12-02T20:47:05.876Z",
+      "_id": "c5d7480ba5f7eff4d7494fc9",
+      "id": "c5d7480ba5f7eff4d7494fc9",
+      "createdAt": "2026-11-25T20:47:05.876Z",
+      "updatedAt": "2026-11-25T20:47:05.876Z"
+    },
+    "7ceced3d1db16bc895d944c4": {
+      "schoolId": "fb5033ac69243aed2591b3c3",
+      "title": "Quadratic Equations Worksheet",
+      "classId": "d1f9698c2f571df9fcaeb03b",
+      "subjectId": "a31fed045284844e0e1862c2",
+      "facultyId": "b8019b8d74f67da64cb44aa5",
+      "dueDate": "2026-12-02T20:47:23.936Z",
+      "_id": "7ceced3d1db16bc895d944c4",
+      "id": "7ceced3d1db16bc895d944c4",
+      "createdAt": "2026-11-25T20:47:23.936Z",
+      "updatedAt": "2026-11-25T20:47:23.936Z"
+    },
+    "55890ef9e690d77242ef4393": {
+      "title": "problem",
+      "description": "",
+      "classId": "d1f9698c2f571df9fcaeb03b",
+      "sectionId": "8f7d2fadde2a5da733bcf97d",
+      "subjectId": "a31fed045284844e0e1862c2",
+      "dueDate": "2027-02-09",
+      "facultyId": "b8019b8d74f67da64cb44aa5",
+      "attachmentUrl": "",
+      "_id": "55890ef9e690d77242ef4393",
+      "id": "55890ef9e690d77242ef4393",
+      "createdAt": "2026-11-25T20:52:27.803Z",
+      "updatedAt": "2026-11-25T20:52:27.803Z",
+      "schoolId": "fb5033ac69243aed2591b3c3"
+    },
+    "d09b61b17b9abdbcc0fd1cb7": {
+      "title": "obeid",
+      "description": "assignment 2 ",
+      "classId": "d1f9698c2f571df9fcaeb03b",
+      "sectionId": "8f7d2fadde2a5da733bcf97d",
+      "subjectId": "a31fed045284844e0e1862c2",
+      "dueDate": "2026-11-28",
+      "facultyId": "b8019b8d74f67da64cb44aa5",
+      "attachmentUrl": "",
+      "_id": "d09b61b17b9abdbcc0fd1cb7",
+      "id": "d09b61b17b9abdbcc0fd1cb7",
+      "createdAt": "2026-11-26T08:03:45.710Z",
+      "updatedAt": "2026-11-26T08:03:45.710Z",
+      "schoolId": "fb5033ac69243aed2591b3c3"
+    }
+  },
+  "submissions": {},
+  "studyMaterials": {},
+  "remarks": {},
+  "timetables": {},
+  "feeStructures": {},
+  "feePayments": {},
+  "notifications": {},
+  "riskAlerts": {
+    "b666b942d030555c7953c499": {
+      "studentId": "ef81e8d8b91b2c76ed857610",
+      "academicYearId": "eec99f689f699951637d3bc9",
+      "_id": "b666b942d030555c7953c499",
+      "id": "b666b942d030555c7953c499",
+      "createdAt": "2026-11-26T08:05:41.361Z",
+      "level": "low",
+      "score": 0,
+      "reasons": [],
+      "metrics": {
+        "attendancePct": 100,
+        "failedSubjectsCount": 0,
+        "averageMarksPct": 0,
+        "missedAssignmentsCount": 0
+      },
+      "resolved": true,
+      "updatedAt": "2026-11-26T08:05:41.361Z"
+    },
+    "ba51917070717eac242af01a": {
+      "studentId": "25191362741faf88642d6d07",
+      "academicYearId": "eec99f689f699951637d3bc9",
+      "_id": "ba51917070717eac242af01a",
+      "id": "ba51917070717eac242af01a",
+      "createdAt": "2026-11-26T08:05:41.364Z",
+      "level": "low",
+      "score": 0,
+      "reasons": [],
+      "metrics": {
+        "attendancePct": 100,
+        "failedSubjectsCount": 0,
+        "averageMarksPct": 95,
+        "missedAssignmentsCount": 0
+      },
+      "resolved": true,
+      "updatedAt": "2026-11-26T08:05:41.364Z"
+    },
+    "7f501f0c13a0ddcd404a5146": {
+      "studentId": "ef81e8d8b91b2c76ed857610",
+      "academicYearId": "eec99f689f699951637d3bc9",
+      "_id": "7f501f0c13a0ddcd404a5146",
+      "id": "7f501f0c13a0ddcd404a5146",
+      "createdAt": "2026-11-26T08:05:56.525Z",
+      "level": "low",
+      "score": 0,
+      "reasons": [],
+      "metrics": {
+        "attendancePct": 100,
+        "failedSubjectsCount": 0,
+        "averageMarksPct": 0,
+        "missedAssignmentsCount": 0
+      },
+      "resolved": true,
+      "updatedAt": "2026-11-26T08:05:56.525Z"
+    },
+    "ccbb350195dbd06eecd36185": {
+      "studentId": "25191362741faf88642d6d07",
+      "academicYearId": "eec99f689f699951637d3bc9",
+      "_id": "ccbb350195dbd06eecd36185",
+      "id": "ccbb350195dbd06eecd36185",
+      "createdAt": "2026-11-26T08:05:56.529Z",
+      "level": "low",
+      "score": 0,
+      "reasons": [],
+      "metrics": {
+        "attendancePct": 100,
+        "failedSubjectsCount": 0,
+        "averageMarksPct": 95,
+        "missedAssignmentsCount": 0
+      },
+      "resolved": true,
+      "updatedAt": "2026-11-26T08:05:56.529Z"
+    },
+    "0e245cda21a146b442ddf7a9": {
+      "studentId": "ef81e8d8b91b2c76ed857610",
+      "academicYearId": "eec99f689f699951637d3bc9",
+      "_id": "0e245cda21a146b442ddf7a9",
+      "id": "0e245cda21a146b442ddf7a9",
+      "createdAt": "2026-11-26T08:06:04.899Z",
+      "level": "low",
+      "score": 0,
+      "reasons": [],
+      "metrics": {
+        "attendancePct": 100,
+        "failedSubjectsCount": 0,
+        "averageMarksPct": 0,
+        "missedAssignmentsCount": 0
+      },
+      "resolved": true,
+      "updatedAt": "2026-11-26T08:06:04.899Z"
+    },
+    "5fcd6bb48e4b6cb33c9fa5d9": {
+      "studentId": "25191362741faf88642d6d07",
+      "academicYearId": "eec99f689f699951637d3bc9",
+      "_id": "5fcd6bb48e4b6cb33c9fa5d9",
+      "id": "5fcd6bb48e4b6cb33c9fa5d9",
+      "createdAt": "2026-11-26T08:06:04.903Z",
+      "level": "low",
+      "score": 0,
+      "reasons": [],
+      "metrics": {
+        "attendancePct": 100,
+        "failedSubjectsCount": 0,
+        "averageMarksPct": 95,
+        "missedAssignmentsCount": 0
+      },
+      "resolved": true,
+      "updatedAt": "2026-11-26T08:06:04.903Z"
+    },
+    "2477ea9f2478ea75383c89a7": {
+      "studentId": "ef81e8d8b91b2c76ed857610",
+      "academicYearId": "eec99f689f699951637d3bc9",
+      "_id": "2477ea9f2478ea75383c89a7",
+      "id": "2477ea9f2478ea75383c89a7",
+      "createdAt": "2026-11-26T08:06:08.425Z",
+      "level": "low",
+      "score": 0,
+      "reasons": [],
+      "metrics": {
+        "attendancePct": 100,
+        "failedSubjectsCount": 0,
+        "averageMarksPct": 0,
+        "missedAssignmentsCount": 0
+      },
+      "resolved": true,
+      "updatedAt": "2026-11-26T08:06:08.425Z"
+    },
+    "1524975e9c3d4b6bb881e981": {
+      "studentId": "25191362741faf88642d6d07",
+      "academicYearId": "eec99f689f699951637d3bc9",
+      "_id": "1524975e9c3d4b6bb881e981",
+      "id": "1524975e9c3d4b6bb881e981",
+      "createdAt": "2026-11-26T08:06:08.428Z",
+      "level": "low",
+      "score": 0,
+      "reasons": [],
+      "metrics": {
+        "attendancePct": 100,
+        "failedSubjectsCount": 0,
+        "averageMarksPct": 95,
+        "missedAssignmentsCount": 0
+      },
+      "resolved": true,
+      "updatedAt": "2026-11-26T08:06:08.428Z"
+    },
+    "ba3b49a900920e3bdcd8f933": {
+      "studentId": "ef81e8d8b91b2c76ed857610",
+      "academicYearId": "eec99f689f699951637d3bc9",
+      "_id": "ba3b49a900920e3bdcd8f933",
+      "id": "ba3b49a900920e3bdcd8f933",
+      "createdAt": "2026-11-26T08:06:11.507Z",
+      "level": "low",
+      "score": 0,
+      "reasons": [],
+      "metrics": {
+        "attendancePct": 100,
+        "failedSubjectsCount": 0,
+        "averageMarksPct": 0,
+        "missedAssignmentsCount": 0
+      },
+      "resolved": true,
+      "updatedAt": "2026-11-26T08:06:11.508Z"
+    },
+    "fd945ee32f6335e2a236dee5": {
+      "studentId": "25191362741faf88642d6d07",
+      "academicYearId": "eec99f689f699951637d3bc9",
+      "_id": "fd945ee32f6335e2a236dee5",
+      "id": "fd945ee32f6335e2a236dee5",
+      "createdAt": "2026-11-26T08:06:11.510Z",
+      "level": "low",
+      "score": 0,
+      "reasons": [],
+      "metrics": {
+        "attendancePct": 100,
+        "failedSubjectsCount": 0,
+        "averageMarksPct": 95,
+        "missedAssignmentsCount": 0
+      },
+      "resolved": true,
+      "updatedAt": "2026-11-26T08:06:11.510Z"
+    },
+    "68c924511abbc62e28300346": {
+      "studentId": "ef81e8d8b91b2c76ed857610",
+      "academicYearId": "eec99f689f699951637d3bc9",
+      "_id": "68c924511abbc62e28300346",
+      "id": "68c924511abbc62e28300346",
+      "createdAt": "2026-11-26T08:06:12.467Z",
+      "level": "low",
+      "score": 0,
+      "reasons": [],
+      "metrics": {
+        "attendancePct": 100,
+        "failedSubjectsCount": 0,
+        "averageMarksPct": 0,
+        "missedAssignmentsCount": 0
+      },
+      "resolved": true,
+      "updatedAt": "2026-11-26T08:06:12.467Z"
+    },
+    "65d1805a3b26c87890943cb2": {
+      "studentId": "25191362741faf88642d6d07",
+      "academicYearId": "eec99f689f699951637d3bc9",
+      "_id": "65d1805a3b26c87890943cb2",
+      "id": "65d1805a3b26c87890943cb2",
+      "createdAt": "2026-11-26T08:06:12.471Z",
+      "level": "low",
+      "score": 0,
+      "reasons": [],
+      "metrics": {
+        "attendancePct": 100,
+        "failedSubjectsCount": 0,
+        "averageMarksPct": 95,
+        "missedAssignmentsCount": 0
+      },
+      "resolved": true,
+      "updatedAt": "2026-11-26T08:06:12.471Z"
+    },
+    "1ef29125f894f7ba25c1f891": {
+      "studentId": "ef81e8d8b91b2c76ed857610",
+      "academicYearId": "eec99f689f699951637d3bc9",
+      "_id": "1ef29125f894f7ba25c1f891",
+      "id": "1ef29125f894f7ba25c1f891",
+      "createdAt": "2026-11-26T08:06:12.713Z",
+      "level": "low",
+      "score": 0,
+      "reasons": [],
+      "metrics": {
+        "attendancePct": 100,
+        "failedSubjectsCount": 0,
+        "averageMarksPct": 0,
+        "missedAssignmentsCount": 0
+      },
+      "resolved": true,
+      "updatedAt": "2026-11-26T08:06:12.713Z"
+    },
+    "7aca2729b2afbce20970d992": {
+      "studentId": "25191362741faf88642d6d07",
+      "academicYearId": "eec99f689f699951637d3bc9",
+      "_id": "7aca2729b2afbce20970d992",
+      "id": "7aca2729b2afbce20970d992",
+      "createdAt": "2026-11-26T08:06:12.716Z",
+      "level": "low",
+      "score": 0,
+      "reasons": [],
+      "metrics": {
+        "attendancePct": 100,
+        "failedSubjectsCount": 0,
+        "averageMarksPct": 95,
+        "missedAssignmentsCount": 0
+      },
+      "resolved": true,
+      "updatedAt": "2026-11-26T08:06:12.716Z"
+    },
+    "9247c5869a83bbccfa60e620": {
+      "studentId": "ef81e8d8b91b2c76ed857610",
+      "academicYearId": "eec99f689f699951637d3bc9",
+      "_id": "9247c5869a83bbccfa60e620",
+      "id": "9247c5869a83bbccfa60e620",
+      "createdAt": "2026-11-26T08:06:12.941Z",
+      "level": "low",
+      "score": 0,
+      "reasons": [],
+      "metrics": {
+        "attendancePct": 100,
+        "failedSubjectsCount": 0,
+        "averageMarksPct": 0,
+        "missedAssignmentsCount": 0
+      },
+      "resolved": true,
+      "updatedAt": "2026-11-26T08:06:12.941Z"
+    },
+    "a8d542a37c29baaa83d72c04": {
+      "studentId": "25191362741faf88642d6d07",
+      "academicYearId": "eec99f689f699951637d3bc9",
+      "_id": "a8d542a37c29baaa83d72c04",
+      "id": "a8d542a37c29baaa83d72c04",
+      "createdAt": "2026-11-26T08:06:12.944Z",
+      "level": "low",
+      "score": 0,
+      "reasons": [],
+      "metrics": {
+        "attendancePct": 100,
+        "failedSubjectsCount": 0,
+        "averageMarksPct": 95,
+        "missedAssignmentsCount": 0
+      },
+      "resolved": true,
+      "updatedAt": "2026-11-26T08:06:12.944Z"
+    },
+    "a824328647d69359c0e1a434": {
+      "studentId": "ef81e8d8b91b2c76ed857610",
+      "academicYearId": "eec99f689f699951637d3bc9",
+      "_id": "a824328647d69359c0e1a434",
+      "id": "a824328647d69359c0e1a434",
+      "createdAt": "2026-11-26T08:07:12.721Z",
+      "level": "low",
+      "score": 0,
+      "reasons": [],
+      "metrics": {
+        "attendancePct": 100,
+        "failedSubjectsCount": 0,
+        "averageMarksPct": 0,
+        "missedAssignmentsCount": 0
+      },
+      "resolved": true,
+      "updatedAt": "2026-11-26T08:07:12.722Z"
+    },
+    "c75526180d5448cbf78f3b76": {
+      "studentId": "25191362741faf88642d6d07",
+      "academicYearId": "eec99f689f699951637d3bc9",
+      "_id": "c75526180d5448cbf78f3b76",
+      "id": "c75526180d5448cbf78f3b76",
+      "createdAt": "2026-11-26T08:07:12.726Z",
+      "level": "low",
+      "score": 0,
+      "reasons": [],
+      "metrics": {
+        "attendancePct": 100,
+        "failedSubjectsCount": 0,
+        "averageMarksPct": 95,
+        "missedAssignmentsCount": 0
+      },
+      "resolved": true,
+      "updatedAt": "2026-11-26T08:07:12.726Z"
+    },
+    "c1339e1527b40a068261f9e5": {
+      "studentId": "ef81e8d8b91b2c76ed857610",
+      "academicYearId": "eec99f689f699951637d3bc9",
+      "_id": "c1339e1527b40a068261f9e5",
+      "id": "c1339e1527b40a068261f9e5",
+      "createdAt": "2026-11-26T08:08:44.200Z",
+      "level": "low",
+      "score": 0,
+      "reasons": [],
+      "metrics": {
+        "attendancePct": 100,
+        "failedSubjectsCount": 0,
+        "averageMarksPct": 0,
+        "missedAssignmentsCount": 0
+      },
+      "resolved": true,
+      "updatedAt": "2026-11-26T08:08:44.200Z"
+    },
+    "41a3f83c88a439e5273403fd": {
+      "studentId": "25191362741faf88642d6d07",
+      "academicYearId": "eec99f689f699951637d3bc9",
+      "_id": "41a3f83c88a439e5273403fd",
+      "id": "41a3f83c88a439e5273403fd",
+      "createdAt": "2026-11-26T08:08:44.205Z",
+      "level": "low",
+      "score": 0,
+      "reasons": [],
+      "metrics": {
+        "attendancePct": 100,
+        "failedSubjectsCount": 0,
+        "averageMarksPct": 95,
+        "missedAssignmentsCount": 0
+      },
+      "resolved": true,
+      "updatedAt": "2026-11-26T08:08:44.205Z"
+    },
+    "3f4e8d530585ebe195ddf98d": {
+      "studentId": "ef81e8d8b91b2c76ed857610",
+      "academicYearId": "eec99f689f699951637d3bc9",
+      "_id": "3f4e8d530585ebe195ddf98d",
+      "id": "3f4e8d530585ebe195ddf98d",
+      "createdAt": "2026-11-26T08:20:00.317Z",
+      "level": "low",
+      "score": 0,
+      "reasons": [],
+      "metrics": {
+        "attendancePct": 100,
+        "failedSubjectsCount": 0,
+        "averageMarksPct": 0,
+        "missedAssignmentsCount": 0
+      },
+      "resolved": true,
+      "updatedAt": "2026-11-26T08:20:00.317Z"
+    },
+    "2467a31f78d24b79031c7969": {
+      "studentId": "25191362741faf88642d6d07",
+      "academicYearId": "eec99f689f699951637d3bc9",
+      "_id": "2467a31f78d24b79031c7969",
+      "id": "2467a31f78d24b79031c7969",
+      "createdAt": "2026-11-26T08:20:00.321Z",
+      "level": "low",
+      "score": 0,
+      "reasons": [],
+      "metrics": {
+        "attendancePct": 100,
+        "failedSubjectsCount": 0,
+        "averageMarksPct": 95,
+        "missedAssignmentsCount": 0
+      },
+      "resolved": true,
+      "updatedAt": "2026-11-26T08:20:00.321Z"
+    }
+  },
+  "platformPayments": {
+    "a1b861e4813ed4f7c623ff73": {
+      "invoiceNo": "INV-2026-0001",
+      "_id": "a1b861e4813ed4f7c623ff73",
+      "id": "a1b861e4813ed4f7c623ff73",
+      "createdAt": "2026-11-25T20:21:21.898Z",
+      "schoolId": "fb5033ac69243aed2591b3c3",
+      "planId": "b1d6a81811cfa77b68de6102",
+      "amount": 199,
+      "method": "bank_transfer",
+      "reference": "TXN-GF-001",
+      "periodStart": "2026-11-25T20:21:21.898Z",
+      "periodEnd": "2027-02-23T20:21:21.898Z",
+      "status": "paid",
+      "updatedAt": "2026-11-25T20:21:21.898Z"
+    }
+  },
+  "platformAuditLogs": {}
+}
