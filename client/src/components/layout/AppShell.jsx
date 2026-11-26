@@ -120,7 +120,7 @@ export function AppShell() {
         </div>
         <div className="min-w-0">
           <p className="truncate text-sm font-bold text-slate-900 dark:text-white leading-tight">
-            {school?.name || 'SchoolCloud SaaS'}
+            {school?.name || 'StudyX'}
           </p>
           <p className="text-xs text-slate-500 dark:text-slate-400 capitalize">{user?.role?.replace('_', ' ')}</p>
         </div>

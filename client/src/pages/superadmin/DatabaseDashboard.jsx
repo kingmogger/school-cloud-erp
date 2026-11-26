@@ -117,7 +117,7 @@ export function DatabaseDashboard() {
             <div className="p-2 rounded-xl bg-amber-500/10 text-amber-600 dark:text-amber-400">
               <Database className="h-6 w-6" />
             </div>
-            <h1 className="text-xl font-bold text-slate-900 dark:text-white">Firebase Database Dashboard</h1>
+            <h1 className="text-xl font-bold text-slate-900 dark:text-white">StudyX Database Dashboard</h1>
             <Badge variant={stats?.isCloud ? 'success' : 'warning'}>
               {stats?.isCloud ? '🔥 Google Cloud Firestore' : '⚡ Local Firestore Engine'}
             </Badge>

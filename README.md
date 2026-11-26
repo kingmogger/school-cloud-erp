@@ -1,4 +1,4 @@
-# SchoolCloud SaaS — Multi-Tenant School ERP & Academic Intelligence
+# StudyX — Multi-Tenant School ERP & Academic Intelligence
 
 A production-grade multi-tenant SaaS platform serving **Super Admin (Platform Owner)**, **School Admin**, **Faculty**, **Student**, and **Parent** roles with strict database-level tenant isolation and subscription kill-switch controls.
 

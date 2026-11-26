@@ -146,7 +146,7 @@ export function generatePlatformInvoiceBuffer(payment, school) {
     doc.on('end', () => resolve(Buffer.concat(buffers)));
     doc.on('error', reject);
 
-    doc.fontSize(20).text('SCHOOLCLOUD SAAS PLATFORM', { align: 'center' });
+    doc.fontSize(20).text('STUDYX SAAS PLATFORM', { align: 'center' });
     doc.fontSize(10).text('Official Subscription Invoice & Payment Receipt', { align: 'center' });
     doc.moveDown(1.5);
 

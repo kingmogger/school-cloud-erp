@@ -87,7 +87,7 @@ export function LoginPage() {
           <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-indigo-600 text-white shadow-lg shadow-indigo-600/20">
             <GraduationCap className="h-8 w-8" />
           </div>
-          <h1 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-white">SchoolCloud SaaS ERP</h1>
+          <h1 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-white">StudyX ERP</h1>
           <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">Multi-Tenant School Management & Academic Intelligence</p>
         </div>
 

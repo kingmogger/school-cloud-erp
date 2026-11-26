@@ -175,7 +175,7 @@ export async function runSeed({ closeConnection = true } = {}) {
 
     await PlatformSettings.findOneAndUpdate(
       {},
-      { platformName: 'SchoolCloud SaaS', defaultTrialDays: 14, gracePeriodDays: 7 },
+      { platformName: 'StudyX', defaultTrialDays: 14, gracePeriodDays: 7 },
       { upsert: true, new: true }
     );
 

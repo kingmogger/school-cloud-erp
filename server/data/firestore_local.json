@@ -5,7 +5,7 @@
       "id": "42ce9317b71a9905f4b2e35a",
       "createdAt": "2026-11-25T20:21:21.828Z",
       "updatedAt": "2026-11-25T20:21:21.894Z",
-      "platformName": "SchoolCloud SaaS",
+      "platformName": "StudyX",
       "defaultTrialDays": 14,
       "gracePeriodDays": 7
     }
@@ -107,9 +107,9 @@
       "schoolId": "fb5033ac69243aed2591b3c3",
       "phone": "+1-555-0101",
       "isActive": true,
-      "updatedAt": "2026-11-26T08:21:16.623Z",
-      "refreshTokenHash": "a90c4554783dee02b17090735b79ee7b6f7469c7a854498234e5016daea77c38",
-      "lastLoginAt": "2026-11-26T08:21:16.623Z"
+      "updatedAt": "2026-11-26T08:51:04.678Z",
+      "refreshTokenHash": "0995dfacc99f19823933b22a79ac8f8e0ba61786cb447229a2ba3d35b899fdfd",
+      "lastLoginAt": "2026-11-26T08:51:04.678Z"
     },
     "6e3bc9c2d0fc5eee4f58e124": {
       "email": "marcus.gf@greenfield.edu",
@@ -121,8 +121,8 @@
       "role": "faculty",
       "schoolId": "fb5033ac69243aed2591b3c3",
       "isActive": true,
-      "updatedAt": "2026-11-26T08:22:55.582Z",
-      "refreshTokenHash": "c6054c3a3b40ea05d30785920688f6218d9ca7387589f2d2ce522881f2145f81",
+      "updatedAt": "2026-11-26T09:22:35.686Z",
+      "refreshTokenHash": "76f379526d8972db14190bec19bf367133462d6f9a8b720ae3b8a793eb4845f8",
       "lastLoginAt": "2026-11-26T08:22:55.582Z"
     },
     "78c67f9df1f40a9596be870a": {
