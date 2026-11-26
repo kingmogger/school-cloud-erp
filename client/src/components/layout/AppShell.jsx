@@ -34,16 +34,6 @@ import { useTheme } from '../../context/ThemeContext';
 import { Badge, Button } from '../ui';
 
 const NAV_BY_ROLE = {
-  super_admin: [
-    { to: '/superadmin', label: 'Platform Overview', icon: LayoutDashboard, end: true },
-    { to: '/superadmin/control-panel', label: 'Master Control Panel', icon: Sliders },
-    { to: '/superadmin/schools', label: 'Schools & Tenants', icon: Building2 },
-    { to: '/superadmin/plans', label: 'Subscription Plans', icon: Package },
-    { to: '/superadmin/billing', label: 'Billing & Invoices', icon: Receipt },
-    { to: '/superadmin/database', label: 'Firebase Database', icon: Database },
-    { to: '/superadmin/audit-logs', label: 'Platform Audit Log', icon: ShieldAlert },
-    { to: '/superadmin/settings', label: 'Platform Settings', icon: Settings },
-  ],
   school_admin: [
     { to: '/admin', label: 'Dashboard', icon: LayoutDashboard, end: true },
     { to: '/admin/students', label: 'Students', icon: Users },

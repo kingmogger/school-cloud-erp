@@ -25,7 +25,6 @@ const ROLE_HOME = {
 };
 
 const DEMO_ACCOUNTS = [
-  { role: 'Super Admin', email: 'superadmin@schoolcloud.io', code: '' },
   { role: 'School Admin (Active)', email: 'admin@greenfield.edu', code: 'GREENFIELD' },
   { role: 'School Admin (Suspended)', email: 'admin@oakridge.edu', code: 'OAKRIDGE' },
   { role: 'Faculty (GF)', email: 'marcus.gf@greenfield.edu', code: 'GREENFIELD' },
@@ -54,6 +53,10 @@ export function LoginPage() {
     setServerError('');
     try {
       const { user: loggedUser, school } = await login(values.email, values.password, values.schoolCode);
+      if (loggedUser.role === 'super_admin') {
+        setServerError('Super Administrator access is restricted to the Master Control Console.');
+        return;
+      }
       addToast(`Welcome back, ${loggedUser.name}`, 'success');
       if (loggedUser.role === 'school_admin' && school?.subscription?.isBlocked) {
         navigate('/admin/subscription', { replace: true });
@@ -133,18 +136,6 @@ export function LoginPage() {
                   <p className="truncate text-slate-500 dark:text-slate-400">{acc.email}</p>
                 </button>
               ))}
-            </div>
-
-            {/* Standalone Master Control Portal Switcher Link */}
-            <div className="mt-4 pt-3 border-t border-slate-200 dark:border-slate-800 text-center">
-              <Link
-                to="/master-control/login"
-                className="inline-flex items-center gap-1.5 text-xs text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300 hover:underline font-semibold"
-              >
-                <Shield className="h-3.5 w-3.5" />
-                <span>Platform Owner? Access Dedicated Master Control Console</span>
-                <span aria-hidden="true">&rarr;</span>
-              </Link>
             </div>
           </div>
         </div>

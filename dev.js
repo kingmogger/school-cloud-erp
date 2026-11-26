@@ -7,12 +7,12 @@ console.log('   - Frontend Web: http://localhost:5173');
 console.log('   - Master Admin: http://localhost:5173/master-control/login');
 console.log('==================================================\n');
 
-const server = spawn('npm', ['--prefix', 'server', 'run', 'dev'], {
+const server = spawn('node', ['server/src/server.js'], {
   stdio: 'inherit',
   shell: true,
 });
 
-const client = spawn('npm', ['--prefix', 'client', 'run', 'dev'], {
+const client = spawn('npm', ['--prefix', 'client', 'run', 'dev', '--', '--host', '0.0.0.0'], {
   stdio: 'inherit',
   shell: true,
 });

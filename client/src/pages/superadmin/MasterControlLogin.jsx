@@ -26,11 +26,22 @@ const rootLoginSchema = z.object({
 });
 
 export function MasterControlLogin() {
-  const { login } = useAuth();
+  const { user, login, logout } = useAuth();
   const { addToast } = useToast();
   const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
   const [serverError, setServerError] = useState('');
+
+  // Auto-redirect if already root admin; clear session if non-admin
+  useEffect(() => {
+    if (user) {
+      if (user.role === 'super_admin') {
+        navigate('/master-control', { replace: true });
+      } else {
+        logout();
+      }
+    }
+  }, [user, navigate, logout]);
 
   const {
     register,
