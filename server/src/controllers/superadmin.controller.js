@@ -208,8 +208,9 @@ export const getSchoolDetails = asyncHandler(async (req, res) => {
 });
 
 export const updateSchool = asyncHandler(async (req, res) => {
-  const school = await School.findByIdAndUpdate(req.params.id, req.body, { new: true }).populate('planId');
-  if (!school) throw new ApiError(404, 'School not found', 'NOT_FOUND');
+  const updated = await School.findByIdAndUpdate(req.params.id, req.body, { new: true });
+  if (!updated) throw new ApiError(404, 'School not found', 'NOT_FOUND');
+  const school = await School.findById(req.params.id).populate('planId').lean();
 
   if (req.body.name || req.body.logoUrl !== undefined) {
     try {
@@ -302,8 +303,9 @@ export const changeSchoolPlan = asyncHandler(async (req, res) => {
   const plan = await SubscriptionPlan.findById(planId).lean();
   if (!plan) throw new ApiError(404, 'Plan not found', 'NOT_FOUND');
 
-  const school = await School.findByIdAndUpdate(req.params.id, { planId }, { new: true }).populate('planId');
-  if (!school) throw new ApiError(404, 'School not found', 'NOT_FOUND');
+  const updated = await School.findByIdAndUpdate(req.params.id, { planId }, { new: true });
+  if (!updated) throw new ApiError(404, 'School not found', 'NOT_FOUND');
+  const school = await School.findById(req.params.id).populate('planId').lean();
 
   await logPlatformAudit({ req, action: 'CHANGE_PLAN', targetSchoolId: school._id, metadata: { planName: plan.name } });
   return sendSuccess(res, school);

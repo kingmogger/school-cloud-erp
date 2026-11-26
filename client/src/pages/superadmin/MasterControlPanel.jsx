@@ -137,7 +137,7 @@ export function MasterControlPanel() {
   });
 
   const updateMutation = useMutation({
-    mutationFn: (vals) => api.patch(`/superadmin/schools/${editSchool._id}`, vals),
+    mutationFn: (vals) => api.patch(`/superadmin/schools/${editSchool?._id}`, vals),
     onSuccess: () => {
       addToast('School branding and settings updated successfully', 'success');
       setEditSchool(null);
@@ -148,9 +148,9 @@ export function MasterControlPanel() {
   });
 
   const suspendMutation = useMutation({
-    mutationFn: () => api.post(`/superadmin/schools/${suspendTarget._id}/suspend`, { reason: suspendReason }),
+    mutationFn: () => api.post(`/superadmin/schools/${suspendTarget?._id}/suspend`, { reason: suspendReason }),
     onSuccess: () => {
-      addToast(`Access revoked for ${suspendTarget.name}`, 'info');
+      addToast(`Access revoked for ${suspendTarget?.name || 'School'}`, 'info');
       setSuspendTarget(null);
       setSuspendReason('');
       qc.invalidateQueries({ queryKey: ['superadmin-schools'] });
@@ -179,7 +179,7 @@ export function MasterControlPanel() {
   });
 
   const changePlanMutation = useMutation({
-    mutationFn: () => api.post(`/superadmin/schools/${changePlanTarget._id}/change-plan`, { planId: newPlanId }),
+    mutationFn: () => api.post(`/superadmin/schools/${changePlanTarget?._id}/change-plan`, { planId: newPlanId }),
     onSuccess: () => {
       addToast('Subscription plan updated', 'success');
       setChangePlanTarget(null);
@@ -300,7 +300,7 @@ export function MasterControlPanel() {
           </div>
           <div className="mt-2 flex items-baseline gap-2">
             <span className="text-2xl font-extrabold text-slate-900 dark:text-white">
-              {dbStats?.collections ? `${Object.keys(dbStats.collections).length} Collections` : 'Active'}
+              {Array.isArray(dbStats?.collections) ? `${dbStats.collections.length} Collections` : 'Active'}
             </span>
             <span className="inline-flex items-center rounded-md bg-emerald-500/10 px-2 py-0.5 text-xs font-semibold text-emerald-600 dark:text-emerald-400">
               Firestore
@@ -531,16 +531,16 @@ export function MasterControlPanel() {
           </Button>
         </div>
 
-        {dbStats?.collections && (
+        {Array.isArray(dbStats?.collections) && (
           <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-2 pt-2">
-            {Object.entries(dbStats.collections).slice(0, 16).map(([col, count]) => (
+            {dbStats.collections.slice(0, 16).map((col) => (
               <Link
-                key={col}
-                to={`/superadmin/database`}
+                key={col.name}
+                to="/superadmin/database"
                 className="rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50/60 dark:bg-slate-800/40 p-2.5 hover:border-indigo-400 dark:hover:border-indigo-600 transition-colors"
               >
-                <p className="text-xs font-semibold text-slate-600 dark:text-slate-300 truncate capitalize">{col}</p>
-                <p className="text-lg font-bold text-indigo-600 dark:text-indigo-400 mt-1">{count}</p>
+                <p className="text-xs font-semibold text-slate-600 dark:text-slate-300 truncate capitalize">{col.name}</p>
+                <p className="text-lg font-bold text-indigo-600 dark:text-indigo-400 mt-1">{col.count ?? 0}</p>
               </Link>
             ))}
           </div>
