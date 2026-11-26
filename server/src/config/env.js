@@ -23,6 +23,8 @@ const envSchema = z.object({
   FIREBASE_SERVICE_ACCOUNT_PATH: z.string().optional().default(''),
   FIREBASE_CLIENT_EMAIL: z.string().optional().default(''),
   FIREBASE_PRIVATE_KEY: z.string().optional().default(''),
+  FIREBASE_STORAGE_BUCKET: z.string().optional().default(''),
+  STORAGE_DEFAULT_LIMIT_BYTES: z.coerce.number().default(1073741824),
   CLOUDINARY_CLOUD_NAME: z.string().optional().default(''),
   CLOUDINARY_API_KEY: z.string().optional().default(''),
   CLOUDINARY_API_SECRET: z.string().optional().default(''),

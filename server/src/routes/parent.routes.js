@@ -8,6 +8,7 @@ import {
   getChildAttendance,
   getChildResults,
   getChildFees,
+  payChildFee,
   getChildRemarks,
   getNotifications,
   markNotificationRead,
@@ -22,6 +23,7 @@ router.get('/children/:studentId/overview', getChildOverview);
 router.get('/children/:studentId/attendance', getChildAttendance);
 router.get('/children/:studentId/results', getChildResults);
 router.get('/children/:studentId/fees', getChildFees);
+router.post('/children/:studentId/fees/pay', payChildFee);
 router.get('/children/:studentId/remarks', getChildRemarks);
 
 router.get('/notifications', getNotifications);

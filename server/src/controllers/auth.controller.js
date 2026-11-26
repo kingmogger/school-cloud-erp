@@ -80,14 +80,17 @@ async function loadRoleProfile(user) {
 
 export const login = asyncHandler(async (req, res) => {
   const { email, password, schoolCode } = req.body;
+  const cleanEmail = email ? email.trim().toLowerCase() : '';
+  const cleanPassword = password ? password.trim() : '';
+
   const user = await runWithoutTenant(() =>
-    User.findOne({ email: email.toLowerCase() }).select('+passwordHash')
+    User.findOne({ email: cleanEmail }).select('+passwordHash')
   );
-  if (!user || !user.isActive) {
+  if (!user || user.isActive === false) {
     throw new ApiError(401, 'Invalid email or password', 'INVALID_CREDENTIALS');
   }
 
-  const valid = await user.comparePassword(password);
+  const valid = await user.comparePassword(cleanPassword);
   if (!valid) {
     throw new ApiError(401, 'Invalid email or password', 'INVALID_CREDENTIALS');
   }
@@ -101,15 +104,22 @@ export const login = asyncHandler(async (req, res) => {
       throw new ApiError(403, 'Associated school not found', 'SCHOOL_NOT_FOUND');
     }
     if (schoolCode && school.code !== schoolCode.trim().toUpperCase()) {
-      throw new ApiError(401, 'Invalid school code for this account', 'INVALID_CREDENTIALS');
+      throw new ApiError(401, `Invalid school code for this account. Expected code: ${school.code}`, 'INVALID_SCHOOL_CODE');
     }
 
     subscription = await computeEffectiveSchoolStatus(school);
-    if (subscription.isBlocked && user.role !== 'school_admin') {
+    if (subscription.isBlocked && (subscription.code === 'SCHOOL_PAUSED' || user.role !== 'school_admin')) {
       const platformSettings = await PlatformSettings.findOne().lean();
-      throw new ApiError(402, subscription.reason, subscription.code, {
+      const supportEmail = platformSettings?.supportEmail || 'billing@schoolcloud.io';
+      const supportPhone = platformSettings?.supportPhone || '+1-800-555-0199';
+      const msg =
+        subscription.code === 'SCHOOL_PAUSED'
+          ? `${subscription.reason} (Contact: ${supportEmail} · ${supportPhone})`
+          : subscription.reason;
+      throw new ApiError(402, msg, subscription.code, {
         schoolName: school.name,
-        supportEmail: platformSettings?.supportEmail || 'billing@schoolcloud.io',
+        supportEmail,
+        supportPhone,
       });
     }
   }

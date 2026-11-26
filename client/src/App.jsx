@@ -4,15 +4,20 @@ import { ThemeProvider } from './context/ThemeContext';
 import { ToastProvider } from './context/ToastContext';
 import { AuthProvider } from './context/AuthContext';
 import { AppShell } from './components/layout/AppShell';
+import { MasterCommandShell } from './components/layout/MasterCommandShell';
 import { ProtectedRoute, RoleRedirect } from './components/layout/ProtectedRoute';
 import { LoginPage } from './pages/auth/LoginPage';
+import { MasterControlLogin } from './pages/superadmin/MasterControlLogin';
 
 import { SuperAdminDashboard } from './pages/superadmin/SuperAdminDashboard';
+import { MasterControlPanel } from './pages/superadmin/MasterControlPanel';
 import { SchoolsPage } from './pages/superadmin/SchoolsPage';
 import { PlansPage } from './pages/superadmin/PlansPage';
 import { BillingPage } from './pages/superadmin/BillingPage';
 import { PlatformAuditPage, PlatformSettingsPage } from './pages/superadmin/PlatformAuditAndSettings';
 import { DatabaseDashboard } from './pages/superadmin/DatabaseDashboard';
+import { StoragePage } from './pages/superadmin/StoragePage';
+import { SchoolStorageDetailPage } from './pages/superadmin/SchoolStorageDetailPage';
 
 import { AdminDashboard } from './pages/admin/AdminDashboard';
 import { StudentsPage } from './pages/admin/StudentsPage';
@@ -38,8 +43,6 @@ import { StudentResultsPage } from './pages/student/StudentResultsPage';
 import { StudentAssignmentsPage } from './pages/student/StudentAssignmentsPage';
 import { StudentMaterialsPage, StudentTimetablePage } from './pages/student/StudentResources';
 
-import { ParentPortal } from './pages/parent/ParentPortal';
-
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
@@ -58,20 +61,49 @@ export default function App() {
             <BrowserRouter>
               <Routes>
                 <Route path="/login" element={<LoginPage />} />
+                <Route path="/master-control/login" element={<MasterControlLogin />} />
+                <Route path="/superadmin/login" element={<Navigate to="/master-control/login" replace />} />
                 <Route path="/" element={<RoleRedirect />} />
 
+                {/* Standalone Super Admin / Master Control Website */}
+                <Route
+                  path="/master-control"
+                  element={
+                    <ProtectedRoute allowedRoles={['super_admin']}>
+                      <MasterCommandShell />
+                    </ProtectedRoute>
+                  }
+                >
+                  <Route index element={<MasterControlPanel />} />
+                  <Route path="control-panel" element={<MasterControlPanel />} />
+                  <Route path="dashboard" element={<SuperAdminDashboard />} />
+                  <Route path="schools" element={<SchoolsPage />} />
+                  <Route path="database" element={<DatabaseDashboard />} />
+                  <Route path="plans" element={<PlansPage />} />
+                  <Route path="billing" element={<BillingPage />} />
+                  <Route path="storage" element={<StoragePage />} />
+                  <Route path="storage/:id" element={<SchoolStorageDetailPage />} />
+                  <Route path="audit-logs" element={<PlatformAuditPage />} />
+                  <Route path="settings" element={<PlatformSettingsPage />} />
+                </Route>
+
+                {/* Backward compatibility for /superadmin alias -> MasterCommandShell */}
                 <Route
                   path="/superadmin"
                   element={
                     <ProtectedRoute allowedRoles={['super_admin']}>
-                      <AppShell />
+                      <MasterCommandShell />
                     </ProtectedRoute>
                   }
                 >
-                  <Route index element={<SuperAdminDashboard />} />
+                  <Route index element={<MasterControlPanel />} />
+                  <Route path="control-panel" element={<MasterControlPanel />} />
+                  <Route path="dashboard" element={<SuperAdminDashboard />} />
                   <Route path="schools" element={<SchoolsPage />} />
                   <Route path="plans" element={<PlansPage />} />
                   <Route path="billing" element={<BillingPage />} />
+                  <Route path="storage" element={<StoragePage />} />
+                  <Route path="storage/:id" element={<SchoolStorageDetailPage />} />
                   <Route path="audit-logs" element={<PlatformAuditPage />} />
                   <Route path="database" element={<DatabaseDashboard />} />
                   <Route path="settings" element={<PlatformSettingsPage />} />
@@ -129,22 +161,6 @@ export default function App() {
                   <Route path="materials" element={<StudentMaterialsPage />} />
                   <Route path="timetable" element={<StudentTimetablePage />} />
                   <Route path="profile" element={<StudentDashboard />} />
-                </Route>
-
-                <Route
-                  path="/parent"
-                  element={
-                    <ProtectedRoute allowedRoles={['parent']}>
-                      <AppShell />
-                    </ProtectedRoute>
-                  }
-                >
-                  <Route index element={<ParentPortal section="overview" />} />
-                  <Route path="attendance" element={<ParentPortal section="attendance" />} />
-                  <Route path="results" element={<ParentPortal section="results" />} />
-                  <Route path="fees" element={<ParentPortal section="fees" />} />
-                  <Route path="remarks" element={<ParentPortal section="remarks" />} />
-                  <Route path="notifications" element={<ParentPortal section="notifications" />} />
                 </Route>
 
                 <Route path="*" element={<Navigate to="/" replace />} />

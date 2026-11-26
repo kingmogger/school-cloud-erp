@@ -1,7 +1,8 @@
 import { useQuery } from '@tanstack/react-query';
-import { Building2, Users, CreditCard, AlertTriangle, Calendar } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { Building2, Users, CreditCard, AlertTriangle, Calendar, Sliders, Database, ArrowRight } from 'lucide-react';
 import { api } from '../../api/client';
-import { StatCard, DataTable, Badge, Skeleton } from '../../components/ui';
+import { StatCard, DataTable, Badge, Skeleton, Button } from '../../components/ui';
 
 export function SuperAdminDashboard() {
   const { data, isLoading, isError } = useQuery({
@@ -14,16 +15,23 @@ export function SuperAdminDashboard() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold text-slate-900 dark:text-white">Platform Overview</h1>
-        <p className="text-sm text-slate-500 dark:text-slate-400">Multi-tenant SaaS health, revenue, and tenant activity</p>
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div>
+          <h1 className="text-2xl font-bold text-slate-900 dark:text-white">Platform Overview</h1>
+          <p className="text-sm text-slate-500 dark:text-slate-400">Multi-tenant SaaS health, revenue, and tenant activity</p>
+        </div>
+        <Link to="/superadmin/control-panel">
+          <Button className="bg-indigo-600 hover:bg-indigo-700 text-white">
+            <Sliders className="h-4 w-4" /> Open Master Control Panel <ArrowRight className="h-4 w-4 ml-1" />
+          </Button>
+        </Link>
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <StatCard
           title="Total Schools"
           value={data.totalSchools}
-          subtitle={`${data.counts?.active || 0} active · ${data.counts?.trial || 0} trial · ${data.counts?.suspended || 0} suspended`}
+          subtitle={`${data.counts?.active || 0} active · ${data.counts?.paused || 0} paused · ${data.counts?.suspended || 0} suspended`}
           icon={Building2}
         />
         <StatCard title="Platform Users" value={data.totalUsers} subtitle={`${data.totalStudents} active students`} icon={Users} />
@@ -61,6 +69,22 @@ export function SuperAdminDashboard() {
           />
         </div>
       </div>
+
+      {(data.pausedSchools || []).length > 0 && (
+        <div className="space-y-3">
+          <h2 className="text-lg font-semibold text-slate-900 dark:text-white">Paused Schools ({data.pausedSchools.length})</h2>
+          <DataTable
+            columns={[
+              { key: 'name', label: 'School' },
+              { key: 'code', label: 'Code', render: (r) => <span className="font-mono">{r.code}</span> },
+              { key: 'reason', label: 'Reason', render: (r) => r.reason || '—' },
+              { key: 'pausedByName', label: 'Paused By' },
+              { key: 'pausedAt', label: 'Paused At', render: (r) => (r.pausedAt ? new Date(r.pausedAt).toLocaleString() : '—') },
+            ]}
+            data={data.pausedSchools}
+          />
+        </div>
+      )}
     </div>
   );
 }

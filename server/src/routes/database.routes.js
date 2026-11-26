@@ -116,7 +116,7 @@ router.post('/:collection', async (req, res) => {
 
   try {
     const created = await model.create(req.body);
-    return sendSuccess(res, created, 'Document created successfully');
+    return sendSuccess(res, created, 201);
   } catch (err) {
     return sendError(res, 400, 'CREATE_DOCUMENT_ERROR', err.message);
   }
@@ -133,7 +133,7 @@ router.put('/:collection/:id', async (req, res) => {
 
   try {
     const updated = await model.findByIdAndUpdate(id, req.body, { upsert: true });
-    return sendSuccess(res, updated, 'Document updated successfully');
+    return sendSuccess(res, updated, 200);
   } catch (err) {
     return sendError(res, 400, 'UPDATE_DOCUMENT_ERROR', err.message);
   }
@@ -150,7 +150,7 @@ router.delete('/:collection/:id', async (req, res) => {
 
   try {
     const deleted = await model.findByIdAndDelete(id);
-    return sendSuccess(res, { id, deleted: !!deleted }, 'Document deleted successfully');
+    return sendSuccess(res, { id, deleted: !!deleted }, 200);
   } catch (err) {
     return sendError(res, 500, 'DELETE_DOCUMENT_ERROR', err.message);
   }
@@ -160,7 +160,7 @@ router.delete('/:collection/:id', async (req, res) => {
 router.post('/seed/run', async (req, res) => {
   try {
     await runSeed({ closeConnection: false });
-    return sendSuccess(res, { status: 'seeded' }, 'Database seeded successfully with demo users and schools');
+    return sendSuccess(res, { status: 'seeded' }, 200);
   } catch (err) {
     return sendError(res, 500, 'SEED_ERROR', err.message);
   }

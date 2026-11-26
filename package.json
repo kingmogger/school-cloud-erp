@@ -6,7 +6,7 @@
   "scripts": {
     "dev:server": "npm --prefix server run dev",
     "dev:client": "npm --prefix client run dev",
-    "dev": "npm --prefix client run dev",
+    "dev": "node dev.js",
     "start": "npm --prefix server start",
     "seed": "npm --prefix server run seed",
     "migrate": "npm --prefix server run migrate",

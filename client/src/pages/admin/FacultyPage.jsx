@@ -11,6 +11,7 @@ export function FacultyPage() {
   const qc = useQueryClient();
   const [search, setSearch] = useState('');
   const [modalOpen, setModalOpen] = useState(false);
+  const [deleteTarget, setDeleteTarget] = useState(null);
 
   const { data: facultyRes, isLoading } = useQuery({
     queryKey: ['admin-faculty', search],
@@ -20,7 +21,13 @@ export function FacultyPage() {
   const { register, handleSubmit, reset } = useForm();
 
   const createMutation = useMutation({
-    mutationFn: (payload) => api.post('/admin/faculty', payload),
+    mutationFn: (payload) => {
+      const body = { ...payload };
+      if (!body.password || !body.password.trim()) {
+        delete body.password;
+      }
+      return api.post('/admin/faculty', body);
+    },
     onSuccess: () => {
       addToast('Faculty member added', 'success');
       qc.invalidateQueries({ queryKey: ['admin-faculty'] });
@@ -34,7 +41,9 @@ export function FacultyPage() {
     mutationFn: (id) => api.delete(`/admin/faculty/${id}`),
     onSuccess: () => {
       addToast('Faculty member removed', 'info');
+      setDeleteTarget(null);
       qc.invalidateQueries({ queryKey: ['admin-faculty'] });
+      qc.invalidateQueries({ queryKey: ['admin-dashboard'] });
     },
     onError: (err) => addToast(getApiErrorMessage(err), 'error'),
   });
@@ -58,7 +67,7 @@ export function FacultyPage() {
       key: 'actions',
       label: '',
       render: (r) => (
-        <Button variant="ghost" size="sm" onClick={() => deleteMutation.mutate(r._id)}>
+        <Button variant="ghost" size="sm" onClick={() => setDeleteTarget(r)} aria-label={`Delete ${r.userId?.name}`}>
           <Trash2 className="h-4 w-4 text-rose-500" />
         </Button>
       ),
@@ -95,8 +104,11 @@ export function FacultyPage() {
           <FormField label="Full Name" required>
             <input className={inputClass} {...register('name', { required: true })} />
           </FormField>
-          <FormField label="Email" required>
-            <input type="email" className={inputClass} {...register('email', { required: true })} />
+          <FormField label="Email (Gmail / School Email)" required>
+            <input type="email" className={inputClass} placeholder="teacher@gmail.com" {...register('email', { required: true })} />
+          </FormField>
+          <FormField label="Login Password (min 6 chars, default Password@123)">
+            <input type="password" className={inputClass} placeholder="Leave blank for Password@123" {...register('password')} />
           </FormField>
           <div className="grid gap-4 sm:grid-cols-2">
             <FormField label="Department">
@@ -111,6 +123,21 @@ export function FacultyPage() {
             <Button type="submit" disabled={createMutation.isPending}>Save Faculty</Button>
           </div>
         </form>
+      </Modal>
+
+      <Modal open={Boolean(deleteTarget)} onClose={() => setDeleteTarget(null)} title="Delete Faculty Member">
+        <div className="space-y-4">
+          <p className="text-sm text-slate-600 dark:text-slate-300">
+            Are you sure you want to remove <strong>{deleteTarget?.userId?.name}</strong> ({deleteTarget?.employeeId})?
+            They will be unassigned from subjects/sections and their login access will be removed.
+          </p>
+          <div className="flex justify-end gap-2">
+            <Button variant="secondary" onClick={() => setDeleteTarget(null)}>Cancel</Button>
+            <Button variant="danger" disabled={deleteMutation.isPending} onClick={() => deleteMutation.mutate(deleteTarget._id)}>
+              {deleteMutation.isPending ? 'Removing...' : 'Confirm Delete'}
+            </Button>
+          </div>
+        </div>
       </Modal>
     </div>
   );

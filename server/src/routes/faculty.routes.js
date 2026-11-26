@@ -27,6 +27,10 @@ const router = Router();
 
 router.use(requireAuth, tenantMiddleware, subscriptionGuard(), requireRole('faculty', 'school_admin'));
 
+// Dashboard / Analytics root endpoints
+router.get('/', getFacultyAnalytics);
+router.get('/dashboard', getFacultyAnalytics);
+
 // Attendance
 router.get('/attendance', getAttendance);
 router.post('/attendance/bulk', markBulkAttendance);

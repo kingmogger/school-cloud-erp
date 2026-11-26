@@ -1,8 +1,11 @@
 import { useQuery } from '@tanstack/react-query';
-import { api } from '../../api/client';
-import { DataTable, EmptyState, Skeleton } from '../../components/ui';
+import { ExternalLink } from 'lucide-react';
+import { api, openProtectedFile, getApiErrorMessage } from '../../api/client';
+import { useToast } from '../../context/ToastContext';
+import { DataTable, EmptyState, Skeleton, Button } from '../../components/ui';
 
 export function StudentMaterialsPage() {
+  const { addToast } = useToast();
   const { data: materials = [], isLoading } = useQuery({
     queryKey: ['student-materials'],
     queryFn: async () => (await api.get('/student/materials')).data.data,
@@ -23,16 +26,18 @@ export function StudentMaterialsPage() {
           {
             key: 'file',
             label: 'Resource',
-            render: (r) => (
-              <a
-                href={r.fileUrl?.startsWith('http') ? r.fileUrl : (r.fileUrl ? `http://localhost:5001${r.fileUrl}` : '#')}
-                target="_blank"
-                rel="noreferrer"
-                className="text-indigo-600 hover:underline font-medium"
-              >
-                Open File
-              </a>
-            ),
+            render: (r) =>
+              r.fileUrl ? (
+                <Button
+                  size="sm"
+                  variant="secondary"
+                  onClick={() => openProtectedFile(r.fileUrl).catch((e) => addToast(getApiErrorMessage(e), 'error'))}
+                >
+                  <ExternalLink className="h-3.5 w-3.5" /> Open File
+                </Button>
+              ) : (
+                '—'
+              ),
           },
         ]}
         data={materials}

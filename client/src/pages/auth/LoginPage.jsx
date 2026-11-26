@@ -1,9 +1,9 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { GraduationCap, Moon, Sun, ShieldCheck } from 'lucide-react';
+import { GraduationCap, Moon, Sun, ShieldCheck, Shield } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { useTheme } from '../../context/ThemeContext';
 import { useToast } from '../../context/ToastContext';
@@ -17,20 +17,17 @@ const loginSchema = z.object({
 });
 
 const ROLE_HOME = {
-  super_admin: '/superadmin',
+  super_admin: '/master-control',
   school_admin: '/admin',
   faculty: '/faculty',
   student: '/student',
-  parent: '/parent',
 };
 
 const DEMO_ACCOUNTS = [
-  { role: 'Super Admin', email: 'superadmin@schoolcloud.io', code: '' },
   { role: 'School Admin (Active)', email: 'admin@greenfield.edu', code: 'GREENFIELD' },
   { role: 'School Admin (Suspended)', email: 'admin@oakridge.edu', code: 'OAKRIDGE' },
   { role: 'Faculty (GF)', email: 'marcus.gf@greenfield.edu', code: 'GREENFIELD' },
   { role: 'Student (GF)', email: 'liam.gf@greenfield.edu', code: 'GREENFIELD' },
-  { role: 'Parent (GF)', email: 'parent.gf@greenfield.edu', code: 'GREENFIELD' },
 ];
 
 export function LoginPage() {
@@ -54,6 +51,14 @@ export function LoginPage() {
     setServerError('');
     try {
       const { user: loggedUser, school } = await login(values.email, values.password, values.schoolCode);
+      if (loggedUser.role === 'super_admin') {
+        setServerError('Super Administrator access is restricted to the Master Control Console.');
+        return;
+      }
+      if (loggedUser.role === 'parent') {
+        setServerError('This account type is not available');
+        return;
+      }
       addToast(`Welcome back, ${loggedUser.name}`, 'success');
       if (loggedUser.role === 'school_admin' && school?.subscription?.isBlocked) {
         navigate('/admin/subscription', { replace: true });

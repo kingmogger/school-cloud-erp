@@ -251,16 +251,19 @@ export function initFirebase() {
   if (keyFileFound) {
     try {
       const serviceAccount = JSON.parse(fs.readFileSync(keyFileFound, 'utf-8'));
+      const projectId = serviceAccount.project_id || env.FIREBASE_PROJECT_ID;
+      const storageBucket = env.FIREBASE_STORAGE_BUCKET || (projectId ? `${projectId}.appspot.com` : undefined);
       const apps = admin.getApps ? admin.getApps() : (admin.apps || []);
       if (!apps.length) {
         admin.initializeApp({
           credential: admin.credential.cert(serviceAccount),
-          projectId: serviceAccount.project_id || env.FIREBASE_PROJECT_ID,
+          projectId,
+          ...(storageBucket ? { storageBucket } : {}),
         });
       }
       firestoreInstance = getFirestore();
       isCloudMode = true;
-      activeProjectId = serviceAccount.project_id || 'cloud-firestore';
+      activeProjectId = projectId || 'cloud-firestore';
       console.log(`🔥 [Firebase Firestore] Connected to Cloud Project: ${activeProjectId}`);
       return firestoreInstance;
     } catch (err) {
@@ -268,6 +271,7 @@ export function initFirebase() {
     }
   } else if (env.FIREBASE_CLIENT_EMAIL && env.FIREBASE_PRIVATE_KEY && env.FIREBASE_PROJECT_ID) {
     try {
+      const storageBucket = env.FIREBASE_STORAGE_BUCKET || `${env.FIREBASE_PROJECT_ID}.appspot.com`;
       const apps = admin.getApps ? admin.getApps() : (admin.apps || []);
       if (!apps.length) {
         admin.initializeApp({
@@ -276,6 +280,7 @@ export function initFirebase() {
             clientEmail: env.FIREBASE_CLIENT_EMAIL,
             privateKey: env.FIREBASE_PRIVATE_KEY.replace(/\\n/g, '\n'),
           }),
+          storageBucket,
         });
       }
       firestoreInstance = getFirestore();
@@ -306,6 +311,20 @@ export function getDb() {
 
 export function isCloudFirebase() {
   return isCloudMode;
+}
+
+export function getStorageBucket() {
+  if (!firestoreInstance) {
+    initFirebase();
+  }
+  if (!isCloudMode || !admin.apps.length) {
+    return null;
+  }
+  try {
+    return admin.storage().bucket();
+  } catch {
+    return null;
+  }
 }
 
 export function getFirebaseInfo() {

@@ -38,11 +38,14 @@ import {
   deleteSubject,
   listAcademicYears,
   createAcademicYear,
+  setupStandardAcademics,
   getSettings,
   updateSettings,
   listAuditLogs,
   getMySubscription,
   downloadMySubscriptionReceipt,
+  payMySubscription,
+  getMyStorage,
 } from '../controllers/admin.controller.js';
 
 const router = Router();
@@ -51,7 +54,9 @@ router.use(requireAuth, tenantMiddleware, requireRole('school_admin'));
 
 // Accessible even when subscription is suspended/expired so School Admin sees billing & contact info
 router.get('/subscription', subscriptionGuard({ allowBlockedForAdmin: true }), getMySubscription);
+router.post('/subscription/checkout', subscriptionGuard({ allowBlockedForAdmin: true }), payMySubscription);
 router.get('/subscription/receipt/:paymentId', subscriptionGuard({ allowBlockedForAdmin: true }), downloadMySubscriptionReceipt);
+router.get('/storage', subscriptionGuard({ allowBlockedForAdmin: true }), getMyStorage);
 
 // All other School Admin routes require an active/trial/grace subscription
 router.use(subscriptionGuard());
@@ -84,6 +89,7 @@ router.delete('/subjects/:id', deleteSubject);
 
 router.get('/academic-years', listAcademicYears);
 router.post('/academic-years', validate({ body: academicYearSchema }), createAcademicYear);
+router.post('/academics/setup-standard', setupStandardAcademics);
 
 router.get('/settings', getSettings);
 router.patch('/settings', upload.single('logo'), validate({ body: settingsSchema }), updateSettings);

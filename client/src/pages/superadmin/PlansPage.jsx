@@ -14,6 +14,7 @@ export function PlansPage() {
   const [billingCycle, setBillingCycle] = useState('monthly');
   const [maxStudents, setMaxStudents] = useState(300);
   const [maxFaculty, setMaxFaculty] = useState(30);
+  const [storageLimitGb, setStorageLimitGb] = useState(2);
 
   const { data: plans = [], isLoading } = useQuery({
     queryKey: ['superadmin-plans'],
@@ -21,7 +22,19 @@ export function PlansPage() {
   });
 
   const createMutation = useMutation({
-    mutationFn: () => api.post('/superadmin/plans', { name, code, price: Number(price), billingCycle, maxStudents: Number(maxStudents), maxFaculty: Number(maxFaculty) }),
+    mutationFn: () => {
+      const gb = Number(storageLimitGb) || 1;
+      return api.post('/superadmin/plans', {
+        name,
+        code,
+        price: Number(price),
+        billingCycle,
+        maxStudents: Number(maxStudents),
+        maxFaculty: Number(maxFaculty),
+        storageLimitMb: Math.round(gb * 1024),
+        storageLimitBytes: Math.round(gb * 1024 * 1024 * 1024),
+      });
+    },
     onSuccess: () => {
       addToast('Plan created', 'success');
       setName('');
@@ -51,6 +64,7 @@ export function PlansPage() {
           </FormField>
           <FormField label="Max Students"><input type="number" className={inputClass} value={maxStudents} onChange={(e) => setMaxStudents(e.target.value)} /></FormField>
           <FormField label="Max Faculty"><input type="number" className={inputClass} value={maxFaculty} onChange={(e) => setMaxFaculty(e.target.value)} /></FormField>
+          <FormField label="Storage (GB)"><input type="number" step="0.5" min="0.5" className={inputClass} value={storageLimitGb} onChange={(e) => setStorageLimitGb(e.target.value)} /></FormField>
         </div>
         <Button onClick={() => createMutation.mutate()} disabled={!name || !code}>
           <Plus className="h-4 w-4" /> Create Plan
@@ -63,7 +77,7 @@ export function PlansPage() {
           { key: 'name', label: 'Plan' },
           { key: 'code', label: 'Code', render: (r) => <span className="font-mono">{r.code}</span> },
           { key: 'price', label: 'Price', render: (r) => `$${r.price} / ${r.billingCycle}` },
-          { key: 'limits', label: 'Limits', render: (r) => `${r.maxStudents} students · ${r.maxFaculty} faculty` },
+          { key: 'limits', label: 'Limits', render: (r) => `${r.maxStudents} students · ${r.maxFaculty} faculty · ${r.storageLimitMb ? `${(r.storageLimitMb / 1024).toFixed(1)} GB` : '1.0 GB'}` },
           { key: 'isActive', label: 'Status', render: (r) => <Badge color={r.isActive ? 'emerald' : 'slate'}>{r.isActive ? 'Active' : 'Inactive'}</Badge> },
         ]}
         data={plans}

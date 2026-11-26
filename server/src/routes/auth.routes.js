@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import rateLimit from 'express-rate-limit';
+import { env } from '../config/env.js';
 import { login, refresh, logout, me, changePassword } from '../controllers/auth.controller.js';
 import { requireAuth } from '../middleware/auth.js';
 import { validate } from '../middleware/validate.js';
@@ -9,7 +10,7 @@ const router = Router();
 
 const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
-  max: 50,
+  max: env.NODE_ENV === 'production' ? 50 : 1000,
   standardHeaders: true,
   legacyHeaders: false,
   message: { success: false, data: null, error: { code: 'RATE_LIMITED', message: 'Too many auth attempts, try again later' } },

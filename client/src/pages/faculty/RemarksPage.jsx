@@ -17,7 +17,7 @@ export function RemarksPage() {
   const createMutation = useMutation({
     mutationFn: () => api.post('/faculty/remarks', { studentId, category, comment }),
     onSuccess: () => {
-      addToast('Remark added (visible to student & parent)', 'success');
+      addToast('Remark added (visible to student)', 'success');
       setComment('');
       qc.invalidateQueries({ queryKey: ['faculty-remarks'] });
     },
@@ -28,7 +28,7 @@ export function RemarksPage() {
     <div className="space-y-6">
       <div>
         <h1 className="text-2xl font-bold text-slate-900 dark:text-white">Student Remarks</h1>
-        <p className="text-sm text-slate-500 dark:text-slate-400">Share academic and behavioral feedback with students and parents</p>
+        <p className="text-sm text-slate-500 dark:text-slate-400">Share academic and behavioral feedback with students</p>
       </div>
 
       <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-5 space-y-4">
