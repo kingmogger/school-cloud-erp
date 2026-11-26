@@ -1,10 +1,19 @@
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useForm } from 'react-hook-form';
-import { Plus, Search, Trash2 } from 'lucide-react';
+import { Plus, Search, Trash2, RefreshCw, Eye, EyeOff, Copy } from 'lucide-react';
 import { api, getApiErrorMessage } from '../../api/client';
 import { useToast } from '../../context/ToastContext';
 import { Button, DataTable, Modal, FormField, Badge, inputClass } from '../../components/ui';
+
+function generateTempPassword() {
+  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnpqrstuvwxyz23456789';
+  let rand = '';
+  for (let i = 0; i < 6; i++) {
+    rand += chars.charAt(Math.floor(Math.random() * chars.length));
+  }
+  return `Temp@${rand}`;
+}
 
 export function StudentsPage() {
   const { addToast } = useToast();
@@ -12,6 +21,8 @@ export function StudentsPage() {
   const [search, setSearch] = useState('');
   const [classFilter, setClassFilter] = useState('');
   const [modalOpen, setModalOpen] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [createdCredentials, setCreatedCredentials] = useState(null);
 
   const { data: studentsRes, isLoading } = useQuery({
     queryKey: ['admin-students', search, classFilter],
@@ -28,14 +39,39 @@ export function StudentsPage() {
     queryFn: async () => (await api.get('/admin/sections')).data.data,
   });
 
-  const { register, handleSubmit, watch, reset, formState: { errors } } = useForm();
+  const { register, handleSubmit, watch, reset, setValue, formState: { errors } } = useForm();
   const selectedClassId = watch('classId');
   const filteredSections = sections.filter((s) => (s.classId?._id || s.classId) === selectedClassId);
 
+  const handleOpenModal = () => {
+    reset({
+      name: '',
+      email: '',
+      classId: '',
+      sectionId: '',
+      rollNo: '',
+      gender: 'male',
+      parentName: '',
+      parentEmail: '',
+      password: generateTempPassword(),
+    });
+    setShowPassword(false);
+    setModalOpen(true);
+  };
+
   const createMutation = useMutation({
     mutationFn: (payload) => api.post('/admin/students', payload),
-    onSuccess: () => {
-      addToast('Student registered with auto admission number & parent link', 'success');
+    onSuccess: (res) => {
+      const creds = res.data?.data?.credentials;
+      if (creds) {
+        setCreatedCredentials({
+          name: res.data?.data?.userId?.name || res.data?.data?.name || 'Student',
+          admissionNo: res.data?.data?.admissionNo || '',
+          email: creds.email,
+          password: creds.password || creds.temporaryPassword,
+        });
+      }
+      addToast('Student registered with Firebase login credentials', 'success');
       qc.invalidateQueries({ queryKey: ['admin-students'] });
       qc.invalidateQueries({ queryKey: ['admin-dashboard'] });
       reset();
@@ -86,7 +122,7 @@ export function StudentsPage() {
           <h1 className="text-2xl font-bold text-slate-900 dark:text-white">Students</h1>
           <p className="text-sm text-slate-500 dark:text-slate-400">Register students with automatic admission numbers and linked parent accounts</p>
         </div>
-        <Button onClick={() => setModalOpen(true)}>
+        <Button onClick={handleOpenModal}>
           <Plus className="h-4 w-4" /> Register Student
         </Button>
       </div>
@@ -150,6 +186,79 @@ export function StudentsPage() {
           </div>
 
           <div className="border-t border-slate-200 dark:border-slate-800 pt-4">
+            <div className="flex items-center justify-between mb-2">
+              <p className="text-xs font-semibold uppercase tracking-wider text-slate-500">Student Account & Login Credentials</p>
+              <button
+                type="button"
+                onClick={() => {
+                  const newPass = generateTempPassword();
+                  setValue('password', newPass, { shouldValidate: true, shouldDirty: true });
+                  addToast('New temporary password generated', 'info');
+                }}
+                className="inline-flex items-center gap-1.5 text-xs font-medium text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300 cursor-pointer"
+              >
+                <RefreshCw className="h-3.5 w-3.5" />
+                Generate New
+              </button>
+            </div>
+
+            <FormField label="Temporary Password" error={errors.password?.message}>
+              <div className="flex gap-2">
+                <div className="relative flex-1">
+                  <input
+                    type={showPassword ? 'text' : 'password'}
+                    className={`${inputClass} pr-20 font-mono`}
+                    placeholder="e.g. Temp@Ab12"
+                    {...register('password', {
+                      minLength: { value: 6, message: 'Password must be at least 6 characters' },
+                    })}
+                  />
+                  <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-1">
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword((prev) => !prev)}
+                      className="p-1 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 rounded cursor-pointer"
+                      title={showPassword ? 'Hide password' : 'Show password'}
+                    >
+                      {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const pass = watch('password');
+                        if (pass) {
+                          navigator.clipboard?.writeText(pass);
+                          addToast('Temporary password copied to clipboard', 'info');
+                        }
+                      }}
+                      className="p-1 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 rounded cursor-pointer"
+                      title="Copy password"
+                    >
+                      <Copy className="h-4 w-4" />
+                    </button>
+                  </div>
+                </div>
+                <Button
+                  type="button"
+                  variant="secondary"
+                  onClick={() => {
+                    const newPass = generateTempPassword();
+                    setValue('password', newPass, { shouldValidate: true, shouldDirty: true });
+                    addToast('Temporary password generated', 'info');
+                  }}
+                  className="shrink-0"
+                >
+                  <RefreshCw className="h-4 w-4" />
+                  Generate
+                </Button>
+              </div>
+              <p className="mt-1 text-xs text-slate-500">
+                This temporary password will be assigned to the student's Firebase account for their initial login.
+              </p>
+            </FormField>
+          </div>
+
+          <div className="border-t border-slate-200 dark:border-slate-800 pt-4">
             <p className="mb-3 text-xs font-semibold uppercase tracking-wider text-slate-500">Auto-Linked Parent Account</p>
             <div className="grid gap-4 sm:grid-cols-2">
               <FormField label="Parent Name">
@@ -168,6 +277,60 @@ export function StudentsPage() {
             </Button>
           </div>
         </form>
+      </Modal>
+
+      <Modal
+        open={!!createdCredentials}
+        onClose={() => setCreatedCredentials(null)}
+        title="Student Login Credentials"
+        maxWidth="max-w-md"
+      >
+        <div className="space-y-4">
+          <p className="text-sm text-slate-600 dark:text-slate-300">
+            Student account created with Firebase Authentication. Share these login credentials with the student:
+          </p>
+
+          <div className="rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 p-4 space-y-2.5 font-mono text-sm">
+            {createdCredentials?.admissionNo && (
+              <div className="flex justify-between items-center text-xs">
+                <span className="text-slate-500 font-sans">Admission No:</span>
+                <span className="font-semibold text-slate-800 dark:text-slate-200">{createdCredentials.admissionNo}</span>
+              </div>
+            )}
+            <div className="flex justify-between items-center text-xs">
+              <span className="text-slate-500 font-sans">Student:</span>
+              <span className="font-semibold text-slate-800 dark:text-slate-200">{createdCredentials?.name}</span>
+            </div>
+            <div className="flex justify-between items-center text-xs">
+              <span className="text-slate-500 font-sans">Email:</span>
+              <span className="font-semibold text-slate-800 dark:text-slate-200 select-all">{createdCredentials?.email}</span>
+            </div>
+            <div className="flex justify-between items-center text-xs">
+              <span className="text-slate-500 font-sans">Temporary Password:</span>
+              <span className="font-bold text-indigo-600 dark:text-indigo-400 select-all">{createdCredentials?.password}</span>
+            </div>
+          </div>
+
+          <div className="flex justify-end gap-2 pt-2">
+            <Button
+              type="button"
+              variant="secondary"
+              onClick={() => {
+                if (createdCredentials) {
+                  navigator.clipboard?.writeText(
+                    `Student Login Credentials:\nEmail: ${createdCredentials.email}\nPassword: ${createdCredentials.password}`
+                  );
+                  addToast('Credentials copied to clipboard', 'info');
+                }
+              }}
+            >
+              Copy Credentials
+            </Button>
+            <Button type="button" onClick={() => setCreatedCredentials(null)}>
+              Done
+            </Button>
+          </div>
+        </div>
       </Modal>
     </div>
   );

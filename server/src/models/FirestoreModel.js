@@ -311,9 +311,19 @@ export class FirestoreModel {
       return modelInstance;
     };
 
+    modelInstance.deleteOne = async function () {
+      const db = getDb();
+      const docId = String(modelInstance._id || modelInstance.id);
+      await db.collection(self.collectionName).doc(docId).delete();
+      return { acknowledged: true, deletedCount: 1 };
+    };
+
     modelInstance.toObject = function () {
       const copy = { ...modelInstance };
       delete copy.toObject;
+      delete copy.save;
+      delete copy.deleteOne;
+      delete copy.comparePassword;
       return copy;
     };
 
@@ -375,6 +385,10 @@ export class FirestoreModel {
       createdAt: data.createdAt || new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     };
+
+    if (this.collectionName === 'users' && docData.isActive === undefined) {
+      docData.isActive = true;
+    }
 
     const activeSchoolId = getCurrentSchoolId();
     if (this.hasTenant && activeSchoolId && !docData.schoolId && docData.role !== 'super_admin') {
@@ -463,6 +477,14 @@ export class FirestoreModel {
     const db = getDb();
     await db.collection(this.collectionName).doc(String(id)).delete();
     return existing;
+  }
+
+  async deleteOne(query = {}) {
+    const doc = await this.findOne(query).lean().exec();
+    if (!doc) return { acknowledged: true, deletedCount: 0 };
+    const db = getDb();
+    await db.collection(this.collectionName).doc(String(doc._id)).delete();
+    return { acknowledged: true, deletedCount: 1 };
   }
 
   async deleteMany(query = {}) {

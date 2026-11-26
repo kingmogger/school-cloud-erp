@@ -1,4 +1,6 @@
 import mongoose from 'mongoose';
+import crypto from 'node:crypto';
+import { createFirebaseAuthUser, deleteFirebaseAuthUser, getDb } from '../config/firebase.js';
 import { User } from '../models/User.js';
 import { Student } from '../models/Student.js';
 import { Faculty } from '../models/Faculty.js';
@@ -14,6 +16,7 @@ import { PlatformSettings } from '../models/PlatformSettings.js';
 import { AuditLog } from '../models/AuditLog.js';
 import { Attendance } from '../models/Attendance.js';
 import { FeePayment } from '../models/FeePayment.js';
+import { Mark, Submission, Remark, RiskAlert } from '../models/allModels.js';
 import { computeEffectiveSchoolStatus } from '../services/subscription.service.js';
 import { generatePlatformInvoiceBuffer } from '../services/pdf.service.js';
 import { ApiError } from '../utils/ApiError.js';
@@ -159,8 +162,20 @@ export const createStudent = asyncHandler(async (req, res) => {
     throw new ApiError(409, 'A user with this email already exists', 'EMAIL_EXISTS');
   }
 
+  const temporaryPassword = data.password && data.password.trim().length >= 6
+    ? data.password.trim()
+    : `Temp@${crypto.randomBytes(4).toString('hex')}`;
+
+  // Create student's Firebase Auth account with both email and password
+  const firebaseUser = await createFirebaseAuthUser({
+    email: data.email.toLowerCase(),
+    password: temporaryPassword,
+    displayName: data.name,
+  });
+
   const academicYearId = await resolveAcademicYearId(data.academicYearId);
-  const passwordHash = await User.hashPassword(data.password || 'Password@123');
+  // Never store plain-text passwords in Firestore - store hashed password only
+  const passwordHash = await User.hashPassword(temporaryPassword);
   const admissionNo = await generateAdmissionNo();
 
   const stuUser = await User.create({
@@ -168,7 +183,10 @@ export const createStudent = asyncHandler(async (req, res) => {
     email: data.email.toLowerCase(),
     passwordHash,
     role: 'student',
+    schoolId: req.user.schoolId,
     phone: data.phone || '',
+    isActive: true,
+    firebaseUid: firebaseUser?.uid,
   });
 
   const parentIds = [];
@@ -180,18 +198,21 @@ export const createStudent = asyncHandler(async (req, res) => {
         email: data.parentEmail.toLowerCase(),
         passwordHash: await User.hashPassword('Password@123'),
         role: 'parent',
+        schoolId: req.user.schoolId,
         phone: data.parentPhone || data.guardianPhone || '',
+        isActive: true,
       });
     }
     let parentDoc = await Parent.findOne({ userId: parentUser._id });
     if (!parentDoc) {
-      parentDoc = await Parent.create({ userId: parentUser._id, address: data.address || '' });
+      parentDoc = await Parent.create({ userId: parentUser._id, schoolId: req.user.schoolId, address: data.address || '' });
     }
     parentIds.push(parentDoc._id);
   }
 
   const student = await Student.create({
     userId: stuUser._id,
+    schoolId: req.user.schoolId,
     admissionNo,
     rollNo: data.rollNo || '',
     classId: data.classId,
@@ -204,6 +225,7 @@ export const createStudent = asyncHandler(async (req, res) => {
     guardianName: data.guardianName || data.parentName || '',
     guardianPhone: data.guardianPhone || data.parentPhone || '',
     parentIds,
+    status: 'active',
   });
 
   if (parentIds.length > 0) {
@@ -217,7 +239,18 @@ export const createStudent = asyncHandler(async (req, res) => {
     .lean();
 
   await recordAudit({ req, action: 'CREATE_STUDENT', entity: 'Student', entityId: student._id, after: { admissionNo } });
-  return sendSuccess(res, populated, 201);
+  return sendSuccess(
+    res,
+    {
+      ...populated,
+      credentials: {
+        email: stuUser.email,
+        temporaryPassword,
+        password: temporaryPassword,
+      },
+    },
+    201
+  );
 });
 
 export const updateStudent = asyncHandler(async (req, res) => {
@@ -246,11 +279,72 @@ export const deleteStudent = asyncHandler(async (req, res) => {
   const student = await Student.findById(req.params.id);
   if (!student) throw new ApiError(404, 'Student not found', 'NOT_FOUND');
 
-  await Parent.updateMany({ children: student._id }, { $pull: { children: student._id } });
-  await User.findByIdAndDelete(student.userId);
-  await student.deleteOne();
+  const studentId = String(student._id || student.id || req.params.id);
+  const rawUserId = student.userId?._id || student.userId?.id || student.userId;
+  const userId = rawUserId ? String(rawUserId) : null;
 
-  await recordAudit({ req, action: 'DELETE_STUDENT', entity: 'Student', entityId: req.params.id, before: student.toObject() });
+  const db = getDb();
+  let userDoc = null;
+  if (userId) {
+    userDoc = await User.findById(userId).lean().exec();
+    if (!userDoc) {
+      const userSnap = await db.collection('users').doc(userId).get();
+      if (userSnap.exists) {
+        userDoc = { ...userSnap.data(), _id: userId };
+      }
+    }
+  }
+
+  const userEmail = (
+    userDoc?.email ||
+    (typeof student.userId === 'object' && student.userId?.email ? student.userId.email : '')
+  ).toLowerCase().trim();
+
+  const firebaseUid = userDoc?.firebaseUid || null;
+
+  // 1. Remove account completely from Firebase Authentication (Cloud + Local Auth store)
+  // Both UID and email are targeted to ensure the email can be re-registered immediately
+  if (firebaseUid || userEmail) {
+    await deleteFirebaseAuthUser(firebaseUid, userEmail);
+  }
+
+  // 2. Remove student user account from Firebase Firestore
+  if (userId) {
+    await User.findByIdAndDelete(userId);
+    await db.collection('users').doc(userId).delete();
+  }
+  if (userEmail) {
+    const emailDocs = await db.collection('users').where('email', '==', userEmail).get();
+    for (const d of emailDocs.docs) {
+      await db.collection('users').doc(d.id).delete();
+    }
+  }
+
+  // 3. Remove student profile from Firebase Firestore
+  if (typeof student.deleteOne === 'function') {
+    await student.deleteOne();
+  }
+  await Student.findByIdAndDelete(studentId);
+  await db.collection('students').doc(studentId).delete();
+
+  // 4. Clean up related references & records in Firestore
+  await Parent.updateMany({ children: student._id }, { $pull: { children: student._id } });
+  await Parent.updateMany({ children: studentId }, { $pull: { children: studentId } });
+  await Attendance.deleteMany({ studentId: student._id });
+  await Mark.deleteMany({ studentId: student._id });
+  await Submission.deleteMany({ studentId: student._id });
+  await FeePayment.deleteMany({ studentId: student._id });
+  await Remark.deleteMany({ studentId: student._id });
+  await RiskAlert.deleteMany({ studentId: student._id });
+
+  await recordAudit({
+    req,
+    action: 'DELETE_STUDENT',
+    entity: 'Student',
+    entityId: studentId,
+    before: student.toObject ? student.toObject() : student,
+  });
+
   return sendSuccess(res, { deleted: true });
 });
 
@@ -353,7 +447,11 @@ export const deleteFaculty = asyncHandler(async (req, res) => {
   await Subject.updateMany({ facultyId: faculty._id }, { $set: { facultyId: null } });
   await Section.updateMany({ classTeacherId: faculty._id }, { $set: { classTeacherId: null } });
   await User.findByIdAndDelete(faculty.userId);
-  await faculty.deleteOne();
+  if (typeof faculty.deleteOne === 'function') {
+    await faculty.deleteOne();
+  } else {
+    await Faculty.findByIdAndDelete(faculty._id);
+  }
 
   await recordAudit({ req, action: 'DELETE_FACULTY', entity: 'Faculty', entityId: req.params.id });
   return sendSuccess(res, { deleted: true });
