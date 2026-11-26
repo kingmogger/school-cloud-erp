@@ -141,6 +141,17 @@ export function LoginPage() {
             </div>
           </div>
         </div>
+
+        <div className="mt-4 text-center">
+          <button
+            type="button"
+            onClick={() => navigate('/master-control/login')}
+            className="inline-flex items-center gap-2 rounded-xl border border-slate-200 dark:border-slate-800 bg-white/80 dark:bg-slate-900/80 px-4 py-2 text-xs font-semibold text-slate-700 dark:text-slate-200 shadow-xs hover:bg-white dark:hover:bg-slate-900 hover:border-indigo-300 dark:hover:border-indigo-700 transition-colors cursor-pointer"
+          >
+            <Shield className="h-3.5 w-3.5 text-indigo-600 dark:text-indigo-400" />
+            Access StudyX Platform OS
+          </button>
+        </div>
       </div>
     </div>
   );
