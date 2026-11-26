@@ -294,6 +294,24 @@ class QueryCursor {
   }
 }
 
+function sanitizeForFirestore(val) {
+  if (val === undefined) return undefined;
+  if (val === null || typeof val !== 'object') return val;
+  if (val instanceof Date) return val.toISOString();
+  if (Array.isArray(val)) {
+    return val.map(sanitizeForFirestore).filter((v) => v !== undefined);
+  }
+  const clean = {};
+  for (const [k, v] of Object.entries(val)) {
+    if (typeof v === 'function' || v === undefined) continue;
+    const sanitized = sanitizeForFirestore(v);
+    if (sanitized !== undefined) {
+      clean[k] = sanitized;
+    }
+  }
+  return clean;
+}
+
 export class FirestoreModel {
   constructor(collectionName, schema = {}, options = {}) {
     this.collectionName = collectionName;
@@ -316,7 +334,7 @@ export class FirestoreModel {
       modelInstance._id = docId;
       modelInstance.id = docId;
       modelInstance.updatedAt = new Date().toISOString();
-      await colRef.doc(docId).set(modelInstance, { merge: true });
+      await colRef.doc(docId).set(sanitizeForFirestore(modelInstance), { merge: true });
       return modelInstance;
     };
 
@@ -404,7 +422,7 @@ export class FirestoreModel {
       docData.schoolId = String(activeSchoolId);
     }
 
-    await colRef.doc(docId).set(docData);
+    await colRef.doc(docId).set(sanitizeForFirestore(docData));
     return this._wrap(docData);
   }
 
@@ -475,7 +493,7 @@ export class FirestoreModel {
     updated.id = targetId;
     updated.updatedAt = new Date().toISOString();
 
-    await colRef.doc(targetId).set(updated, { merge: true });
+    await colRef.doc(targetId).set(sanitizeForFirestore(updated), { merge: true });
     return this._wrap(updated);
   }
 
