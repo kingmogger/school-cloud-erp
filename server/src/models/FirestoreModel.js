@@ -376,6 +376,10 @@ export class FirestoreModel {
       updatedAt: new Date().toISOString(),
     };
 
+    if (this.collectionName === 'users' && docData.isActive === undefined) {
+      docData.isActive = true;
+    }
+
     const activeSchoolId = getCurrentSchoolId();
     if (this.hasTenant && activeSchoolId && !docData.schoolId && docData.role !== 'super_admin') {
       docData.schoolId = String(activeSchoolId);

@@ -116,7 +116,12 @@ export function MasterControlPanel() {
     mutationFn: () => api.post('/superadmin/schools', createForm),
     onSuccess: (res) => {
       addToast(`School "${createForm.name}" created with custom branding!`, 'success');
-      setCreatedCreds(res.data.data.adminCredentials);
+      setCreatedCreds({
+        ...res.data.data.adminCredentials,
+        schoolId: res.data.data.school?._id,
+        schoolName: res.data.data.school?.name,
+        schoolCode: res.data.data.school?.code,
+      });
       setCreateOpen(false);
       setCreateForm({
         name: '',
@@ -890,18 +895,58 @@ export function MasterControlPanel() {
       </Modal>
 
       {/* MODAL: Newly Created Credentials */}
-      <Modal open={Boolean(createdCreds)} onClose={() => setCreatedCreds(null)} title="School Admin Credentials">
+      <Modal open={Boolean(createdCreds)} onClose={() => setCreatedCreds(null)} title="School Onboarded & Credentials Ready">
         <div className="space-y-4">
-          <p className="text-sm text-slate-600 dark:text-slate-300">
-            School created! Share these credentials with the school administrator:
-          </p>
-          <div className="rounded-xl bg-slate-100 dark:bg-slate-800 p-4 font-mono text-xs space-y-1">
-            <p><strong>Admin Name:</strong> {createdCreds?.name}</p>
-            <p><strong>Email:</strong> {createdCreds?.email}</p>
-            <p><strong>Temporary Password:</strong> {createdCreds?.temporaryPassword}</p>
+          <div className="rounded-xl border border-emerald-200 dark:border-emerald-900/60 bg-emerald-50 dark:bg-emerald-950/40 p-4 text-xs text-emerald-800 dark:text-emerald-200">
+            <p className="font-bold text-sm">School successfully saved to database!</p>
+            <p className="mt-1">
+              The School Admin account is active and can log in immediately with the credentials below.
+            </p>
           </div>
-          <div className="flex justify-end">
-            <Button onClick={() => setCreatedCreds(null)}>Done</Button>
+
+          <div className="rounded-xl bg-slate-100 dark:bg-slate-800 p-4 font-mono text-xs space-y-2 border border-slate-200 dark:border-slate-700">
+            {createdCreds?.schoolName && (
+              <p><strong>School:</strong> {createdCreds.schoolName} ({createdCreds.schoolCode})</p>
+            )}
+            <p><strong>Admin Name:</strong> {createdCreds?.name}</p>
+            <p><strong>Email (Login ID):</strong> <span className="text-indigo-600 dark:text-indigo-400 font-bold">{createdCreds?.email}</span></p>
+            <p><strong>Password:</strong> <span className="text-emerald-600 dark:text-emerald-400 font-bold">{createdCreds?.temporaryPassword}</span></p>
+            {createdCreds?.schoolCode && (
+              <p><strong>School Code:</strong> <span className="font-bold">{createdCreds.schoolCode}</span></p>
+            )}
+          </div>
+
+          <div className="flex flex-col sm:flex-row justify-between gap-2 pt-2">
+            <Button
+              variant="secondary"
+              size="sm"
+              onClick={() => {
+                const text = `School: ${createdCreds?.schoolName || ''}\nEmail: ${createdCreds?.email}\nPassword: ${createdCreds?.temporaryPassword}\nSchool Code: ${createdCreds?.schoolCode || ''}`;
+                navigator.clipboard.writeText(text);
+                addToast('Credentials copied to clipboard!', 'success');
+              }}
+            >
+              Copy Credentials
+            </Button>
+
+            <div className="flex gap-2">
+              {createdCreds?.schoolId && (
+                <Button
+                  size="sm"
+                  className="bg-indigo-600 hover:bg-indigo-700 text-white"
+                  onClick={() => {
+                    const sid = createdCreds.schoolId;
+                    setCreatedCreds(null);
+                    handleImpersonate(sid);
+                  }}
+                >
+                  <UserCheck className="h-4 w-4" /> Open Admin Portal Now
+                </Button>
+              )}
+              <Button size="sm" variant="secondary" onClick={() => setCreatedCreds(null)}>
+                Close
+              </Button>
+            </div>
           </div>
         </div>
       </Modal>

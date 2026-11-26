@@ -80,14 +80,17 @@ async function loadRoleProfile(user) {
 
 export const login = asyncHandler(async (req, res) => {
   const { email, password, schoolCode } = req.body;
+  const cleanEmail = email ? email.trim().toLowerCase() : '';
+  const cleanPassword = password ? password.trim() : '';
+
   const user = await runWithoutTenant(() =>
-    User.findOne({ email: email.toLowerCase() }).select('+passwordHash')
+    User.findOne({ email: cleanEmail }).select('+passwordHash')
   );
-  if (!user || !user.isActive) {
+  if (!user || user.isActive === false) {
     throw new ApiError(401, 'Invalid email or password', 'INVALID_CREDENTIALS');
   }
 
-  const valid = await user.comparePassword(password);
+  const valid = await user.comparePassword(cleanPassword);
   if (!valid) {
     throw new ApiError(401, 'Invalid email or password', 'INVALID_CREDENTIALS');
   }
@@ -101,7 +104,7 @@ export const login = asyncHandler(async (req, res) => {
       throw new ApiError(403, 'Associated school not found', 'SCHOOL_NOT_FOUND');
     }
     if (schoolCode && school.code !== schoolCode.trim().toUpperCase()) {
-      throw new ApiError(401, 'Invalid school code for this account', 'INVALID_CREDENTIALS');
+      throw new ApiError(401, `Invalid school code for this account. Expected code: ${school.code}`, 'INVALID_SCHOOL_CODE');
     }
 
     subscription = await computeEffectiveSchoolStatus(school);

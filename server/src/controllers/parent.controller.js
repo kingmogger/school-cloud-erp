@@ -145,3 +145,28 @@ export const markNotificationRead = asyncHandler(async (req, res) => {
   if (!notif) throw new ApiError(404, 'Notification not found', 'NOT_FOUND');
   return sendSuccess(res, notif);
 });
+
+export const payChildFee = asyncHandler(async (req, res) => {
+  const { studentId } = req.params;
+  const { feeStructureId, amountPaid, paymentMethod, transactionReference } = req.body;
+  await assertParentOwnsStudent(req.user.id, studentId);
+
+  const structure = await FeeStructure.findById(feeStructureId).lean();
+  if (!structure) throw new ApiError(404, 'Fee structure not found', 'NOT_FOUND');
+
+  const count = await FeePayment.countDocuments();
+  const receiptNo = `REC-${new Date().getFullYear()}-${String(count + 1).padStart(5, '0')}`;
+
+  const payment = await FeePayment.create({
+    studentId,
+    feeStructureId,
+    receiptNo,
+    amountPaid: Number(amountPaid || structure.totalAmount),
+    paymentMethod: paymentMethod || 'card',
+    status: 'paid',
+    transactionId: transactionReference || `GATEWAY-${Date.now()}`,
+    remarks: `Online Payment via Payment Gateway (${paymentMethod || 'card'})`,
+  });
+
+  return sendSuccess(res, payment, 201);
+});

@@ -11,6 +11,7 @@ import { SchoolSettings } from '../models/SchoolSettings.js';
 import { School } from '../models/School.js';
 import { PlatformPayment } from '../models/PlatformPayment.js';
 import { PlatformSettings } from '../models/PlatformSettings.js';
+import { SubscriptionPlan } from '../models/SubscriptionPlan.js';
 import { AuditLog } from '../models/AuditLog.js';
 import { Attendance } from '../models/Attendance.js';
 import { FeePayment } from '../models/FeePayment.js';
@@ -169,6 +170,7 @@ export const createStudent = asyncHandler(async (req, res) => {
     passwordHash,
     role: 'student',
     phone: data.phone || '',
+    isActive: true,
   });
 
   const parentIds = [];
@@ -181,6 +183,7 @@ export const createStudent = asyncHandler(async (req, res) => {
         passwordHash: await User.hashPassword('Password@123'),
         role: 'parent',
         phone: data.parentPhone || data.guardianPhone || '',
+        isActive: true,
       });
     }
     let parentDoc = await Parent.findOne({ userId: parentUser._id });
@@ -316,6 +319,7 @@ export const createFaculty = asyncHandler(async (req, res) => {
     passwordHash,
     role: 'faculty',
     phone: data.phone || '',
+    isActive: true,
   });
 
   const faculty = await Faculty.create({
@@ -563,4 +567,47 @@ export const downloadMySubscriptionReceipt = asyncHandler(async (req, res) => {
   res.setHeader('Content-Type', 'application/pdf');
   res.setHeader('Content-Disposition', `attachment; filename=Invoice_${payment.invoiceNo}.pdf`);
   return res.send(buffer);
+});
+
+export const payMySubscription = asyncHandler(async (req, res) => {
+  const { planId, paymentMethod, billingCycle, transactionReference } = req.body;
+  const school = await School.findById(req.user.schoolId);
+  if (!school) throw new ApiError(404, 'School not found', 'NOT_FOUND');
+
+  const selectedPlanId = planId || school.planId;
+  const plan = selectedPlanId ? await SubscriptionPlan.findById(selectedPlanId).lean() : null;
+  const amount = Number(plan?.price || 99);
+  const now = new Date();
+  const periodDays = (billingCycle || plan?.billingCycle) === 'yearly' ? 365 : 30;
+  const baseDate = school.endDate && new Date(school.endDate) > now ? new Date(school.endDate) : now;
+  const periodEnd = new Date(baseDate.getTime() + periodDays * 24 * 60 * 60 * 1000);
+
+  const count = await PlatformPayment.countDocuments();
+  const invoiceNo = `INV-${now.getFullYear()}-${String(count + 1).padStart(4, '0')}`;
+
+  const payment = await PlatformPayment.create({
+    schoolId: school._id,
+    planId: plan?._id || school.planId || null,
+    invoiceNo,
+    amount,
+    paidAt: now,
+    method: paymentMethod || 'card',
+    reference: transactionReference || `GATEWAY-${Date.now()}`,
+    periodStart: now,
+    periodEnd,
+    note: `Online payment via Payment Gateway (${paymentMethod || 'card'})`,
+    status: 'paid',
+    recordedById: req.user.id,
+  });
+
+  // Reactivate school and update paid-until date
+  school.lastPaymentDate = now;
+  school.endDate = periodEnd;
+  if (plan?._id) school.planId = plan._id;
+  school.status = 'active';
+  school.subscriptionStatus = 'active';
+  school.manualSuspension = { isSuspended: false, reason: '', suspendedAt: null, suspendedBy: null };
+  await school.save();
+
+  return sendSuccess(res, { payment, school }, 201);
 });

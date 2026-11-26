@@ -137,17 +137,18 @@ export const createSchool = asyncHandler(async (req, res) => {
     gracePeriodDays: settings?.gracePeriodDays ?? 7,
   });
 
-  const rawPassword = adminPassword || `Sch@${crypto.randomBytes(4).toString('hex')}`;
+  const rawPassword = adminPassword && adminPassword.trim() ? adminPassword.trim() : 'Password@123';
   const passHash = await User.hashPassword(rawPassword);
 
   const adminUser = await runWithTenant(school._id, async () => {
     const user = await User.create({
       name: adminName,
-      email: adminEmail.toLowerCase(),
+      email: adminEmail.trim().toLowerCase(),
       passwordHash: passHash,
       role: 'school_admin',
       schoolId: school._id,
       phone: phone || '',
+      isActive: true,
     });
 
     const ay = await AcademicYear.create({

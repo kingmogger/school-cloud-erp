@@ -43,6 +43,7 @@ import {
   listAuditLogs,
   getMySubscription,
   downloadMySubscriptionReceipt,
+  payMySubscription,
 } from '../controllers/admin.controller.js';
 
 const router = Router();
@@ -51,6 +52,7 @@ router.use(requireAuth, tenantMiddleware, requireRole('school_admin'));
 
 // Accessible even when subscription is suspended/expired so School Admin sees billing & contact info
 router.get('/subscription', subscriptionGuard({ allowBlockedForAdmin: true }), getMySubscription);
+router.post('/subscription/checkout', subscriptionGuard({ allowBlockedForAdmin: true }), payMySubscription);
 router.get('/subscription/receipt/:paymentId', subscriptionGuard({ allowBlockedForAdmin: true }), downloadMySubscriptionReceipt);
 
 // All other School Admin routes require an active/trial/grace subscription
