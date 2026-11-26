@@ -56,11 +56,37 @@ export function AcademicsPage() {
     onError: (e) => addToast(getApiErrorMessage(e), 'error'),
   });
 
+  const setupStandard = useMutation({
+    mutationFn: () => api.post('/admin/academics/setup-standard'),
+    onSuccess: (res) => {
+      const d = res.data.data;
+      addToast(`Provisioned ${d.classesCreated} classes, ${d.sectionsCreated} sections, ${d.subjectsCreated} subjects`, 'success');
+      qc.invalidateQueries({ queryKey: ['admin-classes'] });
+      qc.invalidateQueries({ queryKey: ['admin-sections'] });
+      qc.invalidateQueries({ queryKey: ['admin-subjects'] });
+    },
+    onError: (e) => addToast(getApiErrorMessage(e), 'error'),
+  });
+
+  const assignSubjectTeacher = useMutation({
+    mutationFn: ({ subjectId, facultyId }) => api.patch(`/admin/subjects/${subjectId}`, { facultyId: facultyId || null }),
+    onSuccess: () => {
+      addToast('Teacher assigned to subject', 'success');
+      qc.invalidateQueries({ queryKey: ['admin-subjects'] });
+    },
+    onError: (e) => addToast(getApiErrorMessage(e), 'error'),
+  });
+
   return (
     <div className="space-y-8">
-      <div>
-        <h1 className="text-2xl font-bold text-slate-900 dark:text-white">Classes, Sections & Subjects</h1>
-        <p className="text-sm text-slate-500 dark:text-slate-400">Configure academic structure and assign faculty</p>
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div>
+          <h1 className="text-2xl font-bold text-slate-900 dark:text-white">Classes, Sections & Subjects</h1>
+          <p className="text-sm text-slate-500 dark:text-slate-400">Configure academic structure and assign faculty</p>
+        </div>
+        <Button variant="secondary" onClick={() => setupStandard.mutate()} disabled={setupStandard.isPending}>
+          {setupStandard.isPending ? 'Setting up...' : 'Setup Classes 1–10 & 6 Subjects'}
+        </Button>
       </div>
 
       <div className="grid gap-6 lg:grid-cols-3">
@@ -131,7 +157,25 @@ export function AcademicsPage() {
             { key: 'code', label: 'Code' },
             { key: 'name', label: 'Subject' },
             { key: 'class', label: 'Class', render: (r) => r.classId?.name },
-            { key: 'faculty', label: 'Assigned Faculty', render: (r) => r.facultyId?.userId?.name || 'Unassigned' },
+            {
+              key: 'faculty',
+              label: 'Assigned Teacher',
+              render: (r) => (
+                <select
+                  aria-label={`Assign teacher for ${r.name}`}
+                  className={`${inputClass} py-1 text-xs`}
+                  value={r.facultyId?._id || r.facultyId || ''}
+                  onChange={(e) => assignSubjectTeacher.mutate({ subjectId: r._id, facultyId: e.target.value })}
+                >
+                  <option value="">Unassigned</option>
+                  {facultyList.map((f) => (
+                    <option key={f._id} value={f._id}>
+                      {f.userId?.name} ({f.userId?.email})
+                    </option>
+                  ))}
+                </select>
+              ),
+            },
             { key: 'maxMarks', label: 'Max Marks' },
           ]}
           data={subjectsRes?.data || []}

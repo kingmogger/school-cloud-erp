@@ -39,6 +39,8 @@ api.interceptors.response.use(
     ) {
       const refreshToken = localStorage.getItem('schll_refresh_token');
       if (!refreshToken) {
+        localStorage.removeItem('schll_access_token');
+        window.dispatchEvent(new CustomEvent('schll:unauthorized'));
         return Promise.reject(error);
       }
 
@@ -68,6 +70,7 @@ api.interceptors.response.use(
         processQueue(refreshErr, null);
         localStorage.removeItem('schll_access_token');
         localStorage.removeItem('schll_refresh_token');
+        window.dispatchEvent(new CustomEvent('schll:unauthorized'));
         return Promise.reject(refreshErr);
       } finally {
         isRefreshing = false;

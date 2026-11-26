@@ -9,14 +9,14 @@ export function StudentDashboard() {
     queryKey: ['student-profile'],
     queryFn: async () => (await api.get('/student/profile')).data.data,
     refetchOnWindowFocus: true,
-    refetchInterval: 30000,
+    refetchInterval: 5000,
   });
 
   const { data: notifications = [] } = useQuery({
     queryKey: ['student-notifications'],
     queryFn: async () => (await api.get('/student/notifications')).data.data,
     refetchOnWindowFocus: true,
-    refetchInterval: 30000,
+    refetchInterval: 5000,
   });
 
   if (isLoading) return <Skeleton className="h-48 w-full" />;

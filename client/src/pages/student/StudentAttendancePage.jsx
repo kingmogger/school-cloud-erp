@@ -28,7 +28,7 @@ export function StudentAttendancePage() {
     queryKey: ['student-attendance'],
     queryFn: async () => (await api.get('/student/attendance')).data.data,
     refetchOnWindowFocus: true,
-    refetchInterval: 30000,
+    refetchInterval: 5000,
   });
 
   if (isLoading) return <Skeleton className="h-48 w-full" />;

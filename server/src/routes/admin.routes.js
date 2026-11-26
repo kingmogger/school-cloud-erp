@@ -38,6 +38,7 @@ import {
   deleteSubject,
   listAcademicYears,
   createAcademicYear,
+  setupStandardAcademics,
   getSettings,
   updateSettings,
   listAuditLogs,
@@ -88,6 +89,7 @@ router.delete('/subjects/:id', deleteSubject);
 
 router.get('/academic-years', listAcademicYears);
 router.post('/academic-years', validate({ body: academicYearSchema }), createAcademicYear);
+router.post('/academics/setup-standard', setupStandardAcademics);
 
 router.get('/settings', getSettings);
 router.patch('/settings', upload.single('logo'), validate({ body: settingsSchema }), updateSettings);

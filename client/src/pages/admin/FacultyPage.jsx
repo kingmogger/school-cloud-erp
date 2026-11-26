@@ -21,7 +21,13 @@ export function FacultyPage() {
   const { register, handleSubmit, reset } = useForm();
 
   const createMutation = useMutation({
-    mutationFn: (payload) => api.post('/admin/faculty', payload),
+    mutationFn: (payload) => {
+      const body = { ...payload };
+      if (!body.password || !body.password.trim()) {
+        delete body.password;
+      }
+      return api.post('/admin/faculty', body);
+    },
     onSuccess: () => {
       addToast('Faculty member added', 'success');
       qc.invalidateQueries({ queryKey: ['admin-faculty'] });
@@ -98,8 +104,11 @@ export function FacultyPage() {
           <FormField label="Full Name" required>
             <input className={inputClass} {...register('name', { required: true })} />
           </FormField>
-          <FormField label="Email" required>
-            <input type="email" className={inputClass} {...register('email', { required: true })} />
+          <FormField label="Email (Gmail / School Email)" required>
+            <input type="email" className={inputClass} placeholder="teacher@gmail.com" {...register('email', { required: true })} />
+          </FormField>
+          <FormField label="Login Password (min 6 chars, default Password@123)">
+            <input type="password" className={inputClass} placeholder="Leave blank for Password@123" {...register('password')} />
           </FormField>
           <div className="grid gap-4 sm:grid-cols-2">
             <FormField label="Department">

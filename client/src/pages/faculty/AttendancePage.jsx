@@ -60,6 +60,9 @@ export function AttendancePage() {
     onSuccess: (res) => {
       addToast(`Saved attendance for ${res.data.data.markedCount} students (${res.data.data.dateKey || date})`, 'success');
       qc.invalidateQueries({ queryKey: ['faculty-attendance', classId, sectionId, subjectId, date] });
+      qc.invalidateQueries({ queryKey: ['student-attendance'] });
+      qc.invalidateQueries({ queryKey: ['student-profile'] });
+      qc.invalidateQueries({ queryKey: ['student-notifications'] });
     },
     onError: (e) => addToast(getApiErrorMessage(e), 'error'),
   });

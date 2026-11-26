@@ -19,6 +19,7 @@ import { signTokens } from './auth.controller.js';
 import { paymentGateway } from '../services/paymentGateway.service.js';
 import { generatePlatformInvoiceBuffer } from '../services/pdf.service.js';
 import { computeEffectiveSchoolStatus } from '../services/subscription.service.js';
+import { provisionStandardClassesAndSubjects } from '../services/academicsSetup.service.js';
 import {
   DEFAULT_STORAGE_LIMIT_BYTES,
   emptyCategoryUsage,
@@ -207,6 +208,8 @@ export const createSchool = asyncHandler(async (req, res) => {
       address: school.address,
       currentAcademicYearId: ay._id,
     });
+
+    await provisionStandardClassesAndSubjects(school._id, ay._id);
 
     return user;
   });

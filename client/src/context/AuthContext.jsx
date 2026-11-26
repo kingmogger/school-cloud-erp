@@ -35,6 +35,13 @@ export function AuthProvider({ children }) {
 
   useEffect(() => {
     loadMe();
+    const onUnauthorized = () => {
+      setUser(null);
+      setSchool(null);
+      setProfile(null);
+    };
+    window.addEventListener('schll:unauthorized', onUnauthorized);
+    return () => window.removeEventListener('schll:unauthorized', onUnauthorized);
   }, [loadMe]);
 
   const login = async (email, password, schoolCode = '') => {

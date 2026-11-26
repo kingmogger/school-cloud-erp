@@ -26,6 +26,7 @@ import { parsePagination, buildPaginationMeta } from '../utils/pagination.js';
 import { asyncHandler } from '../middleware/asyncHandler.js';
 import { recordAudit } from '../middleware/audit.js';
 import { uploadFile, deleteFile, resolveSchoolStorageLimitBytes, emptyCategoryUsage } from '../services/storage.service.js';
+import { provisionStandardClassesAndSubjects } from '../services/academicsSetup.service.js';
 
 async function generateAdmissionNo() {
   const year = new Date().getFullYear();
@@ -519,6 +520,11 @@ export const createAcademicYear = asyncHandler(async (req, res) => {
   }
   const year = await AcademicYear.create(req.body);
   return sendSuccess(res, year, 201);
+});
+
+export const setupStandardAcademics = asyncHandler(async (req, res) => {
+  const result = await provisionStandardClassesAndSubjects(req.user.schoolId);
+  return sendSuccess(res, result);
 });
 
 // ---------------- SETTINGS & AUDIT ----------------
