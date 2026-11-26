@@ -7,6 +7,7 @@
     "dev": "node --watch src/server.js",
     "start": "node src/server.js",
     "seed": "node src/seeds/seed.js",
+    "sync:firebase": "node src/scripts/syncLocalToFirebase.js",
     "migrate": "node src/scripts/migrateToMultiTenant.js",
     "migrate:storage": "node src/scripts/migrateStoragePaths.js",
     "create-superadmin": "node src/scripts/createSuperAdmin.js",
