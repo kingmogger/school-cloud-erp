@@ -13,7 +13,6 @@ import { Button, FormField, inputClass } from '../../components/ui';
 const loginSchema = z.object({
   email: z.string().email('Enter a valid email address'),
   password: z.string().min(6, 'Password must be at least 6 characters'),
-  schoolCode: z.string().optional(),
 });
 
 const ROLE_HOME = {
@@ -44,13 +43,13 @@ export function LoginPage() {
     formState: { errors, isSubmitting },
   } = useForm({
     resolver: zodResolver(loginSchema),
-    defaultValues: { email: '', password: '', schoolCode: '' },
+    defaultValues: { email: '', password: '' },
   });
 
   const onSubmit = async (values) => {
     setServerError('');
     try {
-      const { user: loggedUser, school } = await login(values.email, values.password, values.schoolCode);
+      const { user: loggedUser, school } = await login(values.email, values.password);
       if (loggedUser.role === 'super_admin') {
         setServerError('Super Administrator access is restricted to the Master Control Console.');
         return;
@@ -70,10 +69,9 @@ export function LoginPage() {
     }
   };
 
-  const fillDemo = (email, code) => {
+  const fillDemo = (email) => {
     setValue('email', email);
     setValue('password', 'Password@123');
-    setValue('schoolCode', code);
   };
 
   return (
@@ -110,10 +108,6 @@ export function LoginPage() {
 
             <FormField label="Password" htmlFor="password" error={errors.password?.message} required>
               <input id="password" type="password" autoComplete="current-password" placeholder="••••••••" className={inputClass} {...register('password')} />
-            </FormField>
-
-            <FormField label="School Code (Optional)" htmlFor="schoolCode">
-              <input id="schoolCode" type="text" placeholder="e.g. GREENFIELD" className={inputClass} {...register('schoolCode')} />
             </FormField>
 
             <Button type="submit" className="w-full" size="lg" disabled={isSubmitting}>
