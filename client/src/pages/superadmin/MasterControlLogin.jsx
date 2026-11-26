@@ -48,8 +48,9 @@ export function MasterControlLogin() {
   const onSubmit = async (values) => {
     setServerError('');
     try {
-      const user = await login(values.email, values.password, '');
-      if (user.role !== 'super_admin') {
+      const res = await login(values.email, values.password, '');
+      const loggedUser = res?.user || res;
+      if (loggedUser?.role !== 'super_admin') {
         setServerError('ACCESS DENIED: This account does not possess Super Administrator root privileges.');
         return;
       }
@@ -63,7 +64,7 @@ export function MasterControlLogin() {
   const handleQuickConnect = () => {
     setValue('email', 'superadmin@schoolcloud.io');
     setValue('password', 'Password@123');
-    handleSubmit(onSubmit)();
+    onSubmit({ email: 'superadmin@schoolcloud.io', password: 'Password@123' });
   };
 
   return (
