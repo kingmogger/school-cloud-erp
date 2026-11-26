@@ -84,6 +84,7 @@ export const getResults = asyncHandler(async (req, res) => {
   }
 
   return sendSuccess(res, {
+    results: resultsByExam,
     publishedResults: resultsByExam,
     scheduledExams,
   });

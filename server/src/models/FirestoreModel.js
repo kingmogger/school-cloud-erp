@@ -84,6 +84,15 @@ function matchesQuery(doc, query = {}) {
     }
 
     // Direct equality (handling ObjectId strings / primitives)
+    if (expected === null || expected === undefined) {
+      if (actual !== null && actual !== undefined) return false;
+      continue;
+    }
+
+    if (actual === null || actual === undefined) {
+      return false;
+    }
+
     if (String(actual) !== String(expected)) {
       return false;
     }
