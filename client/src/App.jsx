@@ -31,6 +31,7 @@ import { IntelligencePage } from './pages/admin/IntelligencePage';
 import { SubscriptionPage } from './pages/admin/SubscriptionPage';
 
 import { FacultyDashboard } from './pages/faculty/FacultyDashboard';
+import { SchedulePage } from './pages/faculty/SchedulePage';
 import { AttendancePage } from './pages/faculty/AttendancePage';
 import { MarksPage } from './pages/faculty/MarksPage';
 import { AssignmentsPage } from './pages/faculty/AssignmentsPage';
@@ -138,6 +139,7 @@ export default function App() {
                   }
                 >
                   <Route index element={<FacultyDashboard />} />
+                  <Route path="schedule" element={<SchedulePage />} />
                   <Route path="attendance" element={<AttendancePage />} />
                   <Route path="marks" element={<MarksPage />} />
                   <Route path="assignments" element={<AssignmentsPage />} />

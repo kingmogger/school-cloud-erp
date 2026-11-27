@@ -20,6 +20,7 @@ export const Submission = new FirestoreModel('submissions', {}, { hasTenant: tru
 export const StudyMaterial = new FirestoreModel('studyMaterials', {}, { hasTenant: true });
 export const Remark = new FirestoreModel('remarks', {}, { hasTenant: true });
 export const Timetable = new FirestoreModel('timetables', {}, { hasTenant: true });
+export const ClassSchedule = new FirestoreModel('classSchedules', {}, { hasTenant: true });
 export const FeeStructure = new FirestoreModel('feeStructures', {}, { hasTenant: true });
 export const FeePayment = new FirestoreModel('feePayments', {}, { hasTenant: true });
 export const Notification = new FirestoreModel('notifications', {}, { hasTenant: true });
@@ -51,6 +52,7 @@ export const ALL_MODELS = {
   studyMaterials: StudyMaterial,
   remarks: Remark,
   timetables: Timetable,
+  classSchedules: ClassSchedule,
   feeStructures: FeeStructure,
   feePayments: FeePayment,
   notifications: Notification,

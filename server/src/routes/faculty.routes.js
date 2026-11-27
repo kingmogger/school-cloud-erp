@@ -4,6 +4,9 @@ import { requireRole } from '../middleware/rbac.js';
 import { tenantMiddleware, subscriptionGuard } from '../middleware/tenant.js';
 import { upload } from '../middleware/upload.js';
 import {
+  listSchedules,
+  createSchedule,
+  deleteSchedule,
   getAttendance,
   markBulkAttendance,
   listExams,
@@ -30,6 +33,11 @@ router.use(requireAuth, tenantMiddleware, subscriptionGuard(), requireRole('facu
 // Dashboard / Analytics root endpoints
 router.get('/', getFacultyAnalytics);
 router.get('/dashboard', getFacultyAnalytics);
+
+// Class Schedules
+router.get('/schedules', listSchedules);
+router.post('/schedules', createSchedule);
+router.delete('/schedules/:id', deleteSchedule);
 
 // Attendance
 router.get('/attendance', getAttendance);

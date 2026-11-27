@@ -13,7 +13,7 @@ import { Notification } from '../models/Notification.js';
 import { User } from '../models/User.js';
 import { ApiError } from '../utils/ApiError.js';
 import { getCurrentSchoolId, runWithoutTenant, runWithTenant } from '../utils/tenantContext.js';
-import { ALLOWED_MIMES, MAX_FILE_SIZE_BYTES } from '../middleware/upload.js';
+import { ALLOWED_MIMES, MAX_FILE_SIZE_BYTES, isAllowedUploadFile } from '../middleware/upload.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 export const LOCAL_UPLOADS_ROOT = path.resolve(__dirname, '../../uploads');
@@ -285,10 +285,10 @@ export async function uploadFile(file, options = {}) {
       'FILE_TOO_LARGE'
     );
   }
-  if (file.mimetype && !ALLOWED_MIMES.has(file.mimetype)) {
+  if (file.mimetype && !isAllowedUploadFile(file)) {
     throw new ApiError(
       400,
-      `Unsupported file type: ${file.mimetype}. Allowed types: PDF, JPG, PNG, DOCX, PPTX, XLSX.`,
+      `Unsupported file type: ${file.mimetype}. Allowed types: PDF, JPG, PNG, DOC/DOCX, PPT/PPTX, XLS/XLSX, TXT.`,
       'INVALID_FILE_TYPE'
     );
   }

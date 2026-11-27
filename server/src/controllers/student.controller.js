@@ -5,6 +5,7 @@ import { Exam } from '../models/Exam.js';
 import { Assignment } from '../models/Assignment.js';
 import { Submission } from '../models/Submission.js';
 import { Timetable } from '../models/Timetable.js';
+import { ClassSchedule } from '../models/ClassSchedule.js';
 import { StudyMaterial } from '../models/StudyMaterial.js';
 import { SchoolSettings } from '../models/SchoolSettings.js';
 import { Notification } from '../models/Notification.js';
@@ -88,26 +89,60 @@ export const getAttendance = asyncHandler(async (req, res) => {
   const monthPresent = monthRecs.filter((r) => r.status === 'present' || r.status === 'late').length;
   const monthPercentage = monthRecs.length > 0 ? Math.round((monthPresent / monthRecs.length) * 1000) / 10 : 100;
 
-  // Per-subject percentage breakdown
+  // Per-subject percentage breakdown with history
   const subjMap = new Map();
   for (const r of normalizedRecords) {
     const key = r.subjectId?._id ? String(r.subjectId._id) : 'daily';
     const name = r.subjectId?.name || 'Daily Roll';
+    const code = r.subjectId?.code || '';
     if (!subjMap.has(key)) {
-      subjMap.set(key, { subjectId: key, subjectName: name, total: 0, present: 0, absent: 0, late: 0, excused: 0 });
+      subjMap.set(key, {
+        subjectId: key,
+        subjectName: name,
+        subjectCode: code,
+        total: 0,
+        present: 0,
+        attended: 0,
+        absent: 0,
+        late: 0,
+        excused: 0,
+        history: [],
+      });
     }
     const bucket = subjMap.get(key);
     bucket.total += 1;
-    if (r.status === 'present') bucket.present += 1;
-    else if (r.status === 'absent') bucket.absent += 1;
-    else if (r.status === 'late') bucket.late += 1;
-    else if (r.status === 'excused') bucket.excused += 1;
+    if (r.status === 'present') {
+      bucket.present += 1;
+      bucket.attended += 1;
+    } else if (r.status === 'absent') {
+      bucket.absent += 1;
+    } else if (r.status === 'late') {
+      bucket.late += 1;
+      bucket.attended += 1;
+    } else if (r.status === 'excused') {
+      bucket.excused += 1;
+      bucket.attended += 1;
+    }
+    bucket.history.push({
+      _id: r._id,
+      dateKey: r.dateKey,
+      date: r.date,
+      startTime: r.startTime || null,
+      endTime: r.endTime || null,
+      room: r.room || null,
+      status: r.status,
+      remarks: r.remarks || '',
+      scheduledClassId: r.scheduledClassId || null,
+    });
   }
 
-  const bySubject = Array.from(subjMap.values()).map((b) => ({
-    ...b,
-    percentage: b.total > 0 ? Math.round(((b.present + b.late) / b.total) * 1000) / 10 : 100,
-  }));
+  const bySubject = Array.from(subjMap.values()).map((b) => {
+    const weighted = b.present + b.late * 0.5 + b.excused;
+    return {
+      ...b,
+      percentage: b.total > 0 ? Math.round((weighted / b.total) * 1000) / 10 : 100,
+    };
+  });
 
   return sendSuccess(res, {
     summary: {
@@ -249,17 +284,91 @@ export const submitAssignment = asyncHandler(async (req, res) => {
   return sendSuccess(res, submission, 201);
 });
 
+const WEEK_DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+
 export const getTimetable = asyncHandler(async (req, res) => {
   const student = await getStudentDoc(req.user.id);
-  const timetable = await Timetable.find({
-    classId: student.classId._id,
-    sectionId: student.sectionId._id,
-  })
-    .populate({ path: 'slots.subjectId', select: 'name code' })
-    .populate({ path: 'slots.facultyId', populate: { path: 'userId', select: 'name' } })
-    .lean();
+  const classId = String(student.classId?._id || student.classId);
+  const sectionId = String(student.sectionId?._id || student.sectionId);
 
-  return sendSuccess(res, timetable);
+  const baseKey =
+    typeof req.query.weekStart === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(req.query.weekStart)
+      ? req.query.weekStart
+      : new Date().toISOString().slice(0, 10);
+  const baseDate = new Date(`${baseKey}T00:00:00Z`);
+  const day = baseDate.getUTCDay();
+  const diffToMonday = day === 0 ? -6 : 1 - day;
+  const monday = new Date(baseDate.getTime() + diffToMonday * 86400000);
+  const weekStart = monday.toISOString().slice(0, 10);
+  const weekEnd = new Date(monday.getTime() + 5 * 86400000).toISOString().slice(0, 10);
+
+  const [staticTimetable, scheduledClasses] = await Promise.all([
+    Timetable.find({ classId, sectionId })
+      .populate({ path: 'slots.subjectId', select: 'name code' })
+      .populate({ path: 'slots.facultyId', populate: { path: 'userId', select: 'name' } })
+      .lean(),
+    ClassSchedule.find({ classId, sectionId })
+      .populate('subjectId', 'name code')
+      .populate({ path: 'facultyId', populate: { path: 'userId', select: 'name' } })
+      .lean(),
+  ]);
+
+  const weekSchedules = scheduledClasses.filter((s) => s.dateKey >= weekStart && s.dateKey <= weekEnd);
+  const scheduleIds = weekSchedules.map((s) => String(s._id));
+  const studentAttRecords = scheduleIds.length > 0
+    ? await Attendance.find({ studentId: String(student._id), scheduledClassId: { $in: scheduleIds } }).lean()
+    : [];
+  const attStatusBySchedule = new Map(
+    studentAttRecords.map((r) => [String(r.scheduledClassId), r.status])
+  );
+
+  const days = WEEK_DAYS.map((dayOfWeek, idx) => {
+    const dateKey = new Date(monday.getTime() + idx * 86400000).toISOString().slice(0, 10);
+    const slots = [];
+
+    const staticDay = staticTimetable.find((t) => t.dayOfWeek === dayOfWeek);
+    if (staticDay?.slots) {
+      for (const s of staticDay.slots) {
+        slots.push({
+          _id: s._id || `static-${dayOfWeek}-${s.startTime}`,
+          source: 'timetable',
+          subjectId: s.subjectId || null,
+          facultyId: s.facultyId || null,
+          facultyName: s.facultyId?.userId?.name || 'TBA',
+          startTime: s.startTime,
+          endTime: s.endTime,
+          room: s.room || '—',
+          dateKey,
+        });
+      }
+    }
+
+    for (const sc of weekSchedules) {
+      if (sc.dateKey === dateKey) {
+        slots.push({
+          _id: sc._id,
+          source: 'schedule',
+          scheduleType: sc.scheduleType || 'class',
+          title: sc.title || '',
+          description: sc.description || '',
+          subjectId: sc.subjectId || null,
+          facultyId: sc.facultyId || null,
+          facultyName: sc.facultyId?.userId?.name || 'Faculty',
+          startTime: sc.startTime,
+          endTime: sc.endTime,
+          room: sc.room || '—',
+          dateKey: sc.dateKey,
+          attendanceMarked: Boolean(sc.attendanceMarked),
+          attendanceStatus: attStatusBySchedule.get(String(sc._id)) || null,
+        });
+      }
+    }
+
+    slots.sort((a, b) => String(a.startTime || '').localeCompare(String(b.startTime || '')));
+    return { dayOfWeek, dateKey, slots };
+  });
+
+  return sendSuccess(res, { weekStart, weekEnd, days });
 });
 
 export const getStudyMaterials = asyncHandler(async (req, res) => {

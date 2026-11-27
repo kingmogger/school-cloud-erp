@@ -1,4 +1,5 @@
 import { Attendance } from '../models/Attendance.js';
+import { ClassSchedule } from '../models/ClassSchedule.js';
 import { Exam } from '../models/Exam.js';
 import { Mark } from '../models/Mark.js';
 import { Assignment } from '../models/Assignment.js';
@@ -41,10 +42,202 @@ function normalizeDateKey(input) {
   return d.toISOString().slice(0, 10);
 }
 
+const DAY_NAMES = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+
+function getDayOfWeekFromDateKey(dateKey) {
+  const d = new Date(`${dateKey}T00:00:00Z`);
+  return Number.isNaN(d.getTime()) ? 'Monday' : DAY_NAMES[d.getUTCDay()];
+}
+
+function getWeekBounds(weekStartInput) {
+  const baseKey = normalizeDateKey(weekStartInput);
+  const d = new Date(`${baseKey}T00:00:00Z`);
+  const day = d.getUTCDay();
+  const diffToMonday = day === 0 ? -6 : 1 - day;
+  const monday = new Date(d.getTime() + diffToMonday * 86400000);
+  const saturday = new Date(monday.getTime() + 5 * 86400000);
+  return {
+    weekStart: monday.toISOString().slice(0, 10),
+    weekEnd: saturday.toISOString().slice(0, 10),
+  };
+}
+
+// ---------------- CLASS SCHEDULES ----------------
+export const listSchedules = asyncHandler(async (req, res) => {
+  const { date, upcoming, weekStart, classId, sectionId, subjectId } = req.query;
+  const filter = {};
+  if (req.user.role === 'faculty') {
+    const fac = await getFacultyDoc(req.user.id);
+    filter.facultyId = String(fac._id);
+  } else if (req.query.facultyId) {
+    filter.facultyId = req.query.facultyId;
+  }
+  if (classId) filter.classId = classId;
+  if (sectionId) filter.sectionId = sectionId;
+  if (subjectId) filter.subjectId = subjectId;
+  if (date) filter.dateKey = normalizeDateKey(date);
+
+  let schedules = await ClassSchedule.find(filter)
+    .populate('subjectId', 'name code')
+    .populate('classId', 'name')
+    .populate('sectionId', 'name')
+    .populate({ path: 'facultyId', populate: { path: 'userId', select: 'name' } })
+    .lean();
+
+  if (upcoming === 'true') {
+    const todayKey = normalizeDateKey();
+    schedules = schedules.filter((s) => s.dateKey >= todayKey);
+  }
+  if (weekStart) {
+    const bounds = getWeekBounds(weekStart);
+    schedules = schedules.filter((s) => s.dateKey >= bounds.weekStart && s.dateKey <= bounds.weekEnd);
+  }
+
+  schedules.sort((a, b) => {
+    const dateCmp = String(a.dateKey || '').localeCompare(String(b.dateKey || ''));
+    if (dateCmp !== 0) return dateCmp;
+    return String(a.startTime || '').localeCompare(String(b.startTime || ''));
+  });
+
+  const scheduleIds = schedules.map((s) => String(s._id));
+  const attRecords = scheduleIds.length > 0
+    ? await Attendance.find({ scheduledClassId: { $in: scheduleIds } }).lean()
+    : [];
+  const countBySchedule = new Map();
+  for (const r of attRecords) {
+    const sid = String(r.scheduledClassId);
+    countBySchedule.set(sid, (countBySchedule.get(sid) || 0) + 1);
+  }
+
+  const enriched = schedules.map((s) => {
+    const markedCount = countBySchedule.get(String(s._id)) || 0;
+    return {
+      ...s,
+      markedCount,
+      attendanceMarked: markedCount > 0 || Boolean(s.attendanceMarked),
+    };
+  });
+
+  return sendSuccess(res, enriched);
+});
+
+export const createSchedule = asyncHandler(async (req, res) => {
+  const { subjectId, sectionId, date, startTime, endTime, room, scheduleType = 'class', title = '', description = '' } = req.body;
+  const isEvent = scheduleType === 'event';
+
+  if (isEvent && !String(title || '').trim()) {
+    throw new ApiError(400, 'Event title is required for custom events', 'VALIDATION_ERROR');
+  }
+  if ((!isEvent && !subjectId) || !sectionId || !date || !startTime || !endTime || !String(room || '').trim()) {
+    throw new ApiError(400, 'Section, date, start time, end time, classroom, and subject (or event title) are required', 'VALIDATION_ERROR');
+  }
+  if (!/^\d{2}:\d{2}$/.test(startTime) || !/^\d{2}:\d{2}$/.test(endTime) || endTime <= startTime) {
+    throw new ApiError(400, 'End time must be after start time (HH:MM)', 'INVALID_TIME_RANGE');
+  }
+
+  const [section, subject] = await Promise.all([
+    Section.findById(sectionId).lean(),
+    subjectId ? Subject.findById(subjectId).lean() : Promise.resolve(null),
+  ]);
+  if (!section) throw new ApiError(404, 'Section not found', 'NOT_FOUND');
+  if (subjectId && !subject) throw new ApiError(404, 'Subject not found', 'NOT_FOUND');
+
+  const classId = String(section.classId?._id || section.classId || req.body.classId || '');
+  const subjectClassId = String(subject?.classId?._id || subject?.classId || '');
+  if (subject && subjectClassId && classId && subjectClassId !== classId) {
+    throw new ApiError(400, 'Selected section does not belong to the selected subject class', 'CLASS_MISMATCH');
+  }
+
+  let facultyId = req.body.facultyId || String(subject?.facultyId?._id || subject?.facultyId || '');
+  if (req.user.role === 'faculty') {
+    const fac = await getFacultyDoc(req.user.id);
+    facultyId = String(fac._id);
+  }
+  if (!facultyId) {
+    throw new ApiError(400, 'Faculty profile is required to schedule a class', 'FACULTY_REQUIRED');
+  }
+
+  const dateKey = normalizeDateKey(date);
+  const dayOfWeek = getDayOfWeekFromDateKey(dateKey);
+  const normalizedRoom = String(room).trim();
+  const roomLower = normalizedRoom.toLowerCase();
+
+  // Prevent duplicate / overlapping schedules
+  const sameDaySchedules = await ClassSchedule.find({ dateKey }).lean();
+  for (const existing of sameDaySchedules) {
+    const overlaps = existing.startTime < endTime && existing.endTime > startTime;
+    if (!overlaps) continue;
+
+    if (String(existing.facultyId) === String(facultyId)) {
+      throw new ApiError(409, `You already have a class scheduled on ${dateKey} (${existing.startTime}–${existing.endTime})`, 'DUPLICATE_FACULTY_SCHEDULE');
+    }
+    if (String(existing.classId) === String(classId) && String(existing.sectionId) === String(sectionId)) {
+      throw new ApiError(409, `This section already has a class scheduled on ${dateKey} (${existing.startTime}–${existing.endTime})`, 'DUPLICATE_SECTION_SCHEDULE');
+    }
+    if (String(existing.room || '').trim().toLowerCase() === roomLower) {
+      throw new ApiError(409, `Classroom ${normalizedRoom} is already booked on ${dateKey} (${existing.startTime}–${existing.endTime})`, 'DUPLICATE_ROOM_SCHEDULE');
+    }
+  }
+
+  const created = await ClassSchedule.create({
+    schoolId: req.user.schoolId,
+    facultyId: String(facultyId),
+    classId: String(classId),
+    sectionId: String(sectionId),
+    subjectId: subjectId ? String(subjectId) : null,
+    scheduleType: isEvent ? 'event' : 'class',
+    title: String(title || '').trim(),
+    description: String(description || '').trim(),
+    dateKey,
+    date: `${dateKey}T00:00:00.000Z`,
+    dayOfWeek,
+    startTime,
+    endTime,
+    room: normalizedRoom,
+    status: 'scheduled',
+    attendanceMarked: false,
+  });
+
+  const populated = await ClassSchedule.findById(created._id)
+    .populate('subjectId', 'name code')
+    .populate('classId', 'name')
+    .populate('sectionId', 'name')
+    .populate({ path: 'facultyId', populate: { path: 'userId', select: 'name' } })
+    .lean();
+
+  await recordAudit({
+    req,
+    action: 'CREATE_CLASS_SCHEDULE',
+    entity: 'ClassSchedule',
+    entityId: created._id,
+    after: { dateKey, startTime, endTime, room: normalizedRoom, subjectId, sectionId },
+  });
+
+  return sendSuccess(res, populated || created, 201);
+});
+
+export const deleteSchedule = asyncHandler(async (req, res) => {
+  const schedule = await ClassSchedule.findById(req.params.id);
+  if (!schedule) throw new ApiError(404, 'Scheduled class not found', 'NOT_FOUND');
+
+  if (req.user.role === 'faculty') {
+    const fac = await getFacultyDoc(req.user.id);
+    if (String(schedule.facultyId) !== String(fac._id)) {
+      throw new ApiError(403, 'You can only delete your own scheduled classes', 'FORBIDDEN');
+    }
+  }
+
+  await Attendance.deleteMany({ scheduledClassId: String(schedule._id) });
+  await ClassSchedule.findByIdAndDelete(schedule._id);
+  await recordAudit({ req, action: 'DELETE_CLASS_SCHEDULE', entity: 'ClassSchedule', entityId: schedule._id });
+  return sendSuccess(res, { deleted: true });
+});
+
 // ---------------- ATTENDANCE ----------------
 export const getAttendance = asyncHandler(async (req, res) => {
-  const { classId, sectionId, subjectId, date } = req.query;
+  const { scheduledClassId, classId, sectionId, subjectId, date } = req.query;
   const filter = {};
+  if (scheduledClassId) filter.scheduledClassId = String(scheduledClassId);
   if (classId) filter.classId = classId;
   if (sectionId) filter.sectionId = sectionId;
   if (subjectId) filter.subjectId = subjectId;
@@ -60,20 +253,48 @@ export const getAttendance = asyncHandler(async (req, res) => {
 });
 
 export const markBulkAttendance = asyncHandler(async (req, res) => {
-  const { classId, sectionId, subjectId, date, records } = req.body;
+  const { scheduledClassId, classId: bodyClassId, sectionId: bodySectionId, subjectId: bodySubjectId, date, records = [] } = req.body;
   // records: [ { studentId, status, remarks } ]
 
-  const dateKey = normalizeDateKey(date);
+  if (!Array.isArray(records) || records.length === 0) {
+    throw new ApiError(400, 'Attendance records are required', 'VALIDATION_ERROR');
+  }
+
+  let schedule = null;
+  if (scheduledClassId) {
+    schedule = await ClassSchedule.findById(scheduledClassId);
+    if (!schedule) throw new ApiError(404, 'Scheduled class not found', 'NOT_FOUND');
+
+    if (req.user.role === 'faculty') {
+      const fac = await getFacultyDoc(req.user.id);
+      if (String(schedule.facultyId) !== String(fac._id)) {
+        throw new ApiError(403, 'You can only mark attendance for your own scheduled classes', 'FORBIDDEN');
+      }
+    }
+  } else if (req.user.role === 'faculty') {
+    throw new ApiError(400, 'Please select one of your scheduled classes to mark attendance', 'SCHEDULE_REQUIRED');
+  }
+
+  const classId = schedule ? String(schedule.classId) : String(bodyClassId);
+  const sectionId = schedule ? String(schedule.sectionId) : String(bodySectionId);
+  const normalizedSubjectId = schedule ? (schedule.subjectId ? String(schedule.subjectId) : null) : (bodySubjectId || null);
+  const dateKey = schedule ? schedule.dateKey : normalizeDateKey(date);
   const targetDateIso = `${dateKey}T00:00:00.000Z`;
-  const normalizedSubjectId = subjectId || null;
+
+  // Deduplicate student records in payload to prevent duplicate writes
+  const uniqueMap = new Map();
+  for (const r of records) {
+    if (r?.studentId) {
+      uniqueMap.set(String(r.studentId), r);
+    }
+  }
+  const uniqueRecords = Array.from(uniqueMap.values());
 
   // Check edit window if records already exist
-  const existing = await Attendance.findOne({
-    classId,
-    sectionId,
-    subjectId: normalizedSubjectId,
-    dateKey,
-  });
+  const existingFilter = scheduledClassId
+    ? { scheduledClassId: String(scheduledClassId) }
+    : { classId, sectionId, subjectId: normalizedSubjectId, dateKey };
+  const existing = await Attendance.findOne(existingFilter);
 
   const settings = await SchoolSettings.findOne().lean();
   const windowHours = settings?.attendanceEditWindowHours || 24;
@@ -85,35 +306,49 @@ export const markBulkAttendance = asyncHandler(async (req, res) => {
     }
   }
 
-  const operations = records.map((r) => ({
-    updateOne: {
-      filter: {
-        studentId: String(r.studentId),
-        dateKey,
-        subjectId: normalizedSubjectId,
-      },
-      update: {
-        $set: {
-          classId: String(classId),
-          sectionId: String(sectionId),
-          subjectId: normalizedSubjectId,
-          dateKey,
-          date: targetDateIso,
-          status: r.status,
-          remarks: r.remarks || '',
-          markedById: req.user.id,
+  const operations = uniqueRecords.map((r) => {
+    const filter = scheduledClassId
+      ? { studentId: String(r.studentId), scheduledClassId: String(scheduledClassId) }
+      : { studentId: String(r.studentId), dateKey, subjectId: normalizedSubjectId };
+
+    return {
+      updateOne: {
+        filter,
+        update: {
+          $set: {
+            schoolId: String(req.user.schoolId),
+            scheduledClassId: scheduledClassId ? String(scheduledClassId) : null,
+            facultyId: schedule ? String(schedule.facultyId) : null,
+            classId,
+            sectionId,
+            subjectId: normalizedSubjectId,
+            dateKey,
+            date: targetDateIso,
+            startTime: schedule?.startTime || null,
+            endTime: schedule?.endTime || null,
+            room: schedule?.room || null,
+            status: r.status,
+            remarks: r.remarks || '',
+            markedById: req.user.id,
+          },
         },
+        upsert: true,
       },
-      upsert: true,
-    },
-  }));
+    };
+  });
 
   if (operations.length > 0) {
     await Attendance.bulkWrite(operations);
   }
 
+  if (schedule) {
+    schedule.attendanceMarked = true;
+    schedule.attendanceMarkedAt = new Date().toISOString();
+    await schedule.save();
+  }
+
   // Trigger intelligence evaluation & notify students marked absent or late
-  for (const r of records) {
+  for (const r of uniqueRecords) {
     evaluateStudentRisk(r.studentId).catch(() => {});
     if (r.status === 'absent' || r.status === 'late') {
       Student.findById(r.studentId)
@@ -125,7 +360,7 @@ export const markBulkAttendance = asyncHandler(async (req, res) => {
               userId: stu.userId,
               type: 'attendance',
               title: `Attendance Marked: ${r.status === 'absent' ? 'Absent' : 'Late'}`,
-              message: `Your attendance for ${dateKey} was marked as ${r.status}.`,
+              message: `Your attendance for ${dateKey}${schedule?.startTime ? ` (${schedule.startTime}–${schedule.endTime})` : ''} was marked as ${r.status}.`,
               link: '/student/attendance',
             });
           }
@@ -138,11 +373,16 @@ export const markBulkAttendance = asyncHandler(async (req, res) => {
     req,
     action: 'MARK_ATTENDANCE',
     entity: 'Attendance',
-    entityId: `${classId}-${sectionId}-${dateKey}`,
-    after: { count: records.length, dateKey },
+    entityId: scheduledClassId ? String(scheduledClassId) : `${classId}-${sectionId}-${dateKey}`,
+    after: { count: uniqueRecords.length, dateKey, scheduledClassId: scheduledClassId || null },
   });
 
-  return sendSuccess(res, { markedCount: records.length, date: dateKey, dateKey });
+  return sendSuccess(res, {
+    markedCount: uniqueRecords.length,
+    date: dateKey,
+    dateKey,
+    scheduledClassId: scheduledClassId || null,
+  });
 });
 
 // ---------------- MARKS ----------------
@@ -320,8 +560,11 @@ export const listStudyMaterials = asyncHandler(async (req, res) => {
 });
 
 export const uploadStudyMaterial = asyncHandler(async (req, res) => {
-  const fac = await getFacultyDoc(req.user.id);
+  const fac = req.user.role === 'faculty' ? await getFacultyDoc(req.user.id) : await Faculty.findOne({ userId: req.user.id });
   if (!req.file) throw new ApiError(400, 'Material file is required', 'FILE_REQUIRED');
+  if (!String(req.body.title || '').trim() || !req.body.classId || !req.body.subjectId) {
+    throw new ApiError(400, 'Title, class, and subject are required', 'VALIDATION_ERROR');
+  }
 
   const uploaded = await uploadFile(req.file, {
     schoolId: req.user.schoolId,
@@ -332,11 +575,11 @@ export const uploadStudyMaterial = asyncHandler(async (req, res) => {
   });
   const material = await StudyMaterial.create({
     schoolId: req.user.schoolId,
-    title: req.body.title,
-    description: req.body.description || '',
+    title: String(req.body.title).trim(),
+    description: String(req.body.description || '').trim(),
     classId: req.body.classId,
     subjectId: req.body.subjectId,
-    facultyId: fac._id,
+    facultyId: fac?._id || null,
     fileUrl: uploaded.url,
     storagePath: uploaded.storagePath,
     storageFileId: uploaded.fileId,

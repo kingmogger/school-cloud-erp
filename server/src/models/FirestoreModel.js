@@ -20,6 +20,7 @@ const REF_COLLECTIONS = {
   classTeacherId: 'faculties',
   currentAcademicYearId: 'academicYears',
   children: 'students',
+  scheduledClassId: 'classSchedules',
 };
 
 function matchesQuery(doc, query = {}) {
@@ -449,7 +450,14 @@ export class FirestoreModel {
     if (!existing) {
       if (!options.upsert) return null;
       targetId = query._id ? String(query._id) : crypto.randomBytes(12).toString('hex');
-      baseData = { ...query, _id: targetId, id: targetId, createdAt: new Date().toISOString() };
+      const tenantId = this.hasTenant ? getCurrentSchoolId() : null;
+      baseData = {
+        ...query,
+        ...(tenantId && !query.schoolId ? { schoolId: String(tenantId) } : {}),
+        _id: targetId,
+        id: targetId,
+        createdAt: new Date().toISOString(),
+      };
     }
 
     // Process update operations

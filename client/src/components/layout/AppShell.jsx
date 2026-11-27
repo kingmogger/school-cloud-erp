@@ -59,6 +59,7 @@ const NAV_BY_ROLE = {
   ],
   faculty: [
     { to: '/faculty', label: 'Dashboard', icon: LayoutDashboard, end: true },
+    { to: '/faculty/schedule', label: 'Class Schedule', icon: Calendar },
     { to: '/faculty/attendance', label: 'Attendance', icon: ClipboardCheck },
     { to: '/faculty/marks', label: 'Marks Entry', icon: Award },
     { to: '/faculty/assignments', label: 'Assignments', icon: FileText },
