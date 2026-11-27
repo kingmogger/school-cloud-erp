@@ -386,7 +386,12 @@ export const getRoster = asyncHandler(async (_req, res) => {
     Class.find().sort({ numericLevel: 1 }).lean(),
     Section.find().populate('classId', 'name').lean(),
     Subject.find().populate('classId', 'name').lean(),
-    Student.find({ status: 'active' }).populate('userId', 'name email').populate('classId', 'name').populate('sectionId', 'name').lean(),
+    Student.find({ status: 'active', isDeleted: { $ne: true } })
+      .populate('userId', 'name email phone')
+      .populate('classId', 'name numericLevel')
+      .populate('sectionId', 'name')
+      .populate('academicYearId', 'name')
+      .lean(),
   ]);
   return sendSuccess(res, { classes, sections, subjects, students });
 });

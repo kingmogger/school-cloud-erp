@@ -36,6 +36,7 @@ import { MarksPage } from './pages/faculty/MarksPage';
 import { AssignmentsPage } from './pages/faculty/AssignmentsPage';
 import { MaterialsPage } from './pages/faculty/MaterialsPage';
 import { RemarksPage } from './pages/faculty/RemarksPage';
+import { FacultyStudentsPage } from './pages/faculty/FacultyStudentsPage';
 
 import { StudentDashboard } from './pages/student/StudentDashboard';
 import { StudentAttendancePage } from './pages/student/StudentAttendancePage';
@@ -43,6 +44,7 @@ import { StudentResultsPage } from './pages/student/StudentResultsPage';
 import { StudentAssignmentsPage } from './pages/student/StudentAssignmentsPage';
 import { StudentMaterialsPage, StudentTimetablePage } from './pages/student/StudentResources';
 import { StudentLearningPage } from './pages/student/StudentLearningPage';
+import { StudentProfilePage } from './pages/student/StudentProfilePage';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -139,6 +141,7 @@ export default function App() {
                   }
                 >
                   <Route index element={<FacultyDashboard />} />
+                  <Route path="students" element={<FacultyStudentsPage />} />
                   <Route path="attendance" element={<AttendancePage />} />
                   <Route path="marks" element={<MarksPage />} />
                   <Route path="assignments" element={<AssignmentsPage />} />
@@ -162,7 +165,7 @@ export default function App() {
                   <Route path="assignments" element={<StudentAssignmentsPage />} />
                   <Route path="materials" element={<StudentMaterialsPage />} />
                   <Route path="timetable" element={<StudentTimetablePage />} />
-                  <Route path="profile" element={<StudentDashboard />} />
+                  <Route path="profile" element={<StudentProfilePage />} />
                 </Route>
 
                 <Route path="*" element={<Navigate to="/" replace />} />

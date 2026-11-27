@@ -185,6 +185,27 @@ export function StudentsPage() {
                 <option value="other">Other</option>
               </select>
             </FormField>
+            <FormField label="Date of Birth">
+              <input type="date" className={inputClass} {...register('dateOfBirth')} />
+            </FormField>
+            <FormField label="Blood Group">
+              <input className={inputClass} placeholder="e.g. O+" {...register('bloodGroup')} />
+            </FormField>
+            <FormField label="Student Phone">
+              <input type="tel" className={inputClass} placeholder="+91 98765 43210" {...register('phone')} />
+            </FormField>
+            <FormField label="Address">
+              <input className={inputClass} placeholder="City, Street" {...register('address')} />
+            </FormField>
+            <FormField label="Father Name">
+              <input className={inputClass} placeholder="Father's full name" {...register('fatherName')} />
+            </FormField>
+            <FormField label="Father Phone No">
+              <input type="tel" className={inputClass} placeholder="+91 98765 43210" {...register('fatherPhone')} />
+            </FormField>
+            <FormField label="Mother Name">
+              <input className={inputClass} placeholder="Mother's full name" {...register('motherName')} />
+            </FormField>
           </div>
 
           <div className="border-t border-slate-200 dark:border-slate-800 pt-4">
