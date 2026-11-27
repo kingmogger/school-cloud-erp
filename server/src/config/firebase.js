@@ -1,9 +1,10 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import admin from 'firebase-admin';
+import { initializeApp, getApps, cert } from 'firebase-admin/app';
 import { getAuth } from 'firebase-admin/auth';
 import { getFirestore } from 'firebase-admin/firestore';
+import { getStorage } from 'firebase-admin/storage';
 import crypto from 'node:crypto';
 import { env } from './env.js';
 
@@ -253,10 +254,10 @@ export function initFirebase() {
       const serviceAccount = JSON.parse(fs.readFileSync(keyFileFound, 'utf-8'));
       const projectId = serviceAccount.project_id || env.FIREBASE_PROJECT_ID;
       const storageBucket = env.FIREBASE_STORAGE_BUCKET || (projectId ? `${projectId}.appspot.com` : undefined);
-      const apps = admin.getApps ? admin.getApps() : (admin.apps || []);
+      const apps = getApps();
       if (!apps.length) {
-        admin.initializeApp({
-          credential: admin.credential.cert(serviceAccount),
+        initializeApp({
+          credential: cert(serviceAccount),
           projectId,
           ...(storageBucket ? { storageBucket } : {}),
         });
@@ -272,10 +273,10 @@ export function initFirebase() {
   } else if (env.FIREBASE_CLIENT_EMAIL && env.FIREBASE_PRIVATE_KEY && env.FIREBASE_PROJECT_ID) {
     try {
       const storageBucket = env.FIREBASE_STORAGE_BUCKET || `${env.FIREBASE_PROJECT_ID}.appspot.com`;
-      const apps = admin.getApps ? admin.getApps() : (admin.apps || []);
+      const apps = getApps();
       if (!apps.length) {
-        admin.initializeApp({
-          credential: admin.credential.cert({
+        initializeApp({
+          credential: cert({
             projectId: env.FIREBASE_PROJECT_ID,
             clientEmail: env.FIREBASE_CLIENT_EMAIL,
             privateKey: env.FIREBASE_PRIVATE_KEY.replace(/\\n/g, '\n'),
@@ -317,11 +318,11 @@ export function getStorageBucket() {
   if (!firestoreInstance) {
     initFirebase();
   }
-  if (!isCloudMode || !admin.apps.length) {
+  if (!isCloudMode || !getApps().length) {
     return null;
   }
   try {
-    return admin.storage().bucket();
+    return getStorage().bucket();
   } catch {
     return null;
   }
@@ -350,7 +351,7 @@ export function getFirebaseInfo() {
 }
 
 export function getFirebaseAuth() {
-  const apps = admin.getApps ? admin.getApps() : (admin.apps || []);
+  const apps = getApps();
   if (apps.length > 0) {
     return getAuth();
   }
@@ -359,7 +360,7 @@ export function getFirebaseAuth() {
 
 export async function createFirebaseAuthUser({ email, password, displayName }) {
   const normEmail = String(email || '').toLowerCase().trim();
-  const apps = admin.getApps ? admin.getApps() : (admin.apps || []);
+  const apps = getApps();
 
   // If Cloud Firebase Admin is initialized with active credentials
   if (apps.length > 0) {
@@ -435,7 +436,7 @@ export async function deleteFirebaseAuthUser(uidOrEmail, optionalEmail) {
 
   if (!normUid && !normEmail) return;
 
-  const apps = admin.getApps ? admin.getApps() : (admin.apps || []);
+  const apps = getApps();
 
   // 1. Cloud Firebase Authentication
   if (apps.length > 0) {

@@ -3,9 +3,9 @@ import { z } from 'zod';
 const objectId = z.string().regex(/^[0-9a-fA-F]{24}$/, 'Invalid ObjectId');
 
 export const createStudentSchema = z.object({
-  name: z.string().min(2),
-  email: z.string().email(),
-  password: z.string().min(6).optional().or(z.literal('')),
+  name: z.string().trim().min(2),
+  email: z.string().trim().email(),
+  password: z.string().trim().min(6).optional().or(z.literal('')),
   phone: z.string().optional().default(''),
   rollNo: z.string().optional().default(''),
   classId: objectId,
@@ -37,9 +37,9 @@ export const updateStudentSchema = z.object({
 });
 
 export const createFacultySchema = z.object({
-  name: z.string().min(2),
-  email: z.string().email(),
-  password: z.string().min(6).optional(),
+  name: z.string().trim().min(2),
+  email: z.string().trim().email(),
+  password: z.string().trim().min(6).optional().or(z.literal('')),
   phone: z.string().optional().default(''),
   employeeId: z.string().optional(),
   department: z.string().optional().default('General'),

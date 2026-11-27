@@ -25,6 +25,7 @@ import { sendSuccess } from '../utils/ApiResponse.js';
 import { parsePagination, buildPaginationMeta } from '../utils/pagination.js';
 import { asyncHandler } from '../middleware/asyncHandler.js';
 import { recordAudit } from '../middleware/audit.js';
+import { runWithoutTenant } from '../utils/tenantContext.js';
 import { uploadFile, deleteFile, resolveSchoolStorageLimitBytes, emptyCategoryUsage } from '../services/storage.service.js';
 import { provisionStandardClassesAndSubjects } from '../services/academicsSetup.service.js';
 
@@ -159,7 +160,8 @@ export const createStudent = asyncHandler(async (req, res) => {
     }
   }
 
-  const exists = await User.exists({ email: data.email.toLowerCase() });
+  const cleanEmail = data.email.trim().toLowerCase();
+  const exists = await runWithoutTenant(() => User.exists({ email: cleanEmail }));
   if (exists) {
     throw new ApiError(409, 'A user with this email already exists', 'EMAIL_EXISTS');
   }
@@ -170,7 +172,7 @@ export const createStudent = asyncHandler(async (req, res) => {
 
   // Create student's Firebase Auth account with both email and password
   const firebaseUser = await createFirebaseAuthUser({
-    email: data.email.toLowerCase(),
+    email: cleanEmail,
     password: temporaryPassword,
     displayName: data.name,
   });
@@ -181,8 +183,8 @@ export const createStudent = asyncHandler(async (req, res) => {
   const admissionNo = await generateAdmissionNo();
 
   const stuUser = await User.create({
-    name: data.name,
-    email: data.email.toLowerCase(),
+    name: data.name.trim(),
+    email: cleanEmail,
     passwordHash,
     role: 'student',
     schoolId: req.user.schoolId,
@@ -409,23 +411,29 @@ export const createFaculty = asyncHandler(async (req, res) => {
     }
   }
 
-  const exists = await User.exists({ email: data.email.toLowerCase() });
+  const cleanEmail = data.email.trim().toLowerCase();
+  const exists = await runWithoutTenant(() => User.exists({ email: cleanEmail }));
   if (exists) throw new ApiError(409, 'Email already registered', 'EMAIL_EXISTS');
 
-  const passwordHash = await User.hashPassword(data.password || 'Password@123');
+  const rawPassword = data.password && data.password.trim().length >= 6
+    ? data.password.trim()
+    : 'Password@123';
+  const passwordHash = await User.hashPassword(rawPassword);
   const employeeId = data.employeeId || (await generateEmployeeId());
 
   const user = await User.create({
-    name: data.name,
-    email: data.email.toLowerCase(),
+    name: data.name.trim(),
+    email: cleanEmail,
     passwordHash,
     role: 'faculty',
+    schoolId: req.user.schoolId,
     phone: data.phone || '',
     isActive: true,
   });
 
   const faculty = await Faculty.create({
     userId: user._id,
+    schoolId: req.user.schoolId,
     employeeId,
     department: data.department,
     qualification: data.qualification,
@@ -434,7 +442,17 @@ export const createFaculty = asyncHandler(async (req, res) => {
 
   const populated = await Faculty.findById(faculty._id).populate('userId', 'name email phone').lean();
   await recordAudit({ req, action: 'CREATE_FACULTY', entity: 'Faculty', entityId: faculty._id, after: { employeeId } });
-  return sendSuccess(res, populated, 201);
+  return sendSuccess(
+    res,
+    {
+      ...populated,
+      credentials: {
+        email: cleanEmail,
+        password: rawPassword,
+      },
+    },
+    201
+  );
 });
 
 export const updateFaculty = asyncHandler(async (req, res) => {

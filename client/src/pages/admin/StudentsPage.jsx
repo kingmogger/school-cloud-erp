@@ -260,18 +260,6 @@ export function StudentsPage() {
             </FormField>
           </div>
 
-          <div className="border-t border-slate-200 dark:border-slate-800 pt-4">
-            <p className="mb-3 text-xs font-semibold uppercase tracking-wider text-slate-500">Auto-Linked Parent Account</p>
-            <div className="grid gap-4 sm:grid-cols-2">
-              <FormField label="Parent Name">
-                <input className={inputClass} {...register('parentName')} />
-              </FormField>
-              <FormField label="Parent Email">
-                <input type="email" className={inputClass} placeholder="parent@example.com" {...register('parentEmail')} />
-              </FormField>
-            </div>
-          </div>
-
           <div className="flex justify-end gap-2 pt-2">
             <Button type="button" variant="secondary" onClick={() => setModalOpen(false)}>Cancel</Button>
             <Button type="submit" disabled={createMutation.isPending}>
