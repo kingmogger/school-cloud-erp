@@ -627,8 +627,8 @@ export const createRemark = asyncHandler(async (req, res) => {
 export const getRoster = asyncHandler(async (_req, res) => {
   const [classes, sections, subjects, students] = await Promise.all([
     Class.find().sort({ numericLevel: 1 }).lean(),
-    Section.find().populate('classId', 'name').lean(),
-    Subject.find().populate('classId', 'name').lean(),
+    Section.find().populate('classId', 'name numericLevel').lean(),
+    Subject.find().populate('classId', 'name numericLevel').lean(),
     Student.find({ status: 'active', isDeleted: { $ne: true } })
       .populate('userId', 'name email phone')
       .populate('classId', 'name numericLevel')
@@ -636,6 +636,23 @@ export const getRoster = asyncHandler(async (_req, res) => {
       .populate('academicYearId', 'name')
       .lean(),
   ]);
+
+  const byClassThenName = (a, b) => {
+    const levelA = a.classId?.numericLevel ?? Number.MAX_SAFE_INTEGER;
+    const levelB = b.classId?.numericLevel ?? Number.MAX_SAFE_INTEGER;
+    if (levelA !== levelB) return levelA - levelB;
+    const classCmp = String(a.classId?.name || '').localeCompare(String(b.classId?.name || ''), undefined, { numeric: true, sensitivity: 'base' });
+    if (classCmp !== 0) return classCmp;
+    return String(a.name || '').localeCompare(String(b.name || ''), undefined, { numeric: true, sensitivity: 'base' });
+  };
+
+  classes.sort((a, b) => {
+    const levelDiff = (a.numericLevel ?? Number.MAX_SAFE_INTEGER) - (b.numericLevel ?? Number.MAX_SAFE_INTEGER);
+    return levelDiff !== 0 ? levelDiff : String(a.name || '').localeCompare(String(b.name || ''), undefined, { numeric: true, sensitivity: 'base' });
+  });
+  sections.sort(byClassThenName);
+  subjects.sort(byClassThenName);
+
   return sendSuccess(res, { classes, sections, subjects, students });
 });
 
