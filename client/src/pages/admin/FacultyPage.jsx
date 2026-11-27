@@ -69,6 +69,7 @@ export function FacultyPage() {
         <div>
           <p className="font-medium text-slate-900 dark:text-white">{r.userId?.name}</p>
           <p className="text-xs text-slate-500">{r.userId?.email}</p>
+          {r.userId?.phone && <p className="text-xs text-indigo-600 dark:text-indigo-400">{r.userId.phone}</p>}
         </div>
       ),
     },
@@ -118,6 +119,9 @@ export function FacultyPage() {
           </FormField>
           <FormField label="Email (Gmail / School Email)" required>
             <input type="email" className={inputClass} placeholder="teacher@gmail.com" {...register('email', { required: true })} />
+          </FormField>
+          <FormField label="Phone Number">
+            <input type="tel" className={inputClass} placeholder="+91 98765 43210" {...register('phone')} />
           </FormField>
           <FormField label="Login Password (min 6 chars, default Password@123)">
             <div className="relative">

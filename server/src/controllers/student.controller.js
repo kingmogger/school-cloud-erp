@@ -8,6 +8,8 @@ import { Timetable } from '../models/Timetable.js';
 import { StudyMaterial } from '../models/StudyMaterial.js';
 import { SchoolSettings } from '../models/SchoolSettings.js';
 import { Notification } from '../models/Notification.js';
+import { Faculty } from '../models/Faculty.js';
+import { Subject } from '../models/Subject.js';
 import { ApiError } from '../utils/ApiError.js';
 import { sendSuccess } from '../utils/ApiResponse.js';
 import { asyncHandler } from '../middleware/asyncHandler.js';
@@ -33,13 +35,32 @@ async function getStudentDoc(userId) {
 
 export const getProfile = asyncHandler(async (req, res) => {
   const student = await getStudentDoc(req.user.id);
-  const [attendance, grades, trends, strengthsWeaknesses, allAttRecords] = await Promise.all([
+  const [attendance, grades, trends, strengthsWeaknesses, allAttRecords, faculties, classSubjects] = await Promise.all([
     calculateStudentAttendance({ studentId: student._id }),
     calculateStudentGrades({ studentId: student._id }),
     calculateExamTrends({ studentId: student._id }),
     calculateSubjectStrengthsWeaknesses({ studentId: student._id }),
     Attendance.find({ studentId: student._id }).lean(),
+    Faculty.find({ isDeleted: { $ne: true }, status: 'active' }).populate('userId', 'name email phone').lean(),
+    Subject.find({ classId: student.classId?._id || student.classId }).lean(),
   ]);
+
+  const subjectsByFaculty = new Map();
+  for (const sub of classSubjects) {
+    if (!sub.facultyId) continue;
+    const fid = String(sub.facultyId);
+    if (!subjectsByFaculty.has(fid)) subjectsByFaculty.set(fid, []);
+    subjectsByFaculty.get(fid).push(sub.name);
+  }
+
+  const teachers = faculties.map((f) => ({
+    _id: f._id,
+    name: f.userId?.name || 'Teacher',
+    email: f.userId?.email || '',
+    phone: f.userId?.phone || '',
+    department: f.department || '',
+    subjects: subjectsByFaculty.get(String(f._id)) || [],
+  }));
 
   const todayKey = new Date().toISOString().slice(0, 10);
   const monthPrefix = todayKey.slice(0, 7);
@@ -63,6 +84,7 @@ export const getProfile = asyncHandler(async (req, res) => {
     grades,
     trends,
     strengthsWeaknesses,
+    teachers,
   });
 });
 
@@ -266,9 +288,54 @@ export const getStudyMaterials = asyncHandler(async (req, res) => {
   const student = await getStudentDoc(req.user.id);
   const materials = await StudyMaterial.find({ classId: student.classId._id })
     .populate('subjectId', 'name code')
-    .populate({ path: 'facultyId', populate: { path: 'userId', select: 'name' } })
+    .populate({ path: 'facultyId', populate: { path: 'userId', select: 'name phone' } })
     .sort({ createdAt: -1 })
     .lean();
 
   return sendSuccess(res, materials);
+});
+
+export const getLearningSubjects = asyncHandler(async (req, res) => {
+  const student = await getStudentDoc(req.user.id);
+  const classId = student.classId?._id || student.classId;
+
+  const [subjects, materials] = await Promise.all([
+    Subject.find({ classId })
+      .populate({ path: 'facultyId', populate: { path: 'userId', select: 'name email phone' } })
+      .sort({ name: 1 })
+      .lean(),
+    StudyMaterial.find({ classId })
+      .populate('subjectId', 'name code')
+      .sort({ createdAt: -1 })
+      .lean(),
+  ]);
+
+  const materialsBySubject = new Map();
+  for (const mat of materials) {
+    const sid = String(mat.subjectId?._id || mat.subjectId || '');
+    if (!materialsBySubject.has(sid)) materialsBySubject.set(sid, []);
+    materialsBySubject.get(sid).push(mat);
+  }
+
+  const list = subjects.map((sub) => ({
+    _id: sub._id,
+    name: sub.name,
+    code: sub.code,
+    credits: sub.credits ?? 1,
+    maxMarks: sub.maxMarks ?? 100,
+    passMarks: sub.passMarks ?? 35,
+    teacher: sub.facultyId
+      ? {
+          _id: sub.facultyId._id,
+          name: sub.facultyId.userId?.name || 'Assigned Teacher',
+          email: sub.facultyId.userId?.email || '',
+          phone: sub.facultyId.userId?.phone || '',
+          department: sub.facultyId.department || '',
+          designation: sub.facultyId.designation || 'Teacher',
+        }
+      : null,
+    materials: materialsBySubject.get(String(sub._id)) || [],
+  }));
+
+  return sendSuccess(res, list);
 });

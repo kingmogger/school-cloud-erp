@@ -68,6 +68,7 @@ const NAV_BY_ROLE = {
   ],
   student: [
     { to: '/student', label: 'Dashboard', icon: LayoutDashboard, end: true },
+    { to: '/student/learning', label: 'Learning', icon: BookOpen },
     { to: '/student/attendance', label: 'Attendance', icon: ClipboardCheck },
     { to: '/student/results', label: 'Exam Results', icon: Award },
     { to: '/student/assignments', label: 'Assignments', icon: FileText },

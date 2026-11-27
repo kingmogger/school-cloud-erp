@@ -42,6 +42,7 @@ import { StudentAttendancePage } from './pages/student/StudentAttendancePage';
 import { StudentResultsPage } from './pages/student/StudentResultsPage';
 import { StudentAssignmentsPage } from './pages/student/StudentAssignmentsPage';
 import { StudentMaterialsPage, StudentTimetablePage } from './pages/student/StudentResources';
+import { StudentLearningPage } from './pages/student/StudentLearningPage';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -155,6 +156,7 @@ export default function App() {
                   }
                 >
                   <Route index element={<StudentDashboard />} />
+                  <Route path="learning" element={<StudentLearningPage />} />
                   <Route path="attendance" element={<StudentAttendancePage />} />
                   <Route path="results" element={<StudentResultsPage />} />
                   <Route path="assignments" element={<StudentAssignmentsPage />} />
