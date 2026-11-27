@@ -3,7 +3,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { GraduationCap, Moon, Sun, ShieldCheck, Shield } from 'lucide-react';
+import { GraduationCap, Moon, Sun, Shield } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { useTheme } from '../../context/ThemeContext';
 import { useToast } from '../../context/ToastContext';
@@ -21,11 +21,6 @@ const ROLE_HOME = {
   faculty: '/faculty',
   student: '/student',
 };
-
-const DEMO_ACCOUNTS = [
-  { role: 'Faculty (GF)', email: 'marcus.gf@greenfield.edu', code: 'GREENFIELD' },
-  { role: 'Student (GF)', email: 'liam.gf@greenfield.edu', code: 'GREENFIELD' },
-];
 
 export function LoginPage() {
   const { login } = useAuth();
@@ -112,26 +107,6 @@ export function LoginPage() {
               {isSubmitting ? 'Signing in...' : 'Sign In'}
             </Button>
           </form>
-
-          <div className="mt-6 border-t border-slate-200 dark:border-slate-800 pt-5">
-            <div className="flex items-center gap-1.5 text-xs font-medium text-slate-500 dark:text-slate-400 mb-2.5">
-              <ShieldCheck className="h-4 w-4 text-indigo-500" />
-              <span>Quick Demo Accounts (Password@123)</span>
-            </div>
-            <div className="grid grid-cols-2 gap-2">
-              {DEMO_ACCOUNTS.map((acc) => (
-                <button
-                  key={acc.email}
-                  type="button"
-                  onClick={() => fillDemo(acc.email, acc.code)}
-                  className="rounded-lg border border-slate-200 dark:border-slate-700 px-3 py-2 text-left text-xs hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors cursor-pointer"
-                >
-                  <p className="font-semibold text-slate-800 dark:text-slate-100">{acc.role}</p>
-                  <p className="truncate text-slate-500 dark:text-slate-400">{acc.email}</p>
-                </button>
-              ))}
-            </div>
-          </div>
         </div>
 
         <div className="mt-4 text-center">
