@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import { Award, ClipboardCheck, TrendingUp, AlertTriangle } from 'lucide-react';
+import { Award, ClipboardCheck, TrendingUp, AlertTriangle, Phone } from 'lucide-react';
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from 'recharts';
 import { api } from '../../api/client';
 import { StatCard, ChartWrapper, Badge, Skeleton } from '../../components/ui';
@@ -21,7 +21,7 @@ export function StudentDashboard() {
 
   if (isLoading) return <Skeleton className="h-48 w-full" />;
 
-  const { student, attendance, grades, trends, strengthsWeaknesses } = data || {};
+  const { student, attendance, grades, trends, strengthsWeaknesses, teachers = [] } = data || {};
 
   return (
     <div className="space-y-6">
@@ -90,6 +90,39 @@ export function StudentDashboard() {
           </div>
         </div>
       </div>
+
+      {teachers.length > 0 && (
+        <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-5 space-y-3">
+          <h3 className="font-semibold text-slate-900 dark:text-white">My Teachers</h3>
+          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+            {teachers.map((t) => (
+              <div
+                key={t._id}
+                className="flex items-center justify-between gap-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50/70 dark:bg-slate-800/40 p-3.5"
+              >
+                <div className="min-w-0">
+                  <p className="font-semibold text-sm text-slate-900 dark:text-white truncate">{t.name}</p>
+                  <p className="text-xs text-slate-500 truncate">
+                    {t.subjects?.length > 0 ? t.subjects.join(', ') : t.department || 'Faculty'}
+                  </p>
+                </div>
+                {t.phone ? (
+                  <a
+                    href={`tel:${t.phone.replace(/[^+\d]/g, '')}`}
+                    className="inline-flex items-center gap-1.5 rounded-lg bg-indigo-50 dark:bg-indigo-950/60 px-2.5 py-1.5 text-xs font-medium text-indigo-700 dark:text-indigo-300 hover:bg-indigo-100 dark:hover:bg-indigo-900/60 shrink-0"
+                    title={`Call ${t.name}`}
+                  >
+                    <Phone className="h-3.5 w-3.5" />
+                    {t.phone}
+                  </a>
+                ) : (
+                  <span className="text-xs text-slate-400 shrink-0">No phone</span>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       {notifications.length > 0 && (
         <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-5 space-y-3">

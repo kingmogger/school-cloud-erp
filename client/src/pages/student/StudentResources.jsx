@@ -23,7 +23,23 @@ export function StudentMaterialsPage() {
         columns={[
           { key: 'title', label: 'Title' },
           { key: 'subject', label: 'Subject', render: (r) => r.subjectId?.name },
-          { key: 'faculty', label: 'Teacher', render: (r) => r.facultyId?.userId?.name },
+          {
+            key: 'faculty',
+            label: 'Teacher',
+            render: (r) => (
+              <div>
+                <p className="font-medium text-slate-900 dark:text-white">{r.facultyId?.userId?.name || '—'}</p>
+                {r.facultyId?.userId?.phone && (
+                  <a
+                    href={`tel:${r.facultyId.userId.phone.replace(/[^+\d]/g, '')}`}
+                    className="text-xs text-indigo-600 dark:text-indigo-400 hover:underline"
+                  >
+                    {r.facultyId.userId.phone}
+                  </a>
+                )}
+              </div>
+            ),
+          },
           {
             key: 'file',
             label: 'Resource',

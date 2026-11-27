@@ -12,6 +12,7 @@ import {
   submitAssignment,
   getTimetable,
   getStudyMaterials,
+  getLearningSubjects,
   getStudentNotifications,
   markStudentNotificationRead,
 } from '../controllers/student.controller.js';
@@ -28,6 +29,7 @@ router.get('/assignments', getAssignments);
 router.post('/assignments/:id/submit', upload.single('file'), submitAssignment);
 router.get('/timetable', getTimetable);
 router.get('/materials', getStudyMaterials);
+router.get('/learning', getLearningSubjects);
 router.get('/notifications', getStudentNotifications);
 router.patch('/notifications/:id/read', markStudentNotificationRead);
 

@@ -60,6 +60,7 @@ const NAV_BY_ROLE = {
   faculty: [
     { to: '/faculty', label: 'Dashboard', icon: LayoutDashboard, end: true },
     { to: '/faculty/schedule', label: 'Class Schedule', icon: Calendar },
+    { to: '/faculty/students', label: 'Students', icon: Users },
     { to: '/faculty/attendance', label: 'Attendance', icon: ClipboardCheck },
     { to: '/faculty/marks', label: 'Marks Entry', icon: Award },
     { to: '/faculty/assignments', label: 'Assignments', icon: FileText },
@@ -69,6 +70,7 @@ const NAV_BY_ROLE = {
   ],
   student: [
     { to: '/student', label: 'Dashboard', icon: LayoutDashboard, end: true },
+    { to: '/student/learning', label: 'Learning', icon: BookOpen },
     { to: '/student/attendance', label: 'Attendance', icon: ClipboardCheck },
     { to: '/student/results', label: 'Exam Results', icon: Award },
     { to: '/student/assignments', label: 'Assignments', icon: FileText },

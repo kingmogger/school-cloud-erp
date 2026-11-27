@@ -226,8 +226,11 @@ export const createStudent = asyncHandler(async (req, res) => {
     gender: data.gender || 'other',
     bloodGroup: data.bloodGroup || '',
     address: data.address || '',
-    guardianName: data.guardianName || data.parentName || '',
-    guardianPhone: data.guardianPhone || data.parentPhone || '',
+    fatherName: data.fatherName || '',
+    motherName: data.motherName || '',
+    fatherPhone: data.fatherPhone || '',
+    guardianName: data.guardianName || data.fatherName || data.parentName || '',
+    guardianPhone: data.guardianPhone || data.fatherPhone || data.parentPhone || '',
     parentIds,
     status: 'active',
   });
